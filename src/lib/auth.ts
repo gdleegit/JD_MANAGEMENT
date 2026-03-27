@@ -3,7 +3,7 @@ import { prisma } from "./prisma";
 import crypto from "crypto";
 
 export function hashPassword(password: string): string {
-  const secret = process.env.AUTH_SECRET || "jd-soccer-2024";
+  const secret = process.env.AUTH_SECRET || "jd-soccer-2026-secret-key";
   return crypto.createHash("sha256").update(password + secret).digest("hex");
 }
 

@@ -3,7 +3,7 @@ const crypto = require("crypto");
 
 const prisma = new PrismaClient();
 
-const SECRET = "jd-soccer-2024-secret-key";
+const SECRET = "jd-soccer-2026-secret-key";
 
 function hash(password) {
   return crypto.createHash("sha256").update(password + SECRET).digest("hex");
