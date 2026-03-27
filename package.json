@@ -4,7 +4,7 @@
   "description": "축구 대회 관리 시스템",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && prisma db push && next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "db:push": "prisma db push",
     "db:seed": "node prisma/seed.js",
