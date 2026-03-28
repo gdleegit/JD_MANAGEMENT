@@ -43,8 +43,11 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const [awayScore, setAwayScore]       = useState(match.awayScore?.toString() ?? "");
   const [date, setDate] = useState(() => {
     if (!match.date) return "";
-    const d = new Date(match.date);
-    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    return new Intl.DateTimeFormat("sv-SE", {
+      timeZone: "Asia/Seoul",
+      year: "numeric", month: "2-digit", day: "2-digit",
+      hour: "2-digit", minute: "2-digit", hour12: false,
+    }).format(new Date(match.date)).replace(" ", "T");
   });
   const [venue,             setVenue]             = useState(match.venue ?? "");
   const [court,             setCourt]             = useState(match.court ?? "");
@@ -75,7 +78,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         status: effectiveStatus,
         homeScore: parsedHome,
         awayScore: parsedAway,
-        date: date || null,
+        date: date ? new Date(date).toISOString() : null,
         venue: venue || null,
         court: court || null,
         round: round || null,

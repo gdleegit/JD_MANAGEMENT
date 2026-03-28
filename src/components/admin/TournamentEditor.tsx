@@ -696,7 +696,7 @@ function MatchesTab({ tournament, loadingMatchId, onCreateMatch, onEditMatch, on
           )}
         </div>
         <button
-          onClick={() => { if (form.homeTeamId && form.awayTeamId) { onCreateMatch({ ...form, matchOrder: form.matchOrder ? parseInt(form.matchOrder) : null }); setForm({ homeTeamId: "", awayTeamId: "", date: "", venue: "", court: "", round: "", stage: "", groupId: "", matchOrder: "" }); } }}
+          onClick={() => { if (form.homeTeamId && form.awayTeamId) { onCreateMatch({ ...form, date: form.date ? new Date(form.date).toISOString() : "", matchOrder: form.matchOrder ? parseInt(form.matchOrder) : null }); setForm({ homeTeamId: "", awayTeamId: "", date: "", venue: "", court: "", round: "", stage: "", groupId: "", matchOrder: "" }); } }}
           className="btn-primary mt-3"
           disabled={!form.homeTeamId || !form.awayTeamId}
         >경기 추가</button>
@@ -710,14 +710,15 @@ function MatchesTab({ tournament, loadingMatchId, onCreateMatch, onEditMatch, on
         ) : (() => {
           // Group matches by date (YYYY-MM-DD), undated matches go to "__none__"
           const grouped = new Map<string, typeof tournament.matches>();
+          const toKSTDate = (iso: string) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
           const sorted = [...tournament.matches].sort((a, b) => {
-            const da = a.date ? a.date.slice(0, 10) : "9999-99-99";
-            const db = b.date ? b.date.slice(0, 10) : "9999-99-99";
+            const da = a.date ? toKSTDate(a.date) : "9999-99-99";
+            const db = b.date ? toKSTDate(b.date) : "9999-99-99";
             if (da !== db) return da.localeCompare(db);
             return (a.matchOrder ?? 999) - (b.matchOrder ?? 999);
           });
           for (const m of sorted) {
-            const key = m.date ? m.date.slice(0, 10) : "__none__";
+            const key = m.date ? toKSTDate(m.date) : "__none__";
             if (!grouped.has(key)) grouped.set(key, []);
             grouped.get(key)!.push(m);
           }

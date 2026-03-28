@@ -44,8 +44,8 @@ export default async function TournamentsPage() {
                 </div>
                 {t.startDate && (
                   <p className="text-xs text-gray-400 mt-2">
-                    {new Date(t.startDate).toLocaleDateString("ko-KR")}
-                    {t.endDate && ` ~ ${new Date(t.endDate).toLocaleDateString("ko-KR")}`}
+                    {new Date(t.startDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })}
+                    {t.endDate && ` ~ ${new Date(t.endDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })}`}
                   </p>
                 )}
               </Link>

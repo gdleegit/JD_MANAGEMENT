@@ -124,8 +124,8 @@ export default function TournamentPublicView({
         {tournament.description && <p className="text-gray-500 mt-1">{tournament.description}</p>}
         {tournament.startDate && (
           <p className="text-sm text-gray-400 mt-1">
-            {new Date(tournament.startDate).toLocaleDateString("ko-KR")}
-            {tournament.endDate && ` ~ ${new Date(tournament.endDate).toLocaleDateString("ko-KR")}`}
+            {new Date(tournament.startDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })}
+            {tournament.endDate && ` ~ ${new Date(tournament.endDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })}`}
           </p>
         )}
       </div>
@@ -325,15 +325,16 @@ export default function TournamentPublicView({
 // ── 날짜별 일정 뷰 ──────────────────────────────────────
 function ScheduleView({ matches }: { matches: Match[] }) {
   // 날짜별 그룹핑
+  const toKSTDate = (iso: string) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
   const byDate = new Map<string, Match[]>();
   const sorted = [...matches].sort((a, b) => {
-    const da = a.date ? a.date.slice(0, 10) : "9999-99-99";
-    const db = b.date ? b.date.slice(0, 10) : "9999-99-99";
+    const da = a.date ? toKSTDate(a.date) : "9999-99-99";
+    const db = b.date ? toKSTDate(b.date) : "9999-99-99";
     if (da !== db) return da.localeCompare(db);
     return (a.matchOrder ?? 999) - (b.matchOrder ?? 999);
   });
   for (const m of sorted) {
-    const key = m.date ? m.date.slice(0, 10) : "__none__";
+    const key = m.date ? toKSTDate(m.date) : "__none__";
     if (!byDate.has(key)) byDate.set(key, []);
     byDate.get(key)!.push(m);
   }
@@ -539,15 +540,16 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
 
       {/* Matches of this group — grouped by date */}
       {groupMatches.length > 0 && (() => {
+        const toKSTDate = (iso: string) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
         const grouped = new Map<string, Match[]>();
         const sorted = [...groupMatches].sort((a, b) => {
-          const da = a.date ? a.date.slice(0, 10) : "9999-99-99";
-          const db = b.date ? b.date.slice(0, 10) : "9999-99-99";
+          const da = a.date ? toKSTDate(a.date) : "9999-99-99";
+          const db = b.date ? toKSTDate(b.date) : "9999-99-99";
           if (da !== db) return da.localeCompare(db);
           return (a.matchOrder ?? 999) - (b.matchOrder ?? 999);
         });
         for (const m of sorted) {
-          const key = m.date ? m.date.slice(0, 10) : "__none__";
+          const key = m.date ? toKSTDate(m.date) : "__none__";
           if (!grouped.has(key)) grouped.set(key, []);
           grouped.get(key)!.push(m);
         }
