@@ -145,12 +145,12 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
       {/* ── 스코어보드 + 결과 저장 ── */}
       <div className="card p-5">
         {/* 상태 토글 */}
-        <div className="flex gap-2 mb-5">
+        <div className="grid grid-cols-3 gap-2 mb-5">
           {STATUS_OPTS.map((o) => (
             <button
               key={o.value}
               onClick={() => setStatus(o.value)}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+              className={`py-2 rounded-full text-xs font-semibold border transition-all text-center ${
                 status === o.value ? o.cls + " ring-2 ring-offset-1 ring-current" : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"
               }`}
             >

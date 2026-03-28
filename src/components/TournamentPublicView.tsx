@@ -95,7 +95,7 @@ export default function TournamentPublicView({
   const tabs = [
     tournament.type === "KNOCKOUT" && { key: "bracket", label: "대진표" },
     tournament.type === "LEAGUE" && { key: "standings", label: "순위표" },
-    tournament.type === "GROUP" && { key: "division", label: "기수별 순위" },
+    tournament.type === "GROUP" && { key: "division", label: "리그별 순위" },
     { key: "schedule", label: "날짜별 일정" },
     { key: "scorers", label: "득점 순위" },
     { key: "teams", label: "참가팀" },
@@ -506,35 +506,46 @@ function MatchCard({ match, showDate, showOrder }: { match: Match; showDate: boo
   const cfg = STATUS_CFG[match.status] ?? STATUS_CFG.SCHEDULED;
   const referees = [match.referee, match.assistantReferee1, match.assistantReferee2].filter(Boolean);
 
+  const groupColor = match.group?.color || "#6366f1";
+
   return (
-    <div className="border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition-colors">
+    <div
+      className="rounded-xl overflow-hidden transition-colors hover:brightness-95"
+      style={{
+        border: "1px solid #f3f4f6",
+        borderLeft: match.group ? `4px solid ${groupColor}` : "1px solid #f3f4f6",
+        backgroundColor: match.group ? groupColor + "08" : "white",
+      }}
+    >
+      <div className="p-3 sm:p-4">
       {/* meta row */}
-      <div className="flex items-center gap-2 flex-wrap text-xs mb-3">
+      <div className="flex items-center gap-1.5 flex-wrap text-xs mb-2.5">
         {/* 경기 순서 번호 */}
         {showOrder && match.matchOrder != null && (
           <span className="w-5 h-5 rounded-full bg-gray-200 text-gray-500 font-bold text-xs flex items-center justify-center flex-shrink-0">
             {match.matchOrder}
           </span>
         )}
-        {/* 시간 — 날짜별 뷰에서는 시간만, 날짜 표시 뷰에서는 날짜+시간 */}
+        {/* 시간 */}
         {match.date && (
-          <span className="font-semibold text-gray-700 bg-gray-100 px-2.5 py-0.5 rounded-full flex-shrink-0" suppressHydrationWarning>
+          <span className="font-semibold text-gray-700 bg-white bg-opacity-80 border border-gray-200 px-2 py-0.5 rounded-full flex-shrink-0 text-xs" suppressHydrationWarning>
             {showDate
               ? new Date(match.date).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })
               : new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
           </span>
         )}
+        {/* 리그 뱃지 */}
         {match.group && (
-          <span className="px-2 py-0.5 rounded-full font-medium text-gray-700" style={{ backgroundColor: (match.group.color || "#6366f1") + "33" }}>
+          <span className="px-2 py-0.5 rounded-full font-bold text-white text-xs flex-shrink-0" style={{ backgroundColor: groupColor }}>
             {match.group.label || match.group.name}
           </span>
         )}
         {match.round && <span className="text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{match.round}</span>}
-        {match.court && <span className="text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">{match.court}</span>}
+        {match.court && <span className="text-purple-600 bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-full font-medium">{match.court}</span>}
         {match.venue && !match.court && <span className="text-gray-400">{match.venue}</span>}
-        {/* 상태 배지 — 오른쪽 정렬 */}
-        <span className={`ml-auto inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-semibold ${cfg.cls}`}>
-          <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+        {/* 상태 배지 — 오른쪽 */}
+        <span className={`ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${cfg.cls}`}>
+          <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${cfg.dot}`} />
           {cfg.label}
         </span>
       </div>
@@ -597,6 +608,7 @@ function MatchCard({ match, showDate, showOrder }: { match: Match; showDate: boo
           )}
         </div>
       )}
+      </div>
     </div>
   );
 }
