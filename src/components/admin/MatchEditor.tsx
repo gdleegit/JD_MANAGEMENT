@@ -293,7 +293,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
                 {homeGoals.length === 0
                   ? <p className="text-xs text-gray-300 text-center py-2">-</p>
                   : homeGoals.map((g) => (
-                    <div key={g.id} className="flex items-center gap-1.5 group">
+                    <div key={g.id} className="flex items-center gap-1.5">
                       <div className="flex-1 min-w-0">
                         <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
                         {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
@@ -301,7 +301,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
                           <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
                         )}
                       </div>
-                      <button onClick={() => deleteGoal(g.id)} className="text-red-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">✕</button>
+                      <button onClick={() => deleteGoal(g.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
                     </div>
                   ))}
               </div>
@@ -318,7 +318,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
                 {awayGoals.length === 0
                   ? <p className="text-xs text-gray-300 text-center py-2">-</p>
                   : awayGoals.map((g) => (
-                    <div key={g.id} className="flex items-center gap-1.5 group">
+                    <div key={g.id} className="flex items-center gap-1.5">
                       <div className="flex-1 min-w-0">
                         <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
                         {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
@@ -326,7 +326,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
                           <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
                         )}
                       </div>
-                      <button onClick={() => deleteGoal(g.id)} className="text-red-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">✕</button>
+                      <button onClick={() => deleteGoal(g.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
                     </div>
                   ))}
               </div>

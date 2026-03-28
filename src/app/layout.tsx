@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
@@ -6,6 +6,12 @@ import Image from "next/image";
 export const metadata: Metadata = {
   title: "中東 Kick-Off",
   description: "中東 Kick-Off 축구 대회 관리 시스템",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
