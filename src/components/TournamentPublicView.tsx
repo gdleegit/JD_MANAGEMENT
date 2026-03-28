@@ -690,26 +690,17 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
           );
         }
 
-        const calcHalfScores = (halfGoals: typeof match.goals) => ({
-          home: halfGoals.filter(g => g.teamId === match.homeTeam.id && g.type !== "OWN_GOAL").length
-              + halfGoals.filter(g => g.teamId === match.awayTeam.id && g.type === "OWN_GOAL").length,
-          away: halfGoals.filter(g => g.teamId === match.awayTeam.id && g.type !== "OWN_GOAL").length
-              + halfGoals.filter(g => g.teamId === match.homeTeam.id && g.type === "OWN_GOAL").length,
-        });
-
         return (
           <div className="mt-2 pt-2 border-t border-gray-100 space-y-2 text-xs">
             {([1, 2] as const).map(half => {
               const halfGoals = match.goals.filter(g => g.half === half);
               if (halfGoals.length === 0) return null;
-              const { home, away } = calcHalfScores(halfGoals);
               const homeHalfGoals = halfGoals.filter(g => g.teamId === match.homeTeam.id);
               const awayHalfGoals = halfGoals.filter(g => g.teamId === match.awayTeam.id);
               return (
                 <div key={half}>
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="font-bold text-gray-400">{half === 1 ? "전반" : "후반"}</span>
-                    <span className="font-bold text-gray-600 tabular-nums">{home} : {away}</span>
                     <div className="flex-1 h-px bg-gray-100" />
                   </div>
                   <div className="grid grid-cols-[1fr_1px_1fr]">
