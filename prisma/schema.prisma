@@ -96,6 +96,7 @@ model Goal {
   team     Team    @relation(fields: [teamId], references: [id])
   teamId   String
   minute   Int?
+  half     Int?
   type     String  @default("GOAL")
 }
 

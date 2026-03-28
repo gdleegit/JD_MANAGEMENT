@@ -27,7 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
 
   const { id: matchId } = await params;
-  const { playerId, teamId, minute, type } = await req.json();
+  const { playerId, teamId, minute, half, type } = await req.json();
   if (!teamId) return NextResponse.json({ error: "팀 정보 필요" }, { status: 400 });
 
   await prisma.goal.create({
@@ -36,6 +36,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       playerId: playerId || null,
       teamId,
       minute: minute ? Number(minute) : null,
+      half: half ? Number(half) : null,
       type: type || "GOAL",
     },
   });

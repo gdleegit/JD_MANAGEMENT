@@ -5,7 +5,7 @@ import BracketView from "./BracketView";
 
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
 type Team = { id: string; name: string; color?: string | null; players?: Player[] };
-type Goal = { id: string; type: string; teamId: string; minute?: number | null; player?: { id: string; name: string } | null; team: { id: string; name: string; color?: string | null } };
+type Goal = { id: string; type: string; teamId: string; minute?: number | null; half?: number | null; player?: { id: string; name: string } | null; team: { id: string; name: string; color?: string | null } };
 type Group = { id: string; name: string; label?: string | null; color?: string | null; teams: GroupTeam[] };
 type GroupTeam = { id: string; team: Team; played: number; won: number; drawn: number; lost: number; gf: number; ga: number; points: number };
 type Match = {
@@ -610,7 +610,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
               .filter((g) => g.teamId === match.homeTeam.id)
               .map((g, i) => (
                 <span key={i} className="ml-2">
-                  {g.player?.name || "미상"}{g.minute ? ` ${g.minute}'` : ""}
+                  {g.player?.name || "미상"}{g.half ? (g.half === 1 ? " 전반" : " 후반") : ""}{g.minute ? ` ${g.minute}'` : ""}
                   {g.type === "OWN_GOAL" ? "(OG)" : g.type === "PENALTY" ? "(PK)" : ""}
                 </span>
               ))}
@@ -620,7 +620,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
               .filter((g) => g.teamId === match.awayTeam.id)
               .map((g, i) => (
                 <span key={i} className="mr-2">
-                  {g.player?.name || "미상"}{g.minute ? ` ${g.minute}'` : ""}
+                  {g.player?.name || "미상"}{g.half ? (g.half === 1 ? " 전반" : " 후반") : ""}{g.minute ? ` ${g.minute}'` : ""}
                   {g.type === "OWN_GOAL" ? "(OG)" : g.type === "PENALTY" ? "(PK)" : ""}
                 </span>
               ))}

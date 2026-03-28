@@ -4,7 +4,7 @@ import { useState } from "react";
 
 type Player = { id: string; name: string; number?: number | null };
 type Team = { id: string; name: string; color?: string | null; players: Player[] };
-type Goal = { id: string; type: string; teamId: string; minute?: number | null; player?: Player | null; team: Team };
+type Goal = { id: string; type: string; teamId: string; minute?: number | null; half?: number | null; player?: Player | null; team: Team };
 type Match = {
   id: string;
   homeTeam: Team;
@@ -54,7 +54,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const [assistantReferee1, setAssistantReferee1] = useState(match.assistantReferee1 ?? "");
   const [assistantReferee2, setAssistantReferee2] = useState(match.assistantReferee2 ?? "");
   const [saving,     setSaving]     = useState(false);
-  const [goalForm,   setGoalForm]   = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", type: "GOAL" });
+  const [goalForm,   setGoalForm]   = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
   const [addingGoal, setAddingGoal] = useState(false);
 
   const saveResult = async () => {
@@ -99,6 +99,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         teamId: goalForm.teamId,
         playerId: goalForm.playerId || null,
         minute: goalForm.minute ? parseInt(goalForm.minute) : null,
+        half: parseInt(goalForm.half),
         type: goalForm.type,
       }),
     });
@@ -106,7 +107,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
     setCurrentMatch(updated);
     setHomeScore(updated.homeScore?.toString() ?? "");
     setAwayScore(updated.awayScore?.toString() ?? "");
-    setGoalForm({ teamId: match.homeTeam.id, playerId: "", minute: "", type: "GOAL" });
+    setGoalForm({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
     setAddingGoal(false);
   };
 
@@ -220,9 +221,9 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
           ))}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {/* 선수 */}
-          <div>
+          <div className="col-span-2 sm:col-span-1">
             <label className="label">선수</label>
             <select className="input" value={goalForm.playerId} onChange={(e) => setGoalForm({ ...goalForm, playerId: e.target.value })}>
               <option value="">미상</option>
@@ -237,6 +238,26 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
                   <option key={p.id} value={p.id}>{p.number ? `${p.number}. ` : ""}{p.name}</option>
                 ))}
             </select>
+          </div>
+
+          {/* 전반/후반 */}
+          <div>
+            <label className="label">전/후반</label>
+            <div className="flex gap-1.5">
+              {[{ value: "1", label: "전반" }, { value: "2", label: "후반" }].map((h) => (
+                <button
+                  key={h.value}
+                  onClick={() => setGoalForm({ ...goalForm, half: h.value })}
+                  className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all ${
+                    goalForm.half === h.value
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  {h.label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* 분 */}
@@ -296,6 +317,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
                     <div key={g.id} className="flex items-center gap-1.5">
                       <div className="flex-1 min-w-0">
                         <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
+                        {g.half && <span className="text-xs text-blue-500 ml-1">{g.half === 1 ? "전반" : "후반"}</span>}
                         {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
                         {g.type !== "GOAL" && (
                           <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
@@ -321,6 +343,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
                     <div key={g.id} className="flex items-center gap-1.5">
                       <div className="flex-1 min-w-0">
                         <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
+                        {g.half && <span className="text-xs text-blue-500 ml-1">{g.half === 1 ? "전반" : "후반"}</span>}
                         {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
                         {g.type !== "GOAL" && (
                           <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
