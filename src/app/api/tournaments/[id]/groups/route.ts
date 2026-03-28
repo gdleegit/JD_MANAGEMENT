@@ -7,12 +7,13 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
 
   const { id: tournamentId } = await params;
-  const { name, label, teamIds } = await req.json();
+  const { name, label, color, teamIds } = await req.json();
 
   const group = await prisma.group.create({
     data: {
       name,
       label: label || null,
+      color: color || "#6366f1",
       tournamentId,
       teams: {
         create: (teamIds as string[]).map((teamId) => ({ teamId })),

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 import { recalcGroupStandings } from "@/lib/standings";
+import { revalidatePath } from "next/cache";
 
 async function recalcMatchScore(matchId: string) {
   const goals = await prisma.goal.findMany({ where: { matchId } });
@@ -15,7 +16,7 @@ async function recalcMatchScore(matchId: string) {
 
   const updated = await prisma.match.update({ where: { id: matchId }, data: { homeScore, awayScore } });
 
-  if (updated.groupId && updated.status === "FINISHED") {
+  if (updated.groupId) {
     await recalcGroupStandings(updated.groupId);
   }
   return updated;
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const { playerId, teamId, minute, type } = await req.json();
   if (!teamId) return NextResponse.json({ error: "팀 정보 필요" }, { status: 400 });
 
-  const goal = await prisma.goal.create({
+  await prisma.goal.create({
     data: {
       matchId,
       playerId: playerId || null,
@@ -37,11 +38,23 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       minute: minute ? Number(minute) : null,
       type: type || "GOAL",
     },
-    include: { player: true, team: true },
   });
 
   await recalcMatchScore(matchId);
-  return NextResponse.json(goal, { status: 201 });
+
+  const updated = await prisma.match.findUnique({
+    where: { id: matchId },
+    include: {
+      homeTeam: { include: { players: true } },
+      awayTeam: { include: { players: true } },
+      goals: { include: { player: true, team: true }, orderBy: { minute: "asc" } },
+    },
+  });
+  if (updated) {
+    revalidatePath(`/tournaments/${updated.tournamentId}`);
+    revalidatePath("/tournaments");
+  }
+  return NextResponse.json(updated, { status: 201 });
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -53,5 +66,18 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
   await prisma.goal.delete({ where: { id: goalId } });
   await recalcMatchScore(matchId);
-  return NextResponse.json({ ok: true });
+
+  const updated = await prisma.match.findUnique({
+    where: { id: matchId },
+    include: {
+      homeTeam: { include: { players: true } },
+      awayTeam: { include: { players: true } },
+      goals: { include: { player: true, team: true }, orderBy: { minute: "asc" } },
+    },
+  });
+  if (updated) {
+    revalidatePath(`/tournaments/${updated.tournamentId}`);
+    revalidatePath("/tournaments");
+  }
+  return NextResponse.json(updated);
 }

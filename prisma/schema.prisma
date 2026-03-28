@@ -15,6 +15,7 @@ model Tournament {
   startDate   DateTime?
   endDate     DateTime?
   description String?
+  rules       String?
   createdAt   DateTime  @default(now())
 
   teams   TournamentTeam[]
@@ -78,7 +79,10 @@ model Match {
   status       String     @default("SCHEDULED")
   group        Group?     @relation(fields: [groupId], references: [id])
   groupId      String?
-  matchOrder   Int?
+  matchOrder        Int?
+  referee           String?
+  assistantReferee1 String?
+  assistantReferee2 String?
 
   goals Goal[]
 }
@@ -99,6 +103,7 @@ model Group {
   id           String     @id @default(cuid())
   name         String
   label        String?
+  color        String?    @default("#6366f1")
   tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   tournamentId String
 

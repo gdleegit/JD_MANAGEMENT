@@ -6,7 +6,7 @@ import BracketView from "./BracketView";
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
 type Team = { id: string; name: string; color?: string | null; players: Player[] };
 type Goal = { id: string; type: string; teamId: string; minute?: number | null; player?: { id: string; name: string } | null; team: Team };
-type Group = { id: string; name: string; label?: string | null; teams: GroupTeam[] };
+type Group = { id: string; name: string; label?: string | null; color?: string | null; teams: GroupTeam[] };
 type GroupTeam = { id: string; team: Team; played: number; won: number; drawn: number; lost: number; gf: number; ga: number; points: number };
 type Match = {
   id: string;
@@ -21,8 +21,11 @@ type Match = {
   stage?: string | null;
   status: string;
   goals: Goal[];
-  group?: { id: string; name: string; label?: string | null } | null;
+  group?: { id: string; name: string; label?: string | null; color?: string | null } | null;
   matchOrder?: number | null;
+  referee?: string | null;
+  assistantReferee1?: string | null;
+  assistantReferee2?: string | null;
 };
 type TournamentTeam = { team: Team };
 type Tournament = {
@@ -33,6 +36,7 @@ type Tournament = {
   startDate?: string | null;
   endDate?: string | null;
   description?: string | null;
+  rules?: string | null;
   teams: TournamentTeam[];
   matches: Match[];
   groups: Group[];
@@ -66,7 +70,7 @@ export default function TournamentPublicView({
     : tournament.type === "GROUP" ? "division"
     : "standings";
 
-  const [tab, setTab] = useState<"bracket" | "standings" | "division" | "schedule" | "teams" | "scorers">(defaultTab as "bracket");
+  const [tab, setTab] = useState<"bracket" | "standings" | "division" | "schedule" | "teams" | "scorers" | "rules">(defaultTab as "bracket");
 
   const tabs = [
     tournament.type === "KNOCKOUT" && { key: "bracket", label: "대진표" },
@@ -75,6 +79,7 @@ export default function TournamentPublicView({
     { key: "schedule", label: "날짜별 일정" },
     { key: "scorers", label: "득점 순위" },
     { key: "teams", label: "참가팀" },
+    tournament.rules && { key: "rules", label: "운영규칙" },
   ].filter(Boolean) as { key: string; label: string }[];
 
   // Top scorers
@@ -95,7 +100,7 @@ export default function TournamentPublicView({
           <span className={st.cls}>{st.label}</span>
           <span className="text-sm text-gray-400">{TYPE_LABEL[tournament.type] || tournament.type}</span>
         </div>
-        <h1 className="text-3xl font-bold">{tournament.name}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold">{tournament.name}</h1>
         {tournament.description && <p className="text-gray-500 mt-1">{tournament.description}</p>}
         {tournament.startDate && (
           <p className="text-sm text-gray-400 mt-1">
@@ -113,16 +118,18 @@ export default function TournamentPublicView({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit flex-wrap">
-        {tabs.map((t) => (
-          <button
-            key={t.key}
-            onClick={() => setTab(t.key as typeof tab)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t.key ? "bg-white shadow-sm text-blue-600" : "text-gray-600 hover:text-gray-800"}`}
-          >
-            {t.label}
-          </button>
-        ))}
+      <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
+        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit min-w-full sm:min-w-0">
+          {tabs.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setTab(t.key as typeof tab)}
+              className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${tab === t.key ? "bg-white shadow-sm text-blue-600" : "text-gray-600 hover:text-gray-800"}`}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Bracket Tab */}
@@ -152,22 +159,77 @@ export default function TournamentPublicView({
 
       {/* Scorers Tab */}
       {tab === "scorers" && (
+        tournament.type === "GROUP" ? (
+          <div className="space-y-4">
+            {tournament.groups.length === 0 ? (
+              <div className="card p-8 text-center text-gray-400">득점 기록이 없습니다</div>
+            ) : (
+              tournament.groups.map((group) => {
+                const groupMatchIds = new Set(tournament.matches.filter((m) => m.group?.id === group.id).map((m) => m.id));
+                const groupGoals = tournament.matches
+                  .filter((m) => groupMatchIds.has(m.id))
+                  .flatMap((m) => m.goals.filter((g) => g.type !== "OWN_GOAL"));
+                const map: Record<string, { name: string; teamName: string; count: number }> = {};
+                for (const g of groupGoals) {
+                  const key = g.player?.id || `unk-${g.teamId}`;
+                  if (!map[key]) map[key] = { name: g.player?.name || "미상", teamName: g.team.name, count: 0 };
+                  map[key].count++;
+                }
+                const scorers = Object.values(map).sort((a, b) => b.count - a.count).slice(0, 20);
+                return (
+                  <div key={group.id} className="card p-5">
+                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                      <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: group.color || "#6366f1" }} />
+                      {group.label || group.name}
+                      <span className="text-gray-400 font-normal text-sm">득점 순위</span>
+                    </h3>
+                    {scorers.length === 0 ? (
+                      <p className="text-gray-400 text-sm text-center py-4">득점 기록이 없습니다</p>
+                    ) : (
+                      <div className="space-y-1">
+                        {scorers.map((s, i) => (
+                          <div key={i} className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">
+                            <span className={`w-7 text-center font-bold text-sm ${i === 0 ? "text-yellow-500" : i === 1 ? "text-gray-400" : i === 2 ? "text-amber-600" : "text-gray-400"}`}>{i + 1}</span>
+                            <span className="font-semibold flex-1">{s.name}</span>
+                            <span className="text-sm text-gray-500">{s.teamName}</span>
+                            <span className="font-bold text-blue-600 w-12 text-right">{s.count}골</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        ) : (
+          <div className="card p-6">
+            <h2 className="text-xl font-bold mb-4">득점 순위</h2>
+            {topScorers.length === 0 ? (
+              <p className="text-gray-400 text-center py-8">득점 기록이 없습니다</p>
+            ) : (
+              <div className="space-y-1">
+                {topScorers.map((s, i) => (
+                  <div key={i} className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">
+                    <span className={`w-7 text-center font-bold text-sm ${i === 0 ? "text-yellow-500" : i === 1 ? "text-gray-400" : i === 2 ? "text-amber-600" : "text-gray-400"}`}>{i + 1}</span>
+                    <span className="font-semibold flex-1">{s.name}</span>
+                    <span className="text-sm text-gray-500">{s.teamName}</span>
+                    <span className="font-bold text-blue-600 w-12 text-right">{s.count}골</span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      )}
+
+      {/* Rules Tab */}
+      {tab === "rules" && tournament.rules && (
         <div className="card p-6">
-          <h2 className="text-xl font-bold mb-4">득점 순위</h2>
-          {topScorers.length === 0 ? (
-            <p className="text-gray-400 text-center py-8">득점 기록이 없습니다</p>
-          ) : (
-            <div className="space-y-1">
-              {topScorers.map((s, i) => (
-                <div key={i} className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">
-                  <span className={`w-7 text-center font-bold text-sm ${i === 0 ? "text-yellow-500" : i === 1 ? "text-gray-400" : i === 2 ? "text-amber-600" : "text-gray-400"}`}>{i + 1}</span>
-                  <span className="font-semibold flex-1">{s.name}</span>
-                  <span className="text-sm text-gray-500">{s.teamName}</span>
-                  <span className="font-bold text-blue-600 w-12 text-right">{s.count}골</span>
-                </div>
-              ))}
-            </div>
-          )}
+          <h2 className="text-xl font-bold mb-5">운영규칙</h2>
+          <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">
+            {tournament.rules}
+          </div>
         </div>
       )}
 
@@ -176,7 +238,7 @@ export default function TournamentPublicView({
         <div>
           <h2 className="text-xl font-bold mb-4">참가 팀</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tournament.teams.map(({ team }) => (
+            {[...tournament.teams].sort((a, b) => a.team.name.localeCompare(b.team.name, "ko", { numeric: true })).map(({ team }) => (
               <div key={team.id} className="card p-4">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: team.color || "#3b82f6" }} />
@@ -185,10 +247,15 @@ export default function TournamentPublicView({
                 {team.players.length > 0 ? (
                   <div className="space-y-1">
                     {[...team.players]
-                      .sort((a, b) => (a.number || 999) - (b.number || 999))
+                      .sort((a, b) => {
+                        if (a.number && b.number) return a.number - b.number;
+                        if (a.number) return -1;
+                        if (b.number) return 1;
+                        return a.name.localeCompare(b.name, "ko", { numeric: true });
+                      })
                       .map((p) => (
                         <div key={p.id} className="flex items-center gap-2 text-sm text-gray-600">
-                          {p.number && <span className="w-6 text-right text-gray-400 text-xs">{p.number}</span>}
+                          <span className="w-6 text-right text-gray-400 text-xs flex-shrink-0">{p.number ?? ""}</span>
                           <span>{p.name}</span>
                           {p.position && <span className="text-xs text-gray-400">({p.position})</span>}
                         </div>
@@ -208,27 +275,6 @@ export default function TournamentPublicView({
 
 // ── 날짜별 일정 뷰 ──────────────────────────────────────
 function ScheduleView({ matches }: { matches: Match[] }) {
-  const MATCH_STATUS: Record<string, string> = { SCHEDULED: "예정", ONGOING: "진행중", FINISHED: "종료" };
-  const STATUS_CLS: Record<string, string> = { SCHEDULED: "badge-gray", ONGOING: "badge-yellow", FINISHED: "badge-green" };
-
-  // 날짜 없는 경기 분리
-  const withDate = matches.filter((m) => m.date);
-  const noDate = matches.filter((m) => !m.date);
-
-  // 날짜별 그룹
-  const byDate: Record<string, Match[]> = {};
-  for (const m of withDate) {
-    const day = new Date(m.date!).toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" });
-    if (!byDate[day]) byDate[day] = [];
-    byDate[day].push(m);
-  }
-
-  const sortedDates = Object.keys(byDate).sort((a, b) => {
-    const da = new Date(byDate[a][0].date!);
-    const db = new Date(byDate[b][0].date!);
-    return da.getTime() - db.getTime();
-  });
-
   if (matches.length === 0) {
     return (
       <div className="card p-12 text-center text-gray-400">
@@ -237,30 +283,38 @@ function ScheduleView({ matches }: { matches: Match[] }) {
     );
   }
 
+  // ISO 날짜(YYYY-MM-DD)를 키로 그룹핑, matchOrder → 시간 순 정렬
+  const grouped = new Map<string, Match[]>();
+  const sorted = [...matches].sort((a, b) => {
+    const da = a.date ? a.date.slice(0, 10) : "9999-99-99";
+    const db = b.date ? b.date.slice(0, 10) : "9999-99-99";
+    if (da !== db) return da.localeCompare(db);
+    return (a.matchOrder ?? 999) - (b.matchOrder ?? 999);
+  });
+  for (const m of sorted) {
+    const key = m.date ? m.date.slice(0, 10) : "__none__";
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key)!.push(m);
+  }
+
   return (
     <div className="space-y-6">
-      {sortedDates.map((day) => (
-        <div key={day}>
+      {[...grouped.entries()].map(([dateKey, dayMatches]) => (
+        <div key={dateKey}>
           <div className="flex items-center gap-3 mb-3">
-            <h3 className="font-bold text-lg">{day}</h3>
-            <span className="text-sm text-gray-400">{byDate[day].length}경기</span>
+            <h3 className="font-bold text-lg">
+              {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
+            </h3>
+            <span className="text-sm text-gray-400">{dayMatches.length}경기</span>
+            <div className="flex-1 h-px bg-gray-100" />
           </div>
           <div className="space-y-2">
-            {byDate[day].map((m) => (
-              <MatchCard key={m.id} match={m} showDate={false} />
+            {dayMatches.map((m) => (
+              <MatchCard key={m.id} match={m} showDate={false} showOrder />
             ))}
           </div>
         </div>
       ))}
-
-      {noDate.length > 0 && (
-        <div>
-          <h3 className="font-bold text-lg mb-3 text-gray-400">일정 미정</h3>
-          <div className="space-y-2">
-            {noDate.map((m) => <MatchCard key={m.id} match={m} showDate={false} />)}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
@@ -288,7 +342,11 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
           <button
             key={g.id}
             onClick={() => setActiveGroup(g.id)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium border transition-colors ${activeGroup === g.id ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-600 border-gray-200 hover:border-blue-300"}`}
+            className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+            style={activeGroup === g.id
+              ? { backgroundColor: (g.color || "#6366f1") + "99", color: "#111827", borderColor: g.color || "#6366f1", fontWeight: 700 }
+              : { backgroundColor: (g.color || "#6366f1") + "22", color: "#6b7280", borderColor: "#e5e7eb" }
+            }
           >
             {g.label || g.name}
           </button>
@@ -297,7 +355,11 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
 
       {/* Standings */}
       <div className="card p-5">
-        <h3 className="font-bold text-lg mb-4">{group.label || group.name} 순위표</h3>
+        <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: group.color || "#6366f1" }} />
+          <span>{group.label || group.name}</span>
+          <span className="text-gray-500 font-normal text-base">순위표</span>
+        </h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
@@ -341,47 +403,99 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
         </div>
       </div>
 
-      {/* Matches of this group */}
-      {groupMatches.length > 0 && (
-        <div className="card p-5">
-          <h3 className="font-bold text-lg mb-4">{group.label || group.name} 경기 결과</h3>
-          <div className="space-y-2">
-            {groupMatches.map((m) => <MatchCard key={m.id} match={m} showDate />)}
+      {/* Matches of this group — grouped by date */}
+      {groupMatches.length > 0 && (() => {
+        const grouped = new Map<string, Match[]>();
+        const sorted = [...groupMatches].sort((a, b) => {
+          const da = a.date ? a.date.slice(0, 10) : "9999-99-99";
+          const db = b.date ? b.date.slice(0, 10) : "9999-99-99";
+          if (da !== db) return da.localeCompare(db);
+          return (a.matchOrder ?? 999) - (b.matchOrder ?? 999);
+        });
+        for (const m of sorted) {
+          const key = m.date ? m.date.slice(0, 10) : "__none__";
+          if (!grouped.has(key)) grouped.set(key, []);
+          grouped.get(key)!.push(m);
+        }
+        return (
+          <div className="card p-5">
+            <h3 className="font-bold text-lg mb-4">{group.label || group.name} 경기 일정</h3>
+            <div className="space-y-5">
+              {[...grouped.entries()].map(([dateKey, dayMatches]) => (
+                <div key={dateKey}>
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-xs font-semibold text-gray-500">
+                      {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
+                    </span>
+                    <span className="text-xs text-gray-400">({dayMatches.length}경기)</span>
+                    <div className="flex-1 h-px bg-gray-100" />
+                  </div>
+                  <div className="space-y-2">
+                    {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder />)}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
 
 // ── 공통 경기 카드 ──────────────────────────────────────
-function MatchCard({ match, showDate }: { match: Match; showDate: boolean }) {
+const STATUS_CFG: Record<string, { label: string; cls: string; dot: string }> = {
+  SCHEDULED: { label: "예정",  cls: "bg-gray-100 text-gray-500",   dot: "bg-gray-400" },
+  ONGOING:   { label: "진행중", cls: "bg-amber-100 text-amber-600", dot: "bg-amber-400" },
+  FINISHED:  { label: "종료",  cls: "bg-green-100 text-green-600", dot: "bg-green-500" },
+};
+
+function MatchCard({ match, showDate, showOrder }: { match: Match; showDate: boolean; showOrder?: boolean }) {
   const finished = match.status === "FINISHED";
   const homeWin = finished && match.homeScore != null && match.awayScore != null && match.homeScore > match.awayScore;
   const awayWin = finished && match.homeScore != null && match.awayScore != null && match.awayScore > match.homeScore;
+  const cfg = STATUS_CFG[match.status] ?? STATUS_CFG.SCHEDULED;
+  const referees = [match.referee, match.assistantReferee1, match.assistantReferee2].filter(Boolean);
 
   return (
     <div className="border border-gray-100 rounded-xl p-4 hover:bg-gray-50 transition-colors">
-      {/* meta */}
-      <div className="flex items-center gap-3 text-xs text-gray-400 mb-3">
-        {match.group && <span className="font-medium text-blue-500">{match.group.label || match.group.name}</span>}
-        {match.round && <span>{match.round}</span>}
-        {showDate && match.date && (
-          <span>{new Date(match.date).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+      {/* meta row */}
+      <div className="flex items-center gap-2 flex-wrap text-xs mb-3">
+        {/* 경기 순서 번호 */}
+        {showOrder && match.matchOrder != null && (
+          <span className="w-5 h-5 rounded-full bg-gray-200 text-gray-500 font-bold text-xs flex items-center justify-center flex-shrink-0">
+            {match.matchOrder}
+          </span>
         )}
-        {!showDate && match.date && (
-          <span>{new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}</span>
+        {/* 시간 — 날짜별 뷰에서는 시간만, 날짜 표시 뷰에서는 날짜+시간 */}
+        {match.date && (
+          <span className="font-semibold text-gray-700 bg-gray-100 px-2.5 py-0.5 rounded-full flex-shrink-0" suppressHydrationWarning>
+            {showDate
+              ? new Date(match.date).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })
+              : new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+          </span>
         )}
-        {match.court && <span className="bg-gray-100 px-2 py-0.5 rounded-full">{match.court}</span>}
-        {match.venue && !match.court && <span>{match.venue}</span>}
-        <span className={`ml-auto ${match.status === "FINISHED" ? "badge-green" : match.status === "ONGOING" ? "badge-yellow" : "badge-gray"}`}>
-          {match.status === "FINISHED" ? "종료" : match.status === "ONGOING" ? "진행중" : "예정"}
+        {match.group && (
+          <span className="px-2 py-0.5 rounded-full font-medium text-gray-700" style={{ backgroundColor: (match.group.color || "#6366f1") + "33" }}>
+            {match.group.label || match.group.name}
+          </span>
+        )}
+        {match.round && <span className="text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{match.round}</span>}
+        {match.court && <span className="text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">{match.court}</span>}
+        {match.venue && !match.court && <span className="text-gray-400">{match.venue}</span>}
+        {/* 상태 배지 — 오른쪽 정렬 */}
+        <span className={`ml-auto inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-semibold ${cfg.cls}`}>
+          <span className={`w-1.5 h-1.5 rounded-full ${cfg.dot}`} />
+          {cfg.label}
         </span>
       </div>
 
       {/* Score row */}
       <div className="flex items-center justify-between gap-2">
-        <span className={`flex-1 text-right font-semibold ${homeWin ? "text-blue-700" : ""}`}>{match.homeTeam.name}</span>
+        <div className={`flex-1 flex items-center justify-end gap-2 ${homeWin ? "text-blue-700" : ""}`}>
+          <span className="font-semibold text-right">{match.homeTeam.name}</span>
+          <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
+        </div>
         <div className="flex items-center gap-2 min-w-[80px] justify-center">
           {finished ? (
             <>
@@ -393,7 +507,10 @@ function MatchCard({ match, showDate }: { match: Match; showDate: boolean }) {
             <span className="text-gray-300 font-medium text-sm">vs</span>
           )}
         </div>
-        <span className={`flex-1 font-semibold ${awayWin ? "text-blue-700" : ""}`}>{match.awayTeam.name}</span>
+        <div className={`flex-1 flex items-center gap-2 ${awayWin ? "text-blue-700" : ""}`}>
+          <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
+          <span className="font-semibold">{match.awayTeam.name}</span>
+        </div>
       </div>
 
       {/* Goals */}
@@ -419,6 +536,16 @@ function MatchCard({ match, showDate }: { match: Match; showDate: boolean }) {
                 </span>
               ))}
           </div>
+        </div>
+      )}
+
+      {/* Referees */}
+      {referees.length > 0 && (
+        <div className="mt-2 pt-2 border-t border-gray-100 text-xs text-gray-400">
+          {match.referee && <span>주심 {match.referee}</span>}
+          {(match.assistantReferee1 || match.assistantReferee2) && (
+            <span className="ml-3">부심 {[match.assistantReferee1, match.assistantReferee2].filter(Boolean).join(", ")}</span>
+          )}
         </div>
       )}
     </div>

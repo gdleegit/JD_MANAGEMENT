@@ -10,8 +10,8 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       teams: { include: { team: { include: { players: true } } } },
       matches: {
         include: {
-          homeTeam: true,
-          awayTeam: true,
+          homeTeam: { include: { players: true } },
+          awayTeam: { include: { players: true } },
           goals: { include: { player: true, team: true } },
           group: true,
         },
@@ -30,7 +30,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
   const body = await req.json();
-  const { name, type, status, startDate, endDate, description } = body;
+  const { name, type, status, startDate, endDate, description, rules } = body;
 
   const tournament = await prisma.tournament.update({
     where: { id },
@@ -41,6 +41,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       ...(startDate !== undefined && { startDate: startDate ? new Date(startDate) : null }),
       ...(endDate !== undefined && { endDate: endDate ? new Date(endDate) : null }),
       ...(description !== undefined && { description }),
+      ...(rules !== undefined && { rules }),
     },
   });
   return NextResponse.json(tournament);

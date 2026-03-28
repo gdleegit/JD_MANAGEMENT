@@ -83,11 +83,16 @@ export default function PlayerManager({ teamId, teamName }: { teamId: string; te
           ) : (
             <div className="divide-y divide-gray-100">
               {players
-                .sort((a, b) => (a.number || 999) - (b.number || 999))
+                .sort((a, b) => {
+                  if (a.number && b.number) return a.number - b.number;
+                  if (a.number) return -1;
+                  if (b.number) return 1;
+                  return a.name.localeCompare(b.name, "ko", { numeric: true });
+                })
                 .map((p) => (
                   <div key={p.id} className="flex items-center justify-between py-2">
                     <div className="flex items-center gap-3">
-                      {p.number && <span className="text-sm text-gray-400 w-6 text-right">{p.number}</span>}
+                      <span className="text-sm text-gray-400 w-6 text-right">{p.number ?? ""}</span>
                       <span className="font-medium text-sm">{p.name}</span>
                       {p.position && <span className="badge badge-blue">{p.position}</span>}
                     </div>

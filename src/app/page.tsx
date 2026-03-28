@@ -25,10 +25,10 @@ export default async function HomePage() {
   return (
     <div className="space-y-10">
       {/* Hero */}
-      <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-10 text-white">
-        <h1 className="text-4xl font-bold mb-3">축구 대회 관리 시스템</h1>
-        <p className="text-blue-100 text-lg mb-6">토너먼트, 리그, 조별 대회를 한곳에서 관리하세요</p>
-        <Link href="/tournaments" className="bg-white text-blue-700 font-semibold px-6 py-3 rounded-xl hover:bg-blue-50 transition-colors">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-6 sm:p-10 text-white">
+        <h1 className="text-2xl sm:text-4xl font-bold mb-2 sm:mb-3">축구 대회 관리 시스템</h1>
+        <p className="text-blue-100 text-sm sm:text-lg mb-5 sm:mb-6">토너먼트, 리그, 조별 대회를 한곳에서 관리하세요</p>
+        <Link href="/tournaments" className="inline-block bg-white text-blue-700 font-semibold px-5 py-2.5 sm:px-6 sm:py-3 rounded-xl hover:bg-blue-50 transition-colors text-sm sm:text-base">
           대회 목록 보기
         </Link>
       </div>

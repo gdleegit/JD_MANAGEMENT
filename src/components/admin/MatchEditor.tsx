@@ -13,36 +13,76 @@ type Match = {
   awayScore?: number | null;
   date?: string | null;
   venue?: string | null;
+  court?: string | null;
   round?: string | null;
+  matchOrder?: number | null;
   status: string;
   goals: Goal[];
+  referee?: string | null;
+  assistantReferee1?: string | null;
+  assistantReferee2?: string | null;
 };
 type Tournament = { id: string; name: string; type: string };
 
 const GOAL_TYPES = [
-  { value: "GOAL", label: "일반골" },
-  { value: "PENALTY", label: "PK" },
-  { value: "OWN_GOAL", label: "자책골" },
+  { value: "GOAL",      label: "일반골" },
+  { value: "PENALTY",   label: "PK" },
+  { value: "OWN_GOAL",  label: "자책골" },
+];
+
+const STATUS_OPTS = [
+  { value: "SCHEDULED", label: "예정",   cls: "bg-gray-100 text-gray-600 border-gray-200" },
+  { value: "ONGOING",   label: "진행중", cls: "bg-amber-100 text-amber-700 border-amber-300" },
+  { value: "FINISHED",  label: "종료",   cls: "bg-green-100 text-green-700 border-green-300" },
 ];
 
 export default function MatchEditor({ match, tournament, onBack }: { match: Match; tournament: Tournament; onBack: () => void }) {
   const [currentMatch, setCurrentMatch] = useState(match);
-  const [status, setStatus] = useState(match.status);
-  const [homeScore, setHomeScore] = useState(match.homeScore?.toString() ?? "");
-  const [awayScore, setAwayScore] = useState(match.awayScore?.toString() ?? "");
-  const [saving, setSaving] = useState(false);
-  const [goalForm, setGoalForm] = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", type: "GOAL" });
+  const [status, setStatus]             = useState(match.status);
+  const [homeScore, setHomeScore]       = useState(match.homeScore?.toString() ?? "");
+  const [awayScore, setAwayScore]       = useState(match.awayScore?.toString() ?? "");
+  const [date, setDate] = useState(() => {
+    if (!match.date) return "";
+    const d = new Date(match.date);
+    return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+  });
+  const [venue,             setVenue]             = useState(match.venue ?? "");
+  const [court,             setCourt]             = useState(match.court ?? "");
+  const [round,             setRound]             = useState(match.round ?? "");
+  const [matchOrder,        setMatchOrder]        = useState(match.matchOrder?.toString() ?? "");
+  const [referee,           setReferee]           = useState(match.referee ?? "");
+  const [assistantReferee1, setAssistantReferee1] = useState(match.assistantReferee1 ?? "");
+  const [assistantReferee2, setAssistantReferee2] = useState(match.assistantReferee2 ?? "");
+  const [saving,     setSaving]     = useState(false);
+  const [goalForm,   setGoalForm]   = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", type: "GOAL" });
   const [addingGoal, setAddingGoal] = useState(false);
 
   const saveResult = async () => {
     setSaving(true);
+    const parsedHome = homeScore !== "" ? parseInt(homeScore) : null;
+    const parsedAway = awayScore !== "" ? parseInt(awayScore) : null;
+    // 예정 상태는 유지 — 진행중·미지정인 경우에만 양쪽 스코어 입력 시 자동 FINISHED
+    const effectiveStatus =
+      (parsedHome !== null && parsedAway !== null && status !== "SCHEDULED")
+        ? "FINISHED"
+        : status;
+    if (effectiveStatus !== status) setStatus(effectiveStatus);
+
     const res = await fetch(`/api/matches/${match.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        status,
-        homeScore: homeScore !== "" ? parseInt(homeScore) : null,
-        awayScore: awayScore !== "" ? parseInt(awayScore) : null,
+        status: effectiveStatus,
+        homeScore: parsedHome,
+        awayScore: parsedAway,
+        date: date || null,
+        venue: venue || null,
+        court: court || null,
+        round: round || null,
+        matchOrder: matchOrder !== "" ? parseInt(matchOrder) : null,
+        referee: referee || null,
+        assistantReferee1: assistantReferee1 || null,
+        assistantReferee2: assistantReferee2 || null,
       }),
     });
     const updated = await res.json();
@@ -62,11 +102,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         type: goalForm.type,
       }),
     });
-    const goal = await res.json();
-
-    // Refresh match scores
-    const matchRes = await fetch(`/api/matches/${match.id}`);
-    const updated = await matchRes.json();
+    const updated = await res.json();
     setCurrentMatch(updated);
     setHomeScore(updated.homeScore?.toString() ?? "");
     setAwayScore(updated.awayScore?.toString() ?? "");
@@ -75,117 +111,281 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   };
 
   const deleteGoal = async (goalId: string) => {
-    await fetch(`/api/matches/${match.id}/goals`, {
+    const res = await fetch(`/api/matches/${match.id}/goals`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ goalId }),
     });
-    const matchRes = await fetch(`/api/matches/${match.id}`);
-    const updated = await matchRes.json();
+    const updated = await res.json();
     setCurrentMatch(updated);
     setHomeScore(updated.homeScore?.toString() ?? "");
     setAwayScore(updated.awayScore?.toString() ?? "");
   };
 
   const selectedTeam = goalForm.teamId === match.homeTeam.id ? match.homeTeam : match.awayTeam;
+  const homeGoals = currentMatch.goals.filter((g) => g.teamId === match.homeTeam.id).sort((a, b) => (a.minute ?? 999) - (b.minute ?? 999));
+  const awayGoals = currentMatch.goals.filter((g) => g.teamId === match.awayTeam.id).sort((a, b) => (a.minute ?? 999) - (b.minute ?? 999));
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
+      {/* Header */}
+      <div className="flex items-center gap-3 flex-wrap">
         <button onClick={onBack} className="btn-secondary btn-sm">← 경기 목록</button>
-        <h3 className="font-bold text-lg">{match.homeTeam.name} vs {match.awayTeam.name}</h3>
-        {match.round && <span className="text-sm text-gray-400">{match.round}</span>}
+        <div className="flex items-center gap-2">
+          <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
+          <span className="font-bold">{match.homeTeam.name}</span>
+          <span className="text-gray-400 text-sm mx-1">vs</span>
+          <span className="font-bold">{match.awayTeam.name}</span>
+          <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
+        </div>
+        {match.round && <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{match.round}</span>}
+        {match.court && <span className="text-xs text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">{match.court}</span>}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Score & Status */}
-        <div className="card p-5">
-          <h4 className="font-bold mb-4">경기 결과</h4>
-          <div className="space-y-3">
-            <div>
-              <label className="label">상태</label>
-              <select className="input" value={status} onChange={(e) => setStatus(e.target.value)}>
-                <option value="SCHEDULED">예정</option>
-                <option value="ONGOING">진행중</option>
-                <option value="FINISHED">종료</option>
-              </select>
+      {/* ── 스코어보드 + 결과 저장 ── */}
+      <div className="card p-5">
+        {/* 상태 토글 */}
+        <div className="flex gap-2 mb-5">
+          {STATUS_OPTS.map((o) => (
+            <button
+              key={o.value}
+              onClick={() => setStatus(o.value)}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all ${
+                status === o.value ? o.cls + " ring-2 ring-offset-1 ring-current" : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"
+              }`}
+            >
+              {o.label}
+            </button>
+          ))}
+        </div>
+
+        {/* 스코어 입력 */}
+        <div className="flex items-center gap-4">
+          {/* 홈팀 */}
+          <div className="flex-1 text-right">
+            <div className="flex items-center justify-end gap-2 mb-2">
+              <span className="font-semibold text-sm sm:text-base">{match.homeTeam.name}</span>
+              <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
             </div>
-            <div className="flex items-center gap-3">
-              <div className="flex-1">
-                <label className="label">{match.homeTeam.name} (홈)</label>
-                <input type="number" min="0" className="input text-center text-xl font-bold" value={homeScore} onChange={(e) => setHomeScore(e.target.value)} />
-              </div>
-              <div className="text-2xl text-gray-300 pt-5">-</div>
-              <div className="flex-1">
-                <label className="label">{match.awayTeam.name} (어웨이)</label>
-                <input type="number" min="0" className="input text-center text-xl font-bold" value={awayScore} onChange={(e) => setAwayScore(e.target.value)} />
-              </div>
+            <input
+              type="number" min="0"
+              className="input text-center text-3xl font-bold h-16 w-full"
+              value={homeScore}
+              onChange={(e) => setHomeScore(e.target.value)}
+            />
+          </div>
+
+          <div className="text-3xl font-bold text-gray-200 pt-8 flex-shrink-0">:</div>
+
+          {/* 어웨이팀 */}
+          <div className="flex-1 text-left">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
+              <span className="font-semibold text-sm sm:text-base">{match.awayTeam.name}</span>
             </div>
-            <button onClick={saveResult} className="btn-primary w-full" disabled={saving}>{saving ? "저장 중..." : "결과 저장"}</button>
+            <input
+              type="number" min="0"
+              className="input text-center text-3xl font-bold h-16 w-full"
+              value={awayScore}
+              onChange={(e) => setAwayScore(e.target.value)}
+            />
           </div>
         </div>
 
-        {/* Add Goal */}
-        <div className="card p-5">
-          <h4 className="font-bold mb-4">득점 기록 추가</h4>
-          <div className="space-y-3">
-            <div>
-              <label className="label">팀</label>
-              <select className="input" value={goalForm.teamId} onChange={(e) => setGoalForm({ ...goalForm, teamId: e.target.value, playerId: "" })}>
-                <option value={match.homeTeam.id}>{match.homeTeam.name}</option>
-                <option value={match.awayTeam.id}>{match.awayTeam.name}</option>
-              </select>
-            </div>
-            <div>
-              <label className="label">선수</label>
-              <select className="input" value={goalForm.playerId} onChange={(e) => setGoalForm({ ...goalForm, playerId: e.target.value })}>
-                <option value="">미상</option>
-                {selectedTeam.players.map((p) => (
+        <button onClick={saveResult} className="btn-primary w-full mt-4" disabled={saving}>
+          {saving ? "저장 중..." : "결과 저장"}
+        </button>
+      </div>
+
+      {/* ── 득점 기록 추가 ── */}
+      <div className="card p-5">
+        <h4 className="font-bold mb-4">득점 기록 추가</h4>
+
+        {/* 팀 선택 pill */}
+        <div className="flex gap-2 mb-3">
+          {[match.homeTeam, match.awayTeam].map((t) => (
+            <button
+              key={t.id}
+              onClick={() => setGoalForm({ ...goalForm, teamId: t.id, playerId: "" })}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border transition-all flex-1 justify-center ${
+                goalForm.teamId === t.id
+                  ? "text-white border-transparent shadow-sm"
+                  : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+              }`}
+              style={goalForm.teamId === t.id ? { backgroundColor: t.color || "#3b82f6", borderColor: t.color || "#3b82f6" } : {}}
+            >
+              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: goalForm.teamId === t.id ? "white" : (t.color || "#3b82f6"), opacity: goalForm.teamId === t.id ? 0.7 : 1 }} />
+              {t.name}
+            </button>
+          ))}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* 선수 */}
+          <div>
+            <label className="label">선수</label>
+            <select className="input" value={goalForm.playerId} onChange={(e) => setGoalForm({ ...goalForm, playerId: e.target.value })}>
+              <option value="">미상</option>
+              {[...selectedTeam.players]
+                .sort((a, b) => {
+                  if (a.number && b.number) return a.number - b.number;
+                  if (a.number) return -1;
+                  if (b.number) return 1;
+                  return a.name.localeCompare(b.name, "ko");
+                })
+                .map((p) => (
                   <option key={p.id} value={p.id}>{p.number ? `${p.number}. ` : ""}{p.name}</option>
                 ))}
-              </select>
+            </select>
+          </div>
+
+          {/* 분 */}
+          <div>
+            <label className="label">분</label>
+            <input
+              type="number" min="1" max="120"
+              className="input"
+              placeholder="예: 45"
+              value={goalForm.minute}
+              onChange={(e) => setGoalForm({ ...goalForm, minute: e.target.value })}
+            />
+          </div>
+
+          {/* 유형 */}
+          <div>
+            <label className="label">유형</label>
+            <div className="flex gap-1.5">
+              {GOAL_TYPES.map((t) => (
+                <button
+                  key={t.value}
+                  onClick={() => setGoalForm({ ...goalForm, type: t.value })}
+                  className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all ${
+                    goalForm.type === t.value
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
+                  }`}
+                >
+                  {t.label}
+                </button>
+              ))}
             </div>
-            <div className="flex gap-2">
-              <div className="flex-1">
-                <label className="label">분</label>
-                <input type="number" min="1" max="120" className="input" placeholder="예: 45" value={goalForm.minute} onChange={(e) => setGoalForm({ ...goalForm, minute: e.target.value })} />
-              </div>
-              <div className="flex-1">
-                <label className="label">유형</label>
-                <select className="input" value={goalForm.type} onChange={(e) => setGoalForm({ ...goalForm, type: e.target.value })}>
-                  {GOAL_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
-                </select>
-              </div>
-            </div>
-            <button onClick={addGoal} className="btn-primary w-full" disabled={addingGoal}>{addingGoal ? "추가 중..." : "득점 추가"}</button>
           </div>
         </div>
+
+        <button onClick={addGoal} className="btn-primary w-full mt-3" disabled={addingGoal}>
+          {addingGoal ? "추가 중..." : "득점 추가"}
+        </button>
       </div>
 
-      {/* Goals List */}
+      {/* ── 득점 기록 목록 (홈/어웨이 컬럼) ── */}
       {currentMatch.goals.length > 0 && (
         <div className="card p-5">
-          <h4 className="font-bold mb-3">득점 기록</h4>
-          <div className="space-y-2">
-            {currentMatch.goals
-              .sort((a, b) => (a.minute || 999) - (b.minute || 999))
-              .map((g) => (
-                <div key={g.id} className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: g.team.color || "#3b82f6" }} />
-                    <span className="text-sm font-medium">{g.team.name}</span>
-                    <span className="text-sm">{g.player?.name || "미상"}</span>
-                    {g.minute && <span className="text-xs text-gray-400">{g.minute}&apos;</span>}
-                    {g.type !== "GOAL" && (
-                      <span className="badge badge-yellow text-xs">{g.type === "OWN_GOAL" ? "자책" : "PK"}</span>
-                    )}
-                  </div>
-                  <button onClick={() => deleteGoal(g.id)} className="text-red-500 text-xs hover:text-red-700">삭제</button>
-                </div>
-              ))}
+          <h4 className="font-bold mb-4">득점 기록 ({currentMatch.goals.length}골)</h4>
+          <div className="grid grid-cols-2 gap-4">
+            {/* 홈 */}
+            <div>
+              <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-gray-100">
+                <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
+                <span className="text-xs font-semibold text-gray-600">{match.homeTeam.name}</span>
+                <span className="ml-auto text-xs font-bold text-blue-600">{homeGoals.length}골</span>
+              </div>
+              <div className="space-y-1.5">
+                {homeGoals.length === 0
+                  ? <p className="text-xs text-gray-300 text-center py-2">-</p>
+                  : homeGoals.map((g) => (
+                    <div key={g.id} className="flex items-center gap-1.5 group">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
+                        {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
+                        {g.type !== "GOAL" && (
+                          <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
+                        )}
+                      </div>
+                      <button onClick={() => deleteGoal(g.id)} className="text-red-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">✕</button>
+                    </div>
+                  ))}
+              </div>
+            </div>
+
+            {/* 어웨이 */}
+            <div>
+              <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-gray-100">
+                <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
+                <span className="text-xs font-semibold text-gray-600">{match.awayTeam.name}</span>
+                <span className="ml-auto text-xs font-bold text-blue-600">{awayGoals.length}골</span>
+              </div>
+              <div className="space-y-1.5">
+                {awayGoals.length === 0
+                  ? <p className="text-xs text-gray-300 text-center py-2">-</p>
+                  : awayGoals.map((g) => (
+                    <div key={g.id} className="flex items-center gap-1.5 group">
+                      <div className="flex-1 min-w-0">
+                        <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
+                        {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
+                        {g.type !== "GOAL" && (
+                          <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
+                        )}
+                      </div>
+                      <button onClick={() => deleteGoal(g.id)} className="text-red-400 text-xs opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">✕</button>
+                    </div>
+                  ))}
+              </div>
+            </div>
           </div>
         </div>
       )}
+
+      {/* ── 경기 정보 ── */}
+      <div className="card p-5">
+        <h4 className="font-bold mb-4">경기 정보</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          <div>
+            <label className="label">일시</label>
+            <input type="datetime-local" step="600" className="input" value={date} onChange={(e) => setDate(e.target.value)} />
+          </div>
+          <div>
+            <label className="label">장소</label>
+            <input type="text" className="input" placeholder="경기장" value={venue} onChange={(e) => setVenue(e.target.value)} />
+          </div>
+          <div>
+            <label className="label">코트/구장</label>
+            <input type="text" className="input" placeholder="예: A코트, 1구장" value={court} onChange={(e) => setCourt(e.target.value)} />
+          </div>
+          <div>
+            <label className="label">{tournament.type === "LEAGUE" ? "주차" : "라운드"}</label>
+            <input type="text" className="input" placeholder={tournament.type === "LEAGUE" ? "예: 1주차" : "예: 8강"} value={round} onChange={(e) => setRound(e.target.value)} />
+          </div>
+          <div>
+            <label className="label">경기 순서</label>
+            <input type="number" className="input" placeholder="순서" value={matchOrder} onChange={(e) => setMatchOrder(e.target.value)} />
+          </div>
+        </div>
+        <button onClick={saveResult} className="btn-secondary mt-3" disabled={saving}>
+          {saving ? "저장 중..." : "경기 정보 저장"}
+        </button>
+      </div>
+
+      {/* ── 심판진 ── */}
+      <div className="card p-5">
+        <h4 className="font-bold mb-4">심판진</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="label">주심</label>
+            <input type="text" className="input" placeholder="주심 이름" value={referee} onChange={(e) => setReferee(e.target.value)} />
+          </div>
+          <div>
+            <label className="label">부심 1</label>
+            <input type="text" className="input" placeholder="부심 이름" value={assistantReferee1} onChange={(e) => setAssistantReferee1(e.target.value)} />
+          </div>
+          <div>
+            <label className="label">부심 2</label>
+            <input type="text" className="input" placeholder="부심 이름" value={assistantReferee2} onChange={(e) => setAssistantReferee2(e.target.value)} />
+          </div>
+        </div>
+        <button onClick={saveResult} className="btn-secondary mt-3" disabled={saving}>
+          {saving ? "저장 중..." : "심판진 저장"}
+        </button>
+      </div>
     </div>
   );
 }

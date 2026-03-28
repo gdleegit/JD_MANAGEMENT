@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ username: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -17,7 +17,7 @@ export default function LoginPage() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ username: form.username }),
       });
       const data = await res.json();
       if (!res.ok) { setError(data.error); return; }
@@ -49,17 +49,7 @@ export default function LoginPage() {
               autoFocus
             />
           </div>
-          <div>
-            <label className="label">비밀번호</label>
-            <input
-              type="password"
-              className="input"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              required
-            />
-          </div>
-          {error && <p className="text-sm text-red-600">{error}</p>}
+{error && <p className="text-sm text-red-600">{error}</p>}
           <button type="submit" className="btn-primary w-full" disabled={loading}>
             {loading ? "로그인 중..." : "로그인"}
           </button>
