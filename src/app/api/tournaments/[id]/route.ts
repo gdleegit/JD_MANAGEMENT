@@ -8,11 +8,11 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
   const tournament = await prisma.tournament.findUnique({
     where: { id },
     include: {
-      teams: { include: { team: { include: { players: true } } } },
+      teams: { include: { team: true } },
       matches: {
         include: {
-          homeTeam: { include: { players: true } },
-          awayTeam: { include: { players: true } },
+          homeTeam: true,
+          awayTeam: true,
           goals: { include: { player: true, team: true } },
           group: true,
         },

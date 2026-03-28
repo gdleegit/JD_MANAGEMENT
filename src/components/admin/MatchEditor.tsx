@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 type Player = { id: string; name: string; number?: number | null };
-type Team = { id: string; name: string; color?: string | null; players: Player[] };
+type Team = { id: string; name: string; color?: string | null; players?: Player[] };
 type Goal = { id: string; type: string; teamId: string; minute?: number | null; half?: number | null; player?: Player | null; team: Team };
 type Match = {
   id: string;
@@ -227,7 +227,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
             <label className="label">선수</label>
             <select className="input" value={goalForm.playerId} onChange={(e) => setGoalForm({ ...goalForm, playerId: e.target.value })}>
               <option value="">미상</option>
-              {[...selectedTeam.players]
+              {[...(selectedTeam.players ?? [])]
                 .sort((a, b) => {
                   if (a.number && b.number) return a.number - b.number;
                   if (a.number) return -1;

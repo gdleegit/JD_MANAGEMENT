@@ -27,7 +27,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       groupId: groupId || null,
       matchOrder: matchOrder ?? null,
     },
-    include: { homeTeam: true, awayTeam: true },
+    include: { homeTeam: true, awayTeam: true, group: true },
   });
   revalidatePath(`/tournaments/${tournamentId}`);
   revalidatePath("/tournaments");

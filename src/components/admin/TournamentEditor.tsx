@@ -5,7 +5,7 @@ import MatchEditor from "./MatchEditor";
 import PlayerManager from "./PlayerManager";
 
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
-type Team = { id: string; name: string; shortName?: string | null; color?: string | null; players: Player[] };
+type Team = { id: string; name: string; shortName?: string | null; color?: string | null; players?: Player[] };
 type Goal = { id: string; type: string; teamId: string; minute?: number | null; player?: Player | null; team: Team };
 type Group = { id: string; name: string; label?: string | null; color?: string | null; teams: { id: string; team: Team; points: number }[] };
 type Match = {
@@ -53,22 +53,26 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
   const [allTeams, setAllTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
+  const [loadingMatchId, setLoadingMatchId] = useState<string | null>(null);
   const [tab, setTab] = useState<"info" | "teams" | "matches" | "groups" | "rules">("matches");
   const [saving, setSaving] = useState(false);
 
+  // 토너먼트만 재조회 (팀 목록 제외 — 선수 없이 훨씬 빠름)
   const load = async () => {
-    const [tRes, teamsRes] = await Promise.all([
-      fetch(`/api/tournaments/${tournamentId}`, { cache: "no-store" }),
-      fetch("/api/teams", { cache: "no-store" }),
-    ]);
-    const t = await tRes.json();
-    const teams = await teamsRes.json();
-    setTournament(t);
-    setAllTeams(teams);
-    setLoading(false);
+    const res = await fetch(`/api/tournaments/${tournamentId}`, { cache: "no-store" });
+    setTournament(await res.json());
   };
 
-  useEffect(() => { load(); }, [tournamentId]);
+  useEffect(() => {
+    Promise.all([
+      fetch(`/api/tournaments/${tournamentId}`, { cache: "no-store" }).then(r => r.json()),
+      fetch("/api/teams").then(r => r.json()),
+    ]).then(([t, teams]) => {
+      setTournament(t);
+      setAllTeams(teams);
+      setLoading(false);
+    });
+  }, [tournamentId]);
 
   if (loading || !tournament) return <div className="text-center py-12 text-gray-400">불러오는 중...</div>;
 
@@ -107,9 +111,10 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
       {tab === "info" && (
         <InfoTab tournament={tournament} onSave={async (data) => {
           setSaving(true);
-          await fetch(`/api/tournaments/${tournamentId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+          const res = await fetch(`/api/tournaments/${tournamentId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+          const updated = await res.json();
+          setTournament(t => t ? { ...t, ...updated } : t);
           setSaving(false);
-          await load();
         }} saving={saving} />
       )}
 
@@ -117,9 +122,10 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
       {tab === "rules" && (
         <RulesTab tournament={tournament} onSave={async (data) => {
           setSaving(true);
-          await fetch(`/api/tournaments/${tournamentId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+          const res = await fetch(`/api/tournaments/${tournamentId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
+          const updated = await res.json();
+          setTournament(t => t ? { ...t, ...updated } : t);
           setSaving(false);
-          await load();
         }} saving={saving} />
       )}
 
@@ -129,22 +135,26 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
           tournament={tournament}
           availableTeams={availableTeams}
           onAddTeams={async (teamIds) => {
-            await Promise.all(teamIds.map((teamId) =>
+            const results = await Promise.all(teamIds.map((teamId) =>
               fetch(`/api/tournaments/${tournamentId}/teams`, {
                 method: "POST", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ teamId }),
-              })
+              }).then(r => r.json())
             ));
-            await load();
+            setTournament(t => t ? { ...t, teams: [...t.teams, ...results] } : t);
           }}
           onRemoveTeam={async (teamId) => {
             await fetch(`/api/tournaments/${tournamentId}/teams`, {
               method: "DELETE", headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ teamId }),
             });
-            await load();
+            setTournament(t => t ? { ...t, teams: t.teams.filter(tt => tt.team.id !== teamId) } : t);
           }}
-          onReload={load}
+          onTeamCreated={(team) => setAllTeams(prev => [...prev, team])}
+          onTeamUpdated={(team) => {
+            setTournament(t => t ? { ...t, teams: t.teams.map(tt => tt.team.id === team.id ? { ...tt, team } : tt) } : t);
+            setAllTeams(prev => prev.map(t => t.id === team.id ? team : t));
+          }}
         />
       )}
 
@@ -174,18 +184,26 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
         ) : (
           <MatchesTab
             tournament={tournament}
+            loadingMatchId={loadingMatchId}
             onCreateMatch={async (data) => {
-              await fetch(`/api/tournaments/${tournamentId}/matches`, {
+              const res = await fetch(`/api/tournaments/${tournamentId}/matches`, {
                 method: "POST", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(data),
               });
-              await load();
+              const newMatch = await res.json();
+              setTournament(t => t ? { ...t, matches: [...t.matches, { ...newMatch, goals: [] }] } : t);
             }}
-            onEditMatch={setEditingMatch}
+            onEditMatch={async (match) => {
+              setLoadingMatchId(match.id);
+              const res = await fetch(`/api/matches/${match.id}`, { cache: "no-store" });
+              const full = await res.json();
+              setLoadingMatchId(null);
+              setEditingMatch(full);
+            }}
             onDeleteMatch={async (id) => {
               if (!confirm("경기를 삭제할까요?")) return;
               await fetch(`/api/matches/${id}`, { method: "DELETE" });
-              await load();
+              setTournament(t => t ? { ...t, matches: t.matches.filter(m => m.id !== id) } : t);
             }}
           />
         )
@@ -262,12 +280,13 @@ function RulesTab({ tournament, onSave, saving }: { tournament: Tournament; onSa
   );
 }
 
-function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onReload }: {
+function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onTeamCreated, onTeamUpdated }: {
   tournament: Tournament;
   availableTeams: Team[];
   onAddTeams: (ids: string[]) => void;
   onRemoveTeam: (id: string) => void;
-  onReload: () => void;
+  onTeamCreated: (team: Team) => void;
+  onTeamUpdated: (team: Team) => void;
 }) {
   const [selected, setSelected] = useState<string[]>([]);
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
@@ -288,9 +307,10 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onRelo
       body: JSON.stringify(newTeamForm),
     });
     if (res.ok) {
+      const newTeam = await res.json();
+      onTeamCreated(newTeam);
       setNewTeamForm({ name: "", shortName: "", color: "#3b82f6" });
       setShowNewTeamForm(false);
-      onReload();
     }
     setCreatingTeam(false);
   };
@@ -318,13 +338,16 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onRelo
     const teamId = editingTeam.id;
     setLocalColors((prev) => ({ ...prev, [teamId]: editForm.color }));
     setEditingTeam(null);
-    await fetch(`/api/teams/${teamId}`, {
+    const res = await fetch(`/api/teams/${teamId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editForm),
     });
+    if (res.ok) {
+      const updated = await res.json();
+      onTeamUpdated(updated);
+    }
     setSaving(false);
-    onReload();
   };
 
   const selectedTeam = tournament.teams.find((tt) => tt.team.id === selectedTeamId);
@@ -605,8 +628,9 @@ function GroupsTab({ tournament, onCreateGroup, onReload }: {
   );
 }
 
-function MatchesTab({ tournament, onCreateMatch, onEditMatch, onDeleteMatch }: {
+function MatchesTab({ tournament, loadingMatchId, onCreateMatch, onEditMatch, onDeleteMatch }: {
   tournament: Tournament;
+  loadingMatchId: string | null;
   onCreateMatch: (d: object) => void;
   onEditMatch: (m: Match) => void;
   onDeleteMatch: (id: string) => void;
@@ -762,7 +786,9 @@ function MatchesTab({ tournament, onCreateMatch, onEditMatch, onDeleteMatch }: {
                             </div>
                           </div>
                           <div className="flex gap-2 ml-3 flex-shrink-0">
-                            <button onClick={() => onEditMatch(match)} className="btn-primary btn-sm text-xs">편집</button>
+                            <button onClick={() => onEditMatch(match)} disabled={loadingMatchId !== null} className="btn-primary btn-sm text-xs">
+                              {loadingMatchId === match.id ? "..." : "편집"}
+                            </button>
                             <button onClick={() => onDeleteMatch(match.id)} className="btn-danger btn-sm text-xs">삭제</button>
                           </div>
                         </div>
