@@ -7,7 +7,7 @@ import PlayerManager from "./PlayerManager";
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
 type Team = { id: string; name: string; shortName?: string | null; color?: string | null; players?: Player[] };
 type Goal = { id: string; type: string; teamId: string; minute?: number | null; player?: Player | null; team: Team };
-type Group = { id: string; name: string; label?: string | null; color?: string | null; teams: { id: string; team: Team; points: number }[] };
+type Group = { id: string; name: string; label?: string | null; color?: string | null; sortOrder?: number | null; teams: { id: string; team: Team; points: number }[] };
 type Match = {
   id: string;
   homeTeam: Team;
@@ -508,7 +508,7 @@ function GroupsTab({ tournament, onCreateGroup, onUpdateGroup, onDeleteGroup }: 
   const [color, setColor] = useState("#6366f1");
   const [selected, setSelected] = useState<string[]>([]);
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
-  const [editForm, setEditForm] = useState({ name: "", label: "", color: "#6366f1" });
+  const [editForm, setEditForm] = useState({ name: "", label: "", color: "#6366f1", sortOrder: "0" });
   const [saving, setSaving] = useState(false);
 
   const assignedTeamIds = new Set(tournament.groups.flatMap((g) => g.teams.map((gt) => gt.team.id)));
@@ -516,7 +516,7 @@ function GroupsTab({ tournament, onCreateGroup, onUpdateGroup, onDeleteGroup }: 
 
   const startEdit = (g: Group) => {
     setEditingGroup(g);
-    setEditForm({ name: g.name, label: g.label || "", color: g.color || "#6366f1" });
+    setEditForm({ name: g.name, label: g.label || "", color: g.color || "#6366f1", sortOrder: String(g.sortOrder ?? 0) });
   };
 
   const saveEdit = async () => {
@@ -596,6 +596,7 @@ function GroupsTab({ tournament, onCreateGroup, onUpdateGroup, onDeleteGroup }: 
                     <div className="flex gap-2">
                       <input className="input flex-1 text-sm" placeholder="기수/조 ID" value={editForm.name} onChange={(e) => setEditForm({ ...editForm, name: e.target.value })} />
                       <input className="input flex-1 text-sm" placeholder="표시 이름" value={editForm.label} onChange={(e) => setEditForm({ ...editForm, label: e.target.value })} />
+                      <input className="input w-16 text-sm" type="number" placeholder="순서" value={editForm.sortOrder} onChange={(e) => setEditForm({ ...editForm, sortOrder: e.target.value })} />
                     </div>
                     <div className="flex items-center gap-3">
                       <input type="color" className="h-8 w-12 rounded border border-gray-300 cursor-pointer" value={editForm.color} onChange={(e) => setEditForm({ ...editForm, color: e.target.value })} />

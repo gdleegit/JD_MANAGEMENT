@@ -35,7 +35,7 @@ export default async function TournamentDetailPage({ params }: { params: Promise
             orderBy: [{ points: "desc" }, { gf: "desc" }],
           },
         },
-        orderBy: { name: "asc" },
+        orderBy: { sortOrder: "asc" },
       },
     },
   });

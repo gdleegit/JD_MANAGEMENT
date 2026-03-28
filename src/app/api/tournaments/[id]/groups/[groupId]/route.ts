@@ -9,7 +9,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
 
   const { groupId } = await params;
-  const { name, label, color } = await req.json();
+  const { name, label, color, sortOrder } = await req.json();
 
   const group = await prisma.group.update({
     where: { id: groupId },
@@ -17,6 +17,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       ...(name !== undefined && { name }),
       ...(label !== undefined && { label: label || null }),
       ...(color !== undefined && { color }),
+      ...(sortOrder !== undefined && { sortOrder: Number(sortOrder) }),
     },
     include: { teams: { include: { team: true } } },
   });
