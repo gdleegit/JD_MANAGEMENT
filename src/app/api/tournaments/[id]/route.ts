@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -44,6 +45,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       ...(rules !== undefined && { rules }),
     },
   });
+  revalidatePath(`/tournaments/${id}`);
+  revalidatePath("/tournaments");
+  revalidatePath("/");
   return NextResponse.json(tournament);
 }
 
@@ -53,5 +57,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
 
   const { id } = await params;
   await prisma.tournament.delete({ where: { id } });
+  revalidatePath("/tournaments");
+  revalidatePath("/");
   return NextResponse.json({ ok: true });
 }

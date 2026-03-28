@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { recalcLeagueStandings } from "@/lib/standings";
 import TournamentPublicView from "@/components/TournamentPublicView";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export default async function TournamentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300; // 5분 캐시, 관리자 변경 시 revalidatePath로 즉시 갱신
 
 export default async function HomePage() {
   const tournaments = await prisma.tournament.findMany({

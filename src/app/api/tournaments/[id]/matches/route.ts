@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
@@ -28,5 +29,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     },
     include: { homeTeam: true, awayTeam: true },
   });
+  revalidatePath(`/tournaments/${tournamentId}`);
+  revalidatePath("/tournaments");
   return NextResponse.json(match, { status: 201 });
 }
