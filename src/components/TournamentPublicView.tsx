@@ -49,10 +49,10 @@ type LeagueRow = {
   gf: number; ga: number; gd: number; points: number;
 };
 
-const STATUS_LABEL: Record<string, { label: string; cls: string }> = {
-  UPCOMING: { label: "예정", cls: "badge-gray" },
-  ONGOING: { label: "진행중", cls: "badge-green" },
-  FINISHED: { label: "종료", cls: "badge-blue" },
+const STATUS_LABEL: Record<string, { label: string; cls: string; badgeCls: string; borderColor: string }> = {
+  UPCOMING: { label: "예정",   cls: "badge-gray",  badgeCls: "bg-gray-100 text-gray-500",       borderColor: "#d1d5db" },
+  ONGOING:  { label: "진행중", cls: "badge-green", badgeCls: "bg-emerald-100 text-emerald-700", borderColor: "#10b981" },
+  FINISHED: { label: "종료",   cls: "badge-blue",  badgeCls: "bg-blue-100 text-blue-700",       borderColor: "#3b82f6" },
 };
 const TYPE_LABEL: Record<string, string> = { KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별·기수 리그" };
 
@@ -122,42 +122,78 @@ export default function TournamentPublicView({
   const topScorers = Object.values(scorerMap).sort((a, b) => b.count - a.count).slice(0, 20);
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <div className="flex items-center gap-2 mb-2">
-          <span className={st.cls}>{st.label}</span>
-          <span className="text-sm text-gray-400">{TYPE_LABEL[tournament.type] || tournament.type}</span>
+    <div className="space-y-4">
+      {/* Header card */}
+      <div
+        className="bg-white rounded-2xl shadow-sm overflow-hidden"
+        style={{ border: "1.5px solid #e2e8f0", borderTop: `4px solid ${st.borderColor}` }}
+      >
+        <div className="p-4 sm:p-6">
+          {/* 상태 + 유형 */}
+          <div className="flex items-center justify-between mb-3">
+            <span className={`inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full ${st.badgeCls}`}>
+              <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: st.borderColor }} />
+              {st.label}
+            </span>
+            <span className="text-xs font-medium text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
+              {TYPE_LABEL[tournament.type] || tournament.type}
+            </span>
+          </div>
+
+          {/* 대회명 */}
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 leading-tight mb-1">
+            {tournament.name}
+          </h1>
+
+          {/* 설명 */}
+          {tournament.description && (
+            <p className="text-sm text-gray-500 mt-1 mb-3">{tournament.description}</p>
+          )}
+
+          {/* 날짜 */}
+          {tournament.startDate && (
+            <p className="text-xs text-gray-400 mt-2">
+              📅 {new Date(tournament.startDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "long", day: "numeric" })}
+              {tournament.endDate && ` ~ ${new Date(tournament.endDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric" })}`}
+            </p>
+          )}
+
+          {/* 통계 */}
+          <div className="flex items-center gap-3 mt-4 pt-3 border-t border-gray-100 text-xs text-gray-500">
+            <span className="flex items-center gap-1">
+              <span className="text-gray-400">팀</span>
+              <span className="font-bold text-gray-700">{tournament.teams.length}</span>
+            </span>
+            <span className="text-gray-200">|</span>
+            <span className="flex items-center gap-1">
+              <span className="text-gray-400">경기</span>
+              <span className="font-bold text-gray-700">{tournament.matches.length}</span>
+            </span>
+            <span className="text-gray-200">|</span>
+            <span className="flex items-center gap-1">
+              <span className="text-gray-400">완료</span>
+              <span className="font-bold text-gray-700">{tournament.matches.filter((m) => m.status === "FINISHED").length}</span>
+            </span>
+          </div>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-bold">{tournament.name}</h1>
-        {tournament.description && <p className="text-gray-500 mt-1">{tournament.description}</p>}
-        {tournament.startDate && (
-          <p className="text-sm text-gray-400 mt-1">
-            {new Date(tournament.startDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })}
-            {tournament.endDate && ` ~ ${new Date(tournament.endDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul" })}`}
-          </p>
-        )}
-      </div>
 
-      {/* Stats bar */}
-      <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
-        <span>팀 {tournament.teams.length}개</span>
-        <span>경기 {tournament.matches.length}개</span>
-        <span>완료 {tournament.matches.filter((m) => m.status === "FINISHED").length}개</span>
-      </div>
-
-      {/* Tabs */}
-      <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
-        <div className="flex gap-0.5 bg-gray-100 p-1 rounded-xl w-fit min-w-full sm:min-w-0">
-          {tabs.map((t) => (
-            <button
-              key={t.key}
-              onClick={() => handleTabChange(t.key)}
-              className={`px-2.5 sm:px-4 py-2 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${tab === t.key ? "bg-white shadow-sm text-blue-600" : "text-gray-600 hover:text-gray-800"}`}
-            >
-              {t.label}
-            </button>
-          ))}
+        {/* Tabs — 카드 하단에 붙임 */}
+        <div className="border-t border-gray-100 overflow-x-auto">
+          <div className="flex">
+            {tabs.map((t) => (
+              <button
+                key={t.key}
+                onClick={() => handleTabChange(t.key)}
+                className={`px-3 sm:px-5 py-3 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors border-b-2 ${
+                  tab === t.key
+                    ? "border-blue-600 text-blue-600 bg-blue-50"
+                    : "border-transparent text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
