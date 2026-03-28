@@ -375,10 +375,9 @@ function ScheduleView({ matches }: { matches: Match[] }) {
                 {[...byGroup.entries()].map(([gKey, grp]) => (
                   <div key={gKey}>
                     {/* 리그 소헤더 */}
-                    <div className="flex items-center gap-2 mb-2 pl-1">
-                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: grp.color }} />
-                      <span className="text-xs font-bold" style={{ color: grp.color }}>{grp.label}</span>
-                      <span className="text-xs text-gray-300">{grp.matches.length}경기</span>
+                    <div className="flex items-center gap-2 mb-2 pl-2 border-l-[3px]" style={{ borderLeftColor: grp.color }}>
+                      <span className="text-xs font-bold text-gray-700">{grp.label}</span>
+                      <span className="text-xs text-gray-400">{grp.matches.length}경기</span>
                     </div>
                     <div className="space-y-2">
                       {grp.matches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge />)}
