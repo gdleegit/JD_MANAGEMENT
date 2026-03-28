@@ -63,7 +63,16 @@ export default function TournamentPublicView({
   tournament: Tournament;
   leagueStandings: LeagueRow[];
 }) {
-  const st = STATUS_LABEL[tournament.status] || STATUS_LABEL.UPCOMING;
+  const calcStatus = () => {
+    const { startDate, endDate, status } = tournament;
+    if (!startDate) return status;
+    const fmt = (d: string) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(d));
+    const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date());
+    if (endDate && today > fmt(endDate)) return "FINISHED";
+    if (today >= fmt(startDate)) return "ONGOING";
+    return "UPCOMING";
+  };
+  const st = STATUS_LABEL[calcStatus()] || STATUS_LABEL.UPCOMING;
 
   // Default tab by type
   const defaultTab = tournament.type === "KNOCKOUT" ? "bracket"
