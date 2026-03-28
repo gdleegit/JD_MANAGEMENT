@@ -277,6 +277,7 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onRelo
   const [newTeamForm, setNewTeamForm] = useState({ name: "", shortName: "", color: "#3b82f6" });
   const [creatingTeam, setCreatingTeam] = useState(false);
   const [showNewTeamForm, setShowNewTeamForm] = useState(false);
+  const [localColors, setLocalColors] = useState<Record<string, string>>({});
 
   const createTeam = async () => {
     if (!newTeamForm.name) return;
@@ -314,13 +315,15 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onRelo
   const saveEdit = async () => {
     if (!editingTeam) return;
     setSaving(true);
-    await fetch(`/api/teams/${editingTeam.id}`, {
+    const teamId = editingTeam.id;
+    setLocalColors((prev) => ({ ...prev, [teamId]: editForm.color }));
+    setEditingTeam(null);
+    await fetch(`/api/teams/${teamId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editForm),
     });
     setSaving(false);
-    setEditingTeam(null);
     onReload();
   };
 
@@ -374,7 +377,7 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onRelo
                   <div className={`flex items-center justify-between py-1.5 border-b border-gray-100 cursor-pointer rounded px-1 ${selectedTeamId === team.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
                     onClick={() => setSelectedTeamId(selectedTeamId === team.id ? null : team.id)}>
                     <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: team.color || "#3b82f6" }} />
+                      <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: localColors[team.id] ?? team.color ?? "#3b82f6" }} />
                       <span className="font-medium text-sm">{team.name}</span>
                       {team.shortName && <span className="text-xs text-gray-400">({team.shortName})</span>}
                     </div>
