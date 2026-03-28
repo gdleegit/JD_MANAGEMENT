@@ -332,8 +332,8 @@ function ScheduleView({ matches }: { matches: Match[] }) {
     );
   }
 
-  // ISO 날짜(YYYY-MM-DD)를 키로 그룹핑, matchOrder → 시간 순 정렬
-  const grouped = new Map<string, Match[]>();
+  // 날짜별 그룹핑
+  const byDate = new Map<string, Match[]>();
   const sorted = [...matches].sort((a, b) => {
     const da = a.date ? a.date.slice(0, 10) : "9999-99-99";
     const db = b.date ? b.date.slice(0, 10) : "9999-99-99";
@@ -342,28 +342,58 @@ function ScheduleView({ matches }: { matches: Match[] }) {
   });
   for (const m of sorted) {
     const key = m.date ? m.date.slice(0, 10) : "__none__";
-    if (!grouped.has(key)) grouped.set(key, []);
-    grouped.get(key)!.push(m);
+    if (!byDate.has(key)) byDate.set(key, []);
+    byDate.get(key)!.push(m);
   }
 
   return (
     <div className="space-y-6">
-      {[...grouped.entries()].map(([dateKey, dayMatches]) => (
-        <div key={dateKey}>
-          <div className="flex items-center gap-2 sm:gap-3 mb-3">
-            <h3 className="font-bold text-sm sm:text-base">
-              {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
-            </h3>
-            <span className="text-xs text-gray-400">{dayMatches.length}경기</span>
-            <div className="flex-1 h-px bg-gray-100" />
+      {[...byDate.entries()].map(([dateKey, dayMatches]) => {
+        // 날짜 내에서 리그별 소그룹
+        const hasGroups = dayMatches.some((m) => m.group);
+        const byGroup = new Map<string, { label: string; color: string; matches: Match[] }>();
+        for (const m of dayMatches) {
+          const gKey = m.group?.id ?? "__none__";
+          if (!byGroup.has(gKey)) byGroup.set(gKey, { label: m.group?.label || m.group?.name || "미배정", color: m.group?.color || "#9ca3af", matches: [] });
+          byGroup.get(gKey)!.matches.push(m);
+        }
+
+        return (
+          <div key={dateKey}>
+            {/* 날짜 헤더 */}
+            <div className="flex items-center gap-2 sm:gap-3 mb-3">
+              <h3 className="font-bold text-sm sm:text-base">
+                {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
+              </h3>
+              <span className="text-xs text-gray-400">{dayMatches.length}경기</span>
+              <div className="flex-1 h-px bg-gray-100" />
+            </div>
+
+            {hasGroups ? (
+              // 리그별 소그룹
+              <div className="space-y-4">
+                {[...byGroup.entries()].map(([gKey, grp]) => (
+                  <div key={gKey}>
+                    {/* 리그 소헤더 */}
+                    <div className="flex items-center gap-2 mb-2 pl-1">
+                      <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: grp.color }} />
+                      <span className="text-xs font-bold" style={{ color: grp.color }}>{grp.label}</span>
+                      <span className="text-xs text-gray-300">{grp.matches.length}경기</span>
+                    </div>
+                    <div className="space-y-2">
+                      {grp.matches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge />)}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder />)}
+              </div>
+            )}
           </div>
-          <div className="space-y-2">
-            {dayMatches.map((m) => (
-              <MatchCard key={m.id} match={m} showDate={false} showOrder />
-            ))}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -480,7 +510,7 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
                     <div className="flex-1 h-px bg-gray-100" />
                   </div>
                   <div className="space-y-2">
-                    {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder />)}
+                    {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge />)}
                   </div>
                 </div>
               ))}
@@ -499,7 +529,7 @@ const STATUS_CFG: Record<string, { label: string; cls: string; dot: string }> = 
   FINISHED:  { label: "종료",  cls: "bg-green-100 text-green-600", dot: "bg-green-500" },
 };
 
-function MatchCard({ match, showDate, showOrder }: { match: Match; showDate: boolean; showOrder?: boolean }) {
+function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Match; showDate: boolean; showOrder?: boolean; hideGroupBadge?: boolean }) {
   const finished = match.status === "FINISHED";
   const homeWin = finished && match.homeScore != null && match.awayScore != null && match.homeScore > match.awayScore;
   const awayWin = finished && match.homeScore != null && match.awayScore != null && match.awayScore > match.homeScore;
@@ -534,7 +564,7 @@ function MatchCard({ match, showDate, showOrder }: { match: Match; showDate: boo
                 : new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
             </span>
           )}
-          {match.group && (
+          {match.group && !hideGroupBadge && (
             <span className="px-2 py-0.5 rounded-full font-bold text-white text-xs flex-shrink-0" style={{ backgroundColor: groupColor }}>
               {match.group.label || match.group.name}
             </span>
