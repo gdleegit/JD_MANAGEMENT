@@ -299,7 +299,7 @@ export default function TournamentPublicView({
                               <div key={p.id} className="flex items-center gap-1.5 py-1 px-1 rounded hover:bg-gray-50 transition-colors min-w-0">
                                 <span
                                   className="w-5 h-5 rounded text-center leading-5 text-xs font-bold flex-shrink-0 text-white"
-                                  style={{ backgroundColor: p.number != null ? color : "#d1d5db" }}
+                                  style={{ backgroundColor: color }}
                                 >
                                   {p.number ?? "·"}
                                 </span>
