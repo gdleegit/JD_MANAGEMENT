@@ -236,36 +236,61 @@ export default function TournamentPublicView({
       {/* Teams Tab */}
       {tab === "teams" && (
         <div>
-          <h2 className="text-xl font-bold mb-4">참가 팀</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...tournament.teams].sort((a, b) => a.team.name.localeCompare(b.team.name, "ko", { numeric: true })).map(({ team }) => (
-              <div key={team.id} className="card p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-4 h-4 rounded-full flex-shrink-0" style={{ backgroundColor: team.color || "#3b82f6" }} />
-                  <h3 className="font-bold">{team.name}</h3>
-                </div>
-                {team.players.length > 0 ? (
-                  <div className="space-y-1">
-                    {[...team.players]
-                      .sort((a, b) => {
-                        if (a.number && b.number) return a.number - b.number;
-                        if (a.number) return -1;
-                        if (b.number) return 1;
-                        return a.name.localeCompare(b.name, "ko", { numeric: true });
-                      })
-                      .map((p) => (
-                        <div key={p.id} className="flex items-center gap-2 text-sm text-gray-600">
-                          <span className="w-6 text-right text-gray-400 text-xs flex-shrink-0">{p.number ?? ""}</span>
-                          <span>{p.name}</span>
-                          {p.position && <span className="text-xs text-gray-400">({p.position})</span>}
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold">참가 팀</h2>
+            <span className="text-sm text-gray-400">{tournament.teams.length}개 팀 · {tournament.teams.reduce((sum, t) => sum + t.team.players.length, 0)}명</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[...tournament.teams]
+              .sort((a, b) => a.team.name.localeCompare(b.team.name, "ko", { numeric: true }))
+              .map(({ team }) => {
+                const color = team.color || "#3b82f6";
+                const sortedPlayers = [...team.players].sort((a, b) => {
+                  if (a.number != null && b.number != null) return a.number - b.number;
+                  if (a.number != null) return -1;
+                  if (b.number != null) return 1;
+                  return a.name.localeCompare(b.name, "ko", { numeric: true });
+                });
+                return (
+                  <div key={team.id} className="card overflow-hidden">
+                    {/* 컬러 헤더 바 */}
+                    <div className="px-4 py-3 flex items-center gap-3" style={{ backgroundColor: color + "22", borderBottom: `3px solid ${color}` }}>
+                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: color }}>
+                        {team.name.slice(0, 1)}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-gray-900 truncate">{team.name}</h3>
+                      </div>
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: color + "33", color }}>
+                        {team.players.length}명
+                      </span>
+                    </div>
+                    {/* 선수 목록 */}
+                    <div className="p-3">
+                      {sortedPlayers.length > 0 ? (
+                        <div className="space-y-0.5">
+                          {sortedPlayers.map((p) => (
+                            <div key={p.id} className="flex items-center gap-2 py-1.5 px-1 rounded-lg hover:bg-gray-50 transition-colors">
+                              <span
+                                className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold flex-shrink-0 text-white"
+                                style={{ backgroundColor: p.number != null ? color : "#d1d5db" }}
+                              >
+                                {p.number ?? "·"}
+                              </span>
+                              <span className="text-sm font-medium text-gray-800 flex-1 min-w-0 truncate">{p.name}</span>
+                              {p.position && (
+                                <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 flex-shrink-0">{p.position}</span>
+                              )}
+                            </div>
+                          ))}
                         </div>
-                      ))}
+                      ) : (
+                        <p className="text-sm text-gray-400 text-center py-3">선수 정보 없음</p>
+                      )}
+                    </div>
                   </div>
-                ) : (
-                  <p className="text-sm text-gray-400">선수 정보 없음</p>
-                )}
-              </div>
-            ))}
+                );
+              })}
           </div>
         </div>
       )}
