@@ -2,6 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
 
+// 참가팀 + 선수 목록 조회 (public, lazy load용)
+export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const { id: tournamentId } = await params;
+  const entries = await prisma.tournamentTeam.findMany({
+    where: { tournamentId },
+    include: { team: { include: { players: { orderBy: [{ number: "asc" }, { name: "asc" }] } } } },
+  });
+  return NextResponse.json(entries);
+}
+
 // Add team to tournament
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();

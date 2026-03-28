@@ -4,8 +4,8 @@ import { useState } from "react";
 import BracketView from "./BracketView";
 
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
-type Team = { id: string; name: string; color?: string | null; players: Player[] };
-type Goal = { id: string; type: string; teamId: string; minute?: number | null; player?: { id: string; name: string } | null; team: Team };
+type Team = { id: string; name: string; color?: string | null; players?: Player[] };
+type Goal = { id: string; type: string; teamId: string; minute?: number | null; player?: { id: string; name: string } | null; team: { id: string; name: string; color?: string | null } };
 type Group = { id: string; name: string; label?: string | null; color?: string | null; teams: GroupTeam[] };
 type GroupTeam = { id: string; team: Team; played: number; won: number; drawn: number; lost: number; gf: number; ga: number; points: number };
 type Match = {
@@ -72,6 +72,26 @@ export default function TournamentPublicView({
 
   const [tab, setTab] = useState<"bracket" | "standings" | "division" | "schedule" | "teams" | "scorers" | "rules">(defaultTab as "bracket");
 
+  // 참가팀 선수 lazy load
+  const [teamPlayers, setTeamPlayers] = useState<Record<string, Player[]> | null>(null);
+  const [loadingPlayers, setLoadingPlayers] = useState(false);
+
+  const handleTabChange = async (key: string) => {
+    setTab(key as typeof tab);
+    if (key === "teams" && teamPlayers === null && !loadingPlayers) {
+      setLoadingPlayers(true);
+      try {
+        const res = await fetch(`/api/tournaments/${tournament.id}/teams`);
+        const data: Array<{ team: { id: string; players: Player[] } }> = await res.json();
+        const map: Record<string, Player[]> = {};
+        for (const entry of data) map[entry.team.id] = entry.team.players;
+        setTeamPlayers(map);
+      } finally {
+        setLoadingPlayers(false);
+      }
+    }
+  };
+
   const tabs = [
     tournament.type === "KNOCKOUT" && { key: "bracket", label: "대진표" },
     tournament.type === "LEAGUE" && { key: "standings", label: "순위표" },
@@ -123,7 +143,7 @@ export default function TournamentPublicView({
           {tabs.map((t) => (
             <button
               key={t.key}
-              onClick={() => setTab(t.key as typeof tab)}
+              onClick={() => handleTabChange(t.key)}
               className={`px-2.5 sm:px-4 py-2 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${tab === t.key ? "bg-white shadow-sm text-blue-600" : "text-gray-600 hover:text-gray-800"}`}
             >
               {t.label}
@@ -238,57 +258,64 @@ export default function TournamentPublicView({
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">참가 팀</h2>
-            <span className="text-sm text-gray-400">{tournament.teams.length}개 팀 · {tournament.teams.reduce((sum, t) => sum + t.team.players.length, 0)}명</span>
+            <span className="text-sm text-gray-400">{tournament.teams.length}개 팀</span>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[...tournament.teams]
-              .sort((a, b) => a.team.name.localeCompare(b.team.name, "ko", { numeric: true }))
-              .map(({ team }) => {
-                const color = team.color || "#3b82f6";
-                const sortedPlayers = [...team.players].sort((a, b) => {
-                  if (a.number != null && b.number != null) return a.number - b.number;
-                  if (a.number != null) return -1;
-                  if (b.number != null) return 1;
-                  return a.name.localeCompare(b.name, "ko", { numeric: true });
-                });
-                return (
-                  <div key={team.id} className="card overflow-hidden">
-                    {/* 컬러 헤더 바 */}
-                    <div className="px-4 py-3 flex items-center gap-3" style={{ backgroundColor: color + "22", borderBottom: `3px solid ${color}` }}>
-                      <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: color }}>
-                        {team.name.slice(0, 1)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-gray-900 truncate">{team.name}</h3>
-                      </div>
-                      <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: color }}>
-                        {team.players.length}명
-                      </span>
-                    </div>
-                    {/* 선수 목록 — 2열 그리드 */}
-                    <div className="p-3">
-                      {sortedPlayers.length > 0 ? (
-                        <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
-                          {sortedPlayers.map((p) => (
-                            <div key={p.id} className="flex items-center gap-1.5 py-1 px-1 rounded hover:bg-gray-50 transition-colors min-w-0">
-                              <span
-                                className="w-5 h-5 rounded text-center leading-5 text-xs font-bold flex-shrink-0 text-white"
-                                style={{ backgroundColor: p.number != null ? color : "#d1d5db" }}
-                              >
-                                {p.number ?? "·"}
-                              </span>
-                              <span className="text-sm font-medium text-gray-800 truncate">{p.name}</span>
-                            </div>
-                          ))}
+          {loadingPlayers ? (
+            <div className="card p-10 text-center text-gray-400 text-sm">선수 정보 불러오는 중...</div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[...tournament.teams]
+                .sort((a, b) => a.team.name.localeCompare(b.team.name, "ko", { numeric: true }))
+                .map(({ team }) => {
+                  const color = team.color || "#3b82f6";
+                  const players = teamPlayers?.[team.id] ?? [];
+                  const sortedPlayers = [...players].sort((a, b) => {
+                    if (a.number != null && b.number != null) return a.number - b.number;
+                    if (a.number != null) return -1;
+                    if (b.number != null) return 1;
+                    return a.name.localeCompare(b.name, "ko", { numeric: true });
+                  });
+                  return (
+                    <div key={team.id} className="card overflow-hidden">
+                      <div className="px-4 py-3 flex items-center gap-3" style={{ backgroundColor: color + "22", borderBottom: `3px solid ${color}` }}>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: color }}>
+                          {team.name.slice(0, 1)}
                         </div>
-                      ) : (
-                        <p className="text-sm text-gray-400 text-center py-3">선수 정보 없음</p>
-                      )}
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-bold text-gray-900 truncate">{team.name}</h3>
+                        </div>
+                        {teamPlayers && (
+                          <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: color }}>
+                            {players.length}명
+                          </span>
+                        )}
+                      </div>
+                      <div className="p-3">
+                        {!teamPlayers ? (
+                          <p className="text-xs text-gray-300 text-center py-3">로딩 중...</p>
+                        ) : sortedPlayers.length > 0 ? (
+                          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                            {sortedPlayers.map((p) => (
+                              <div key={p.id} className="flex items-center gap-1.5 py-1 px-1 rounded hover:bg-gray-50 transition-colors min-w-0">
+                                <span
+                                  className="w-5 h-5 rounded text-center leading-5 text-xs font-bold flex-shrink-0 text-white"
+                                  style={{ backgroundColor: p.number != null ? color : "#d1d5db" }}
+                                >
+                                  {p.number ?? "·"}
+                                </span>
+                                <span className="text-sm font-medium text-gray-800 truncate">{p.name}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-400 text-center py-3">선수 정보 없음</p>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
-          </div>
+                  );
+                })}
+            </div>
+          )}
         </div>
       )}
     </div>

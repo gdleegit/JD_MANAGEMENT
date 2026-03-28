@@ -5,13 +5,20 @@ import TournamentPublicView from "@/components/TournamentPublicView";
 
 export const revalidate = 60;
 
+// 빌드 시 모든 대회 페이지를 미리 렌더링 → CDN 서빙, 첫 로드 즉시 응답
+export async function generateStaticParams() {
+  const tournaments = await prisma.tournament.findMany({ select: { id: true } });
+  return tournaments.map((t) => ({ id: t.id }));
+}
+
 export default async function TournamentDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   const tournament = await prisma.tournament.findUnique({
     where: { id },
     include: {
-      teams: { include: { team: { include: { players: true } } } },
+      // 선수 데이터는 제외 — 참가팀 탭에서 lazy load
+      teams: { include: { team: true } },
       matches: {
         include: {
           homeTeam: true,
@@ -49,7 +56,6 @@ export default async function TournamentDetailPage({ params }: { params: Promise
     leagueStandings = raw.map((r) => ({ ...r, team: teamMap[r.teamId] }));
   }
 
-  // Serialize Dates to strings for client component
   const serialized = JSON.parse(JSON.stringify(tournament));
 
   return (
