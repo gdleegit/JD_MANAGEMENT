@@ -9,14 +9,25 @@ export default async function TournamentsPage() {
     include: { _count: { select: { teams: true, matches: true } } },
   });
 
-  const statusLabel: Record<string, { label: string; cls: string }> = {
-    UPCOMING: { label: "예정", cls: "badge-gray" },
-    ONGOING: { label: "진행중", cls: "badge-green" },
-    FINISHED: { label: "종료", cls: "badge-blue" },
+  const STATUS: Record<string, { label: string; cls: string }> = {
+    UPCOMING: { label: "예정",   cls: "badge-gray" },
+    ONGOING:  { label: "진행중", cls: "badge-green" },
+    FINISHED: { label: "종료",   cls: "badge-blue" },
   };
   const typeLabel: Record<string, string> = {
     KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별리그",
   };
+
+  const kstToday = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date());
+
+  function calcStatus(t: { status: string; startDate: Date | null; endDate: Date | null }) {
+    const start = t.startDate ? new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(t.startDate) : null;
+    const end   = t.endDate   ? new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(t.endDate)   : null;
+    if (!start) return t.status; // 날짜 없으면 DB 상태 사용
+    if (end && kstToday > end)   return "FINISHED";
+    if (kstToday >= start)       return "ONGOING";
+    return "UPCOMING";
+  }
 
   return (
     <div>
@@ -29,7 +40,7 @@ export default async function TournamentsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {tournaments.map((t) => {
-            const st = statusLabel[t.status] || statusLabel.UPCOMING;
+            const st = STATUS[calcStatus(t)] || STATUS.UPCOMING;
             return (
               <Link key={t.id} href={`/tournaments/${t.id}`} className="card p-4 sm:p-5 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between mb-3">
