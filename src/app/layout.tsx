@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <nav className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
-              <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
+              <Link href="/tournaments" className="flex items-center gap-2 sm:gap-3 group">
                 <Image src="/jd1.svg" alt="中東 Kick-Off" width={34} height={34} className="sm:w-[42px] sm:h-[42px]" />
                 <div className="flex flex-col leading-tight">
                   <span className="text-[10px] sm:text-xs font-semibold tracking-[0.3em] text-gray-300 uppercase">中 東</span>
