@@ -599,8 +599,8 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
     <div
       className="rounded-xl overflow-hidden transition-colors hover:brightness-95"
       style={{
-        border: "1px solid #f3f4f6",
-        borderLeft: match.group ? `4px solid ${groupColor}` : "1px solid #f3f4f6",
+        border: "1px solid #e2e8f0",
+        borderLeft: match.group ? `4px solid ${groupColor}` : "1px solid #e2e8f0",
         backgroundColor: match.group ? groupColor + "08" : "white",
       }}
     >
