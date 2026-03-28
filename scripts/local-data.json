@@ -1,0 +1,1768 @@
+{
+  "adminUsers": [
+    {
+      "id": "cmn8sxgba0000wxtcoms6qjhv",
+      "username": "admin",
+      "password": "55adbc690a84bde26d0e252df400a71d3769a3d51b238a11ca70bf7fb348f2bf",
+      "createdAt": "2026-03-27T11:12:03.287Z"
+    }
+  ],
+  "teams": [
+    {
+      "id": "cmn8szdvy0001twnxpl52p2e7",
+      "name": "105회",
+      "shortName": "105회",
+      "color": "#e95ef3",
+      "createdAt": "2026-03-27T11:13:33.454Z"
+    },
+    {
+      "id": "cmn8tb7z5000rtwnxq9obzei8",
+      "name": "71회",
+      "shortName": "71회",
+      "color": "#e1f73b",
+      "createdAt": "2026-03-27T11:22:45.665Z"
+    },
+    {
+      "id": "cmn8tbhrq000stwnxnhvw4g15",
+      "name": "72회",
+      "shortName": "72회",
+      "color": "#28e247",
+      "createdAt": "2026-03-27T11:22:58.359Z"
+    },
+    {
+      "id": "cmn8tblpf000ttwnx2zzd5cmc",
+      "name": "73회",
+      "shortName": "73회",
+      "color": "#3b82f6",
+      "createdAt": "2026-03-27T11:23:03.459Z"
+    },
+    {
+      "id": "cmn8tbs7k000utwnxy3sjfs0q",
+      "name": "74회",
+      "shortName": "74회",
+      "color": "#8304d7",
+      "createdAt": "2026-03-27T11:23:11.888Z"
+    },
+    {
+      "id": "cmn8tc3sf000vtwnx0gxxyxr1",
+      "name": "77회",
+      "shortName": "77회",
+      "color": "#566886",
+      "createdAt": "2026-03-27T11:23:26.896Z"
+    },
+    {
+      "id": "cmn8tcbfo000wtwnxgduw6vc0",
+      "name": "79회",
+      "shortName": "79회",
+      "color": "#eeff00",
+      "createdAt": "2026-03-27T11:23:36.804Z"
+    },
+    {
+      "id": "cmn8tcryu000xtwnxnynz6xbw",
+      "name": "80-81회",
+      "shortName": "80-81회",
+      "color": "#9f0909",
+      "createdAt": "2026-03-27T11:23:58.231Z"
+    },
+    {
+      "id": "cmn8tcztl000ytwnxaedl9naj",
+      "name": "82회",
+      "shortName": "82회",
+      "color": "#ff2c14",
+      "createdAt": "2026-03-27T11:24:08.410Z"
+    },
+    {
+      "id": "cmn8td4m3000ztwnxmg1dgb9l",
+      "name": "83회",
+      "shortName": "83회",
+      "color": "#e0e6f1",
+      "createdAt": "2026-03-27T11:24:14.619Z"
+    },
+    {
+      "id": "cmn8tdk070010twnx3dm7h5u2",
+      "name": "연합팀",
+      "shortName": "연합팀 (86-117회)",
+      "color": "#000000",
+      "createdAt": "2026-03-27T11:24:34.567Z"
+    }
+  ],
+  "players": [
+    {
+      "id": "cmn8szij90003twnxc5s5s2ey",
+      "name": "이건도",
+      "number": 10,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:13:39.477Z"
+    },
+    {
+      "id": "cmn8t8h1e0005twnxdrt8mf6s",
+      "name": "김성호",
+      "number": 13,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:20:37.442Z"
+    },
+    {
+      "id": "cmn8t8mbs0007twnxs5b2dowt",
+      "name": "정하진",
+      "number": 7,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:20:44.296Z"
+    },
+    {
+      "id": "cmn8t8qox0009twnx3t72r87b",
+      "name": "김진완",
+      "number": 18,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:20:49.953Z"
+    },
+    {
+      "id": "cmn8t8wbo000btwnxg69iwcqo",
+      "name": "이영제",
+      "number": 79,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:20:57.252Z"
+    },
+    {
+      "id": "cmn8t910z000dtwnx04hizdn1",
+      "name": "권용익",
+      "number": 9,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:21:03.347Z"
+    },
+    {
+      "id": "cmn8t94vo000ftwnxnb1mp3gf",
+      "name": "조성진",
+      "number": 11,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:21:08.341Z"
+    },
+    {
+      "id": "cmn8t99jn000htwnx7c0mbosa",
+      "name": "박선홍",
+      "number": 5,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:21:14.387Z"
+    },
+    {
+      "id": "cmn8t9drw000jtwnxr8c9h747",
+      "name": "권오빈",
+      "number": 14,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:21:19.868Z"
+    },
+    {
+      "id": "cmn8t9jli000ltwnxl7586zbi",
+      "name": "권오빈",
+      "number": 14,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:21:27.414Z"
+    },
+    {
+      "id": "cmn8t9p0y000ntwnxdoa90e36",
+      "name": "박찬수",
+      "number": 72,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:21:34.450Z"
+    },
+    {
+      "id": "cmn8t9qti000ptwnxuodxqxv3",
+      "name": "엄유식",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "createdAt": "2026-03-27T11:21:36.774Z"
+    },
+    {
+      "id": "cmn8y74qv0001u37awx7uiece",
+      "name": "전광인",
+      "number": 1,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:39:32.935Z"
+    },
+    {
+      "id": "cmn8y795k0003u37a6ih3f9y3",
+      "name": "김상근",
+      "number": 3,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:39:38.649Z"
+    },
+    {
+      "id": "cmn8y7d1g0005u37afiye4tq2",
+      "name": "황 철",
+      "number": 5,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:39:43.684Z"
+    },
+    {
+      "id": "cmn8y7giy0007u37apxflk5af",
+      "name": "류근관",
+      "number": 7,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:39:48.202Z"
+    },
+    {
+      "id": "cmn8y7kno0009u37ai9nznacb",
+      "name": "전경근",
+      "number": 8,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:39:53.556Z"
+    },
+    {
+      "id": "cmn8y7o06000bu37anvojvjr6",
+      "name": "권기환",
+      "number": 9,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:39:57.894Z"
+    },
+    {
+      "id": "cmn8y7qgs000du37avhb1mf20",
+      "name": "유한태",
+      "number": 10,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:40:01.085Z"
+    },
+    {
+      "id": "cmn8y7t47000fu37a3f21rr51",
+      "name": "이승우",
+      "number": 11,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:40:04.520Z"
+    },
+    {
+      "id": "cmn8y7vw8000hu37a9s2kgfrz",
+      "name": "박광호",
+      "number": 14,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:40:08.120Z"
+    },
+    {
+      "id": "cmn8y7yqn000ju37alky0xsm8",
+      "name": "이해영",
+      "number": 17,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:40:11.807Z"
+    },
+    {
+      "id": "cmn8y81tn000lu37a70qa0uhn",
+      "name": "서원석",
+      "number": 26,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:40:15.804Z"
+    },
+    {
+      "id": "cmn8y84ge000nu37ajj2razb5",
+      "name": "홍성화",
+      "number": 27,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:40:19.214Z"
+    },
+    {
+      "id": "cmn8y87hs000pu37a8z53hv3n",
+      "name": "김원기",
+      "number": 99,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:40:23.153Z"
+    },
+    {
+      "id": "cmn8y8as8000ru37aignmqtxz",
+      "name": "김태곤",
+      "number": 16,
+      "position": "",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "createdAt": "2026-03-27T13:40:27.416Z"
+    },
+    {
+      "id": "cmn8y9sql000tu37atd7s0bla",
+      "name": "최규돈",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:37.342Z"
+    },
+    {
+      "id": "cmn8y9umk000vu37a86877dm2",
+      "name": "김원근",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:39.788Z"
+    },
+    {
+      "id": "cmn8y9wjo000xu37as9zlmng5",
+      "name": "김철영",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:42.276Z"
+    },
+    {
+      "id": "cmn8y9xct000zu37azd9ly9py",
+      "name": "김응구",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:43.326Z"
+    },
+    {
+      "id": "cmn8y9y590011u37ahaiswjnu",
+      "name": "문영섭",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:44.349Z"
+    },
+    {
+      "id": "cmn8y9z430013u37aiysqcnxa",
+      "name": "김형익",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:45.604Z"
+    },
+    {
+      "id": "cmn8y9zt20015u37agvz77heq",
+      "name": "하경수",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:46.502Z"
+    },
+    {
+      "id": "cmn8ya0ji0017u37anek5jqwz",
+      "name": "조정훈",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:47.454Z"
+    },
+    {
+      "id": "cmn8ya1re0019u37a03ec1iw5",
+      "name": "남정곤",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:49.034Z"
+    },
+    {
+      "id": "cmn8ya2p2001bu37aieiku3en",
+      "name": "손성철",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:50.246Z"
+    },
+    {
+      "id": "cmn8ya4rm001du37auitpv7o8",
+      "name": "국길주",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:52.930Z"
+    },
+    {
+      "id": "cmn8ya5tw001fu37a45e0htls",
+      "name": "박영관",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:54.309Z"
+    },
+    {
+      "id": "cmn8ya721001hu37a95n3ar9f",
+      "name": "양창근",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:55.898Z"
+    },
+    {
+      "id": "cmn8ya7z7001ju37aj4ft5xqy",
+      "name": "조흠학",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:41:57.092Z"
+    },
+    {
+      "id": "cmn8yab3o001lu37akgeljzhi",
+      "name": "고승창(65회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:42:01.141Z"
+    },
+    {
+      "id": "cmn8yaiu6001nu37awipovsc0",
+      "name": "김주광(66회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:42:11.166Z"
+    },
+    {
+      "id": "cmn8yam0f001pu37avpqn2bd5",
+      "name": "박찬기(66회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:42:15.280Z"
+    },
+    {
+      "id": "cmn8yaqyd001ru37alex66aaa",
+      "name": "정 헌(68회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "createdAt": "2026-03-27T13:42:21.686Z"
+    },
+    {
+      "id": "cmn8ybfzf001tu37a3answjp7",
+      "name": "김광용(선출)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:42:54.124Z"
+    },
+    {
+      "id": "cmn8ybja4001vu37a5l8a7gk4",
+      "name": "최형규",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:42:58.396Z"
+    },
+    {
+      "id": "cmn8yblrk001xu37a3r7v27yl",
+      "name": "한제용",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:01.616Z"
+    },
+    {
+      "id": "cmn8ybogz001zu37axws6mfbf",
+      "name": "송재영",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:05.124Z"
+    },
+    {
+      "id": "cmn8ybpyx0021u37ahsa79lp0",
+      "name": "윤춘하",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:07.065Z"
+    },
+    {
+      "id": "cmn8ybqtb0023u37aoiaf1hye",
+      "name": "최석재",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:08.159Z"
+    },
+    {
+      "id": "cmn8ybsaa0025u37asuyf4h8k",
+      "name": "박상후",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:10.066Z"
+    },
+    {
+      "id": "cmn8ybsz30027u37a7spg0ukz",
+      "name": "유승태",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:10.959Z"
+    },
+    {
+      "id": "cmn8ybuns0029u37a5m69xsqh",
+      "name": "박종호",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:13.144Z"
+    },
+    {
+      "id": "cmn8ybvog002bu37arbbcw86m",
+      "name": "고영식",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:14.464Z"
+    },
+    {
+      "id": "cmn8ybwup002du37a381l7zzk",
+      "name": "진원영",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:15.985Z"
+    },
+    {
+      "id": "cmn8ybxox002fu37aib9xevkh",
+      "name": "김안중",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:17.073Z"
+    },
+    {
+      "id": "cmn8yc0kk002hu37atm0ac1er",
+      "name": "황훈선",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:20.804Z"
+    },
+    {
+      "id": "cmn8yc1w7002ju37ate2zyldl",
+      "name": "이승훈",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:22.520Z"
+    },
+    {
+      "id": "cmn8yc367002lu37ampmxufe6",
+      "name": "문창용",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:24.176Z"
+    },
+    {
+      "id": "cmn8yc4tp002nu37a57ooy3zf",
+      "name": "홍종완",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:26.317Z"
+    },
+    {
+      "id": "cmn8yc5j9002pu37ahf3c256l",
+      "name": "임호성",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:27.237Z"
+    },
+    {
+      "id": "cmn8yc69w002ru37aq2nb9nkx",
+      "name": "최형호",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:28.196Z"
+    },
+    {
+      "id": "cmn8yc7od002tu37atri37j0c",
+      "name": "홍진호",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:30.014Z"
+    },
+    {
+      "id": "cmn8yc8rl002vu37ak7o4eic1",
+      "name": "허진우",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:31.426Z"
+    },
+    {
+      "id": "cmn8yc9ih002xu37arugan5s5",
+      "name": "유 진",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:32.394Z"
+    },
+    {
+      "id": "cmn8yccva002zu37ajzg271kx",
+      "name": "조영상(선출)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:36.742Z"
+    },
+    {
+      "id": "cmn8yceaw0031u37aex19vh77",
+      "name": "최문수",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:38.600Z"
+    },
+    {
+      "id": "cmn8ycf4n0033u37aafh6p1ix",
+      "name": "한치호",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "createdAt": "2026-03-27T13:43:39.671Z"
+    },
+    {
+      "id": "cmn8ycupr0035u37awy6dnuk6",
+      "name": "김성중(80회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:43:59.871Z"
+    },
+    {
+      "id": "cmn8yczgq0037u37a3wak1mhc",
+      "name": "이시형(80회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:06.026Z"
+    },
+    {
+      "id": "cmn8yd2xw0039u37asad3imtu",
+      "name": "이원호(80회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:10.533Z"
+    },
+    {
+      "id": "cmn8yd693003bu37ankcddaxz",
+      "name": "김용철(80회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:14.823Z"
+    },
+    {
+      "id": "cmn8yd9eo003du37all8oz4b8",
+      "name": "김동근(81회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:18.912Z"
+    },
+    {
+      "id": "cmn8ydcx2003fu37a8ym2mund",
+      "name": "최인섭(81회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:23.462Z"
+    },
+    {
+      "id": "cmn8ydhea003hu37atprrntc9",
+      "name": "정 훈(81회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:29.266Z"
+    },
+    {
+      "id": "cmn8ydko1003ju37ail6c77ge",
+      "name": "박진수(81회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:33.506Z"
+    },
+    {
+      "id": "cmn8ydnqc003lu37afxhmvh7f",
+      "name": "이명우(81회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:37.477Z"
+    },
+    {
+      "id": "cmn8ydqc5003nu37a05f2xll2",
+      "name": "김형욱(81회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:40.853Z"
+    },
+    {
+      "id": "cmn8ydsy1003pu37av5xal5kp",
+      "name": "김지상(81회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:44.233Z"
+    },
+    {
+      "id": "cmn8ydvxz003ru37azfu7y2tf",
+      "name": "박철우(81회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "createdAt": "2026-03-27T13:44:48.120Z"
+    },
+    {
+      "id": "cmn8yecv6003tu37aktmhwiz8",
+      "name": "김용광(87회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:10.051Z"
+    },
+    {
+      "id": "cmn8yefng003vu37acvasdl9d",
+      "name": "김나흥(111회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:13.660Z"
+    },
+    {
+      "id": "cmn8yeitz003xu37ai6nneh3p",
+      "name": "김태훈(111회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:17.784Z"
+    },
+    {
+      "id": "cmn8yem84003zu37akd9h17ap",
+      "name": "박균철(96회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:22.181Z"
+    },
+    {
+      "id": "cmn8yeq5y0041u37a48qddqnz",
+      "name": "박진영(97회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:27.286Z"
+    },
+    {
+      "id": "cmn8yet740043u37axiqzybhs",
+      "name": "장예훈(111회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:31.216Z"
+    },
+    {
+      "id": "cmn8yevzh0045u37ap4y2730z",
+      "name": "지연우(95회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:34.830Z"
+    },
+    {
+      "id": "cmn8yez0q0047u37an5i0il93",
+      "name": "황윤재(111회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:38.763Z"
+    },
+    {
+      "id": "cmn8yf32u0049u37aiuyguidg",
+      "name": "송대성(104회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:44.022Z"
+    },
+    {
+      "id": "cmn8yf662004bu37at6vhw8aq",
+      "name": "이종하(87회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:48.027Z"
+    },
+    {
+      "id": "cmn8yf9r8004du37aj6cut6bf",
+      "name": "조영희(86회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:45:52.677Z"
+    },
+    {
+      "id": "cmn8yfs5b004fu37aqgmuqyiw",
+      "name": "박석일(86회)",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "createdAt": "2026-03-27T13:46:16.511Z"
+    },
+    {
+      "id": "cmn8yi4os004hu37aenn13lw8",
+      "name": "유영준",
+      "number": 3,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:06.077Z"
+    },
+    {
+      "id": "cmn8yi7y5004ju37atdf1jwq3",
+      "name": "김형준",
+      "number": 4,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:10.301Z"
+    },
+    {
+      "id": "cmn8yiar0004lu37aocw2089n",
+      "name": "장주록",
+      "number": 6,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:13.933Z"
+    },
+    {
+      "id": "cmn8yid4t004nu37affaqpizo",
+      "name": "홍태희",
+      "number": 7,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:17.021Z"
+    },
+    {
+      "id": "cmn8yig02004pu37ab9h7x8p7",
+      "name": "안종민",
+      "number": 8,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:20.738Z"
+    },
+    {
+      "id": "cmn8yiijv004ru37azbcpi3nn",
+      "name": "김영한",
+      "number": 9,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:24.044Z"
+    },
+    {
+      "id": "cmn8yil7q004tu37af3gdkkki",
+      "name": "정원형",
+      "number": 10,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:27.495Z"
+    },
+    {
+      "id": "cmn8yintc004vu37asgxkx7dh",
+      "name": "최근영",
+      "number": 11,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:30.864Z"
+    },
+    {
+      "id": "cmn8yiq5a004xu37an8nn18ir",
+      "name": "김종훈",
+      "number": 13,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:33.887Z"
+    },
+    {
+      "id": "cmn8yislj004zu37a3bdxs2x3",
+      "name": "김정현",
+      "number": 15,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:37.064Z"
+    },
+    {
+      "id": "cmn8yixk20051u37aut0sn3c3",
+      "name": "권보근",
+      "number": 17,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:43.491Z"
+    },
+    {
+      "id": "cmn8yj0dt0053u37aw6vt9uzo",
+      "name": "마영진",
+      "number": 18,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:47.153Z"
+    },
+    {
+      "id": "cmn8yj3ky0055u37ae9d7t94q",
+      "name": "권지웅",
+      "number": 19,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:51.298Z"
+    },
+    {
+      "id": "cmn8yj6je0057u37arwg82acr",
+      "name": "박상태",
+      "number": 20,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:55.130Z"
+    },
+    {
+      "id": "cmn8yj9vx0059u37ayck90xz7",
+      "name": "이윤혁",
+      "number": 21,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:48:59.470Z"
+    },
+    {
+      "id": "cmn8yjczg005bu37a735mkhp7",
+      "name": "한재일",
+      "number": 28,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:49:03.484Z"
+    },
+    {
+      "id": "cmn8yjfh7005du37abxwmicmf",
+      "name": "강사리",
+      "number": 42,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:49:06.715Z"
+    },
+    {
+      "id": "cmn8yjimr005fu37acsdiqrlq",
+      "name": "최용호",
+      "number": 52,
+      "position": "",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "createdAt": "2026-03-27T13:49:10.803Z"
+    },
+    {
+      "id": "cmn8ykals005hu37ag69bvsg0",
+      "name": "이해욱",
+      "number": 0,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:49:47.056Z"
+    },
+    {
+      "id": "cmn8ykdi6005ju37awgvcg2qo",
+      "name": "조재관",
+      "number": 2,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:49:50.814Z"
+    },
+    {
+      "id": "cmn8ykgxt005lu37awewbe4wm",
+      "name": "김성중",
+      "number": 3,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:49:55.265Z"
+    },
+    {
+      "id": "cmn8ykjxj005nu37aw156fmcf",
+      "name": "김치영",
+      "number": 5,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:49:59.143Z"
+    },
+    {
+      "id": "cmn8ykmth005pu37a2qhl18nb",
+      "name": "김성현",
+      "number": 6,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:02.885Z"
+    },
+    {
+      "id": "cmn8ykt50005ru37a5plj09g9",
+      "name": "박춘일",
+      "number": 7,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:11.076Z"
+    },
+    {
+      "id": "cmn8ykw69005tu37az0ik9fy8",
+      "name": "나용식",
+      "number": 8,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:15.009Z"
+    },
+    {
+      "id": "cmn8ykz2k005vu37a4cmgyqt4",
+      "name": "남기완",
+      "number": 9,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:18.765Z"
+    },
+    {
+      "id": "cmn8yl2xl005xu37amllfshbc",
+      "name": "최희철",
+      "number": 10,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:23.770Z"
+    },
+    {
+      "id": "cmn8yl56n005zu37aaequr9qw",
+      "name": "정재영",
+      "number": 11,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:26.687Z"
+    },
+    {
+      "id": "cmn8yl8iq0061u37axx1gla5u",
+      "name": "박주환",
+      "number": 12,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:31.011Z"
+    },
+    {
+      "id": "cmn8ylax00063u37am3ysnx6l",
+      "name": "김일한",
+      "number": 13,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:34.116Z"
+    },
+    {
+      "id": "cmn8yldpj0065u37a8s0xd6bk",
+      "name": "권택중",
+      "number": 16,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:37.735Z"
+    },
+    {
+      "id": "cmn8ylfyg0067u37azn6g5934",
+      "name": "김종만",
+      "number": 17,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:40.649Z"
+    },
+    {
+      "id": "cmn8ylizm0069u37a0aq0tjzd",
+      "name": "원현진",
+      "number": 19,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:44.579Z"
+    },
+    {
+      "id": "cmn8ylldj006bu37axmcfo6vk",
+      "name": "곽승원",
+      "number": 20,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:47.672Z"
+    },
+    {
+      "id": "cmn8ylouu006du37af4oxa6td",
+      "name": "강인창",
+      "number": 25,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:52.183Z"
+    },
+    {
+      "id": "cmn8yls5o006fu37apl82pwxh",
+      "name": "이광교",
+      "number": 27,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:50:56.461Z"
+    },
+    {
+      "id": "cmn8ylvnq006hu37ar7cnpy5h",
+      "name": "이양수",
+      "number": 26,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:51:00.998Z"
+    },
+    {
+      "id": "cmn8ylyng006ju37aorpkqycc",
+      "name": "이용암",
+      "number": 28,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:51:04.877Z"
+    },
+    {
+      "id": "cmn8ym2ha006lu37ao9fsiip9",
+      "name": "이성한",
+      "number": 44,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:51:09.838Z"
+    },
+    {
+      "id": "cmn8ym4fn006nu37al5qkbtu4",
+      "name": "김택기",
+      "number": null,
+      "position": "",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "createdAt": "2026-03-27T13:51:12.371Z"
+    }
+  ],
+  "tournaments": [
+    {
+      "id": "cmn8syz9b0000twnxjhu4t6ad",
+      "name": "2026 중동 기수별 축구대회",
+      "type": "GROUP",
+      "status": "UPCOMING",
+      "startDate": "2026-03-28T00:00:00.000Z",
+      "endDate": "2026-04-18T00:00:00.000Z",
+      "description": "중동고 120주년 총동문회장배 기수별 축구대회",
+      "rules": "* 라이온스리그는 3라운드까지의 예선점수 정산하여 3-4위전 및 1-2위전으로 순위를 결정\n* 프리미어리그, 영리그는 풀리그 승점제로 순위를 결정\n* 승 3점, 무승부 1점, 패 0점, 실격 0점\n* 핸디캡 [라이온스리그 : 3기수 이상 1골], [영리그 : 핸디캡 없음], [프리미어리그 : 핸디캡 없음. 다만, 83회 VS 77회 경기는 무승부 시 77회 승리]\n* 승점이 같을 경우 1.총골득실차 2.총득점 3.동률팀간 골득실 4. 팀 경고 및 퇴장 개수 순으로 결정\n   [다만, 승점이 같아서 위 순으로 결정하는 경우에 실격팀의 골득실차는 제외하고 산정한다]\n* 선수교체 인원은 제한 없이 할 수 있다.\n* 축구선수출신 2명 초과 시 해당경기 실격 (엔트리 기준이 아닌 실제 운동장 안에 참가하고 있는 선수 기준)\n* 태클 등 위험한 플레이 금지, 욕설은 퇴장 [퇴장시간은 15분]",
+      "createdAt": "2026-03-27T11:13:14.496Z"
+    }
+  ],
+  "tournamentTeams": [
+    {
+      "id": "cmn8tds8c0013twnxuajzr0m4",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "seed": null
+    },
+    {
+      "id": "cmn8tds8d001btwnxlyyhuu1s",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "seed": null
+    },
+    {
+      "id": "cmn8tds8y001etwnxwg40ycxa",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8tcbfo000wtwnxgduw6vc0",
+      "seed": null
+    },
+    {
+      "id": "cmn8tds8d0017twnx14wh1wwf",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8tc3sf000vtwnx0gxxyxr1",
+      "seed": null
+    },
+    {
+      "id": "cmn8tds8d001ctwnxyjnd13a6",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "seed": null
+    },
+    {
+      "id": "cmn8tds8d0018twnxoybaftg3",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "seed": null
+    },
+    {
+      "id": "cmn8tds8c0014twnxtffd4204",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "seed": null
+    },
+    {
+      "id": "cmn8tdsb8001mtwnx3ywbdglj",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "seed": null
+    },
+    {
+      "id": "cmn8tdsax001itwnxb06v9kjl",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8tcztl000ytwnxaedl9naj",
+      "seed": null
+    },
+    {
+      "id": "cmn8tdsax001ktwnx64sra27j",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "seed": null
+    },
+    {
+      "id": "cmn8tdsax001gtwnxd0c1eepy",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "seed": null
+    }
+  ],
+  "groups": [
+    {
+      "id": "cmn8tdzi3001otwnxkxybsicg",
+      "name": "영리그",
+      "label": "영리그",
+      "color": "#d952ff",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad"
+    },
+    {
+      "id": "cmn8te6it001ttwnx5xlrnuoz",
+      "name": "라이온스리그",
+      "label": null,
+      "color": "#fff82e",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad"
+    },
+    {
+      "id": "cmn8tecvm0020twnxlyqoopu2",
+      "name": "프리미어리그",
+      "label": null,
+      "color": "#4fff38",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad"
+    }
+  ],
+  "groupTeams": [
+    {
+      "id": "cmn8tdzi3001qtwnx0tydk1hq",
+      "groupId": "cmn8tdzi3001otwnxkxybsicg",
+      "teamId": "cmn8szdvy0001twnxpl52p2e7",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    },
+    {
+      "id": "cmn8tdzi3001rtwnxrtc3y6qw",
+      "groupId": "cmn8tdzi3001otwnxkxybsicg",
+      "teamId": "cmn8tdk070010twnx3dm7h5u2",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    },
+    {
+      "id": "cmn8te6it001vtwnxw98zlj4l",
+      "groupId": "cmn8te6it001ttwnx5xlrnuoz",
+      "teamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    },
+    {
+      "id": "cmn8te6it001wtwnxlma8x4al",
+      "groupId": "cmn8te6it001ttwnx5xlrnuoz",
+      "teamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    },
+    {
+      "id": "cmn8te6it001xtwnxtqmf2vny",
+      "groupId": "cmn8te6it001ttwnx5xlrnuoz",
+      "teamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    },
+    {
+      "id": "cmn8te6it001ytwnxkzha1axh",
+      "groupId": "cmn8te6it001ttwnx5xlrnuoz",
+      "teamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    },
+    {
+      "id": "cmn8tecvm0022twnx8950eogi",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "teamId": "cmn8tc3sf000vtwnx0gxxyxr1",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    },
+    {
+      "id": "cmn8tecvm0023twnx0at6rxbi",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "teamId": "cmn8tcbfo000wtwnxgduw6vc0",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    },
+    {
+      "id": "cmn8tecvm0024twnx44h16i3q",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "teamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    },
+    {
+      "id": "cmn8tecvm0025twnxatlpmjox",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "teamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    },
+    {
+      "id": "cmn8tecvm0026twnxf41yj7np",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "teamId": "cmn8tcztl000ytwnxaedl9naj",
+      "played": 0,
+      "won": 0,
+      "drawn": 0,
+      "lost": 0,
+      "gf": 0,
+      "ga": 0,
+      "points": 0
+    }
+  ],
+  "matches": [
+    {
+      "id": "cmn8tfai00028twnxzxmkw7cn",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "awayTeamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "homeScore": 0,
+      "awayScore": 0,
+      "date": "2026-03-28T01:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "1R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8te6it001ttwnx5xlrnuoz",
+      "matchOrder": 1,
+      "referee": "김영한(83)",
+      "assistantReferee1": "황윤재(111)",
+      "assistantReferee2": "김나흥(111)"
+    },
+    {
+      "id": "cmn8tnw9e002atwnxzgx89iga",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "awayTeamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-03-28T02:30:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "1R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8te6it001ttwnx5xlrnuoz",
+      "matchOrder": 2,
+      "referee": "장주록(83)",
+      "assistantReferee1": "이영제(105)",
+      "assistantReferee2": "장예훈(111)"
+    },
+    {
+      "id": "cmn8v4icm0001kgwz1pjlwfzs",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "awayTeamId": "cmn8tcztl000ytwnxaedl9naj",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-03-28T03:30:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "1R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "matchOrder": 3,
+      "referee": "손성식(79)",
+      "assistantReferee1": "소미람(97)",
+      "assistantReferee2": "김성호(105)"
+    },
+    {
+      "id": "cmn8v51lp0003kgwzo6bbh90b",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tc3sf000vtwnx0gxxyxr1",
+      "awayTeamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-03-28T04:30:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "1R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "matchOrder": 4,
+      "referee": "최재호(79)",
+      "assistantReferee1": "황윤재(111)",
+      "assistantReferee2": "장예훈(111)"
+    },
+    {
+      "id": "cmn8vnt7z0005kgwztapqzpr3",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tcbfo000wtwnxgduw6vc0",
+      "awayTeamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-03-28T06:30:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "1R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "matchOrder": 6,
+      "referee": "김영한(83)",
+      "assistantReferee1": "이영제(105)",
+      "assistantReferee2": "김성호(105)"
+    },
+    {
+      "id": "cmn8vryks0007kgwzzq0l8nwb",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tdk070010twnx3dm7h5u2",
+      "awayTeamId": "cmn8szdvy0001twnxpl52p2e7",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-03-28T05:30:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "1R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tdzi3001otwnxkxybsicg",
+      "matchOrder": 5,
+      "referee": "홍진호(74)",
+      "assistantReferee1": "정 훈(81)",
+      "assistantReferee2": "김형욱(81)"
+    },
+    {
+      "id": "cmn8wrtq10003y60thact4gas",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "awayTeamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-04T01:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "2R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8te6it001ttwnx5xlrnuoz",
+      "matchOrder": 1,
+      "referee": "최재호(79)",
+      "assistantReferee1": "이건도(105)",
+      "assistantReferee2": "김나흥(111)"
+    },
+    {
+      "id": "cmn8xpzii00016pwnb3ca61ae",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "awayTeamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-04T02:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "2R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8te6it001ttwnx5xlrnuoz",
+      "matchOrder": 2,
+      "referee": "홍태희(83)",
+      "assistantReferee1": "이영제(105)",
+      "assistantReferee2": "소미람(83)"
+    },
+    {
+      "id": "cmn8xqsrl00036pwnk39nwl8j",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "awayTeamId": "cmn8tcbfo000wtwnxgduw6vc0",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-04T03:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "2R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "matchOrder": 3,
+      "referee": "김지상(81)",
+      "assistantReferee1": "박찬수(105)",
+      "assistantReferee2": "황윤재(111)"
+    },
+    {
+      "id": "cmn8xrjkf00056pwnpyt6iw0w",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tcztl000ytwnxaedl9naj",
+      "awayTeamId": "cmn8tc3sf000vtwnx0gxxyxr1",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-04T04:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "2R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "matchOrder": 4,
+      "referee": "손성식(79)",
+      "assistantReferee1": "박선홍(105)",
+      "assistantReferee2": "권오빈(105)"
+    },
+    {
+      "id": "cmn8xsapg00076pwnz1pan0jo",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8szdvy0001twnxpl52p2e7",
+      "awayTeamId": "cmn8tdk070010twnx3dm7h5u2",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-04T05:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "2R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tdzi3001otwnxkxybsicg",
+      "matchOrder": 5,
+      "referee": "김영한(83)",
+      "assistantReferee1": "정원형(83)",
+      "assistantReferee2": "홍태희(83)"
+    },
+    {
+      "id": "cmn8xsq6400096pwnfsessyne",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tblpf000ttwnx2zzd5cmc",
+      "awayTeamId": "cmn8tbhrq000stwnxnhvw4g15",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-11T01:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "3R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8te6it001ttwnx5xlrnuoz",
+      "matchOrder": 1,
+      "referee": "장주록(83)",
+      "assistantReferee1": "정하진(105)",
+      "assistantReferee2": "이건도(105)"
+    },
+    {
+      "id": "cmn8xt793000b6pwnuf5ggy9r",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tbs7k000utwnxy3sjfs0q",
+      "awayTeamId": "cmn8tb7z5000rtwnxq9obzei8",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-11T02:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "3R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8te6it001ttwnx5xlrnuoz",
+      "matchOrder": 2,
+      "referee": "홍태희(83)",
+      "assistantReferee1": "정하진(105)",
+      "assistantReferee2": "이건도(105)"
+    },
+    {
+      "id": "cmn8xuchq000d6pwnii26mw4k",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "awayTeamId": "cmn8tcztl000ytwnxaedl9naj",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-11T03:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "3R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "matchOrder": 3,
+      "referee": "김성중(80)",
+      "assistantReferee1": "박선홍(105)",
+      "assistantReferee2": "박찬수(105)"
+    },
+    {
+      "id": "cmn8xuzyw000f6pwnyjjtyuu0",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tc3sf000vtwnx0gxxyxr1",
+      "awayTeamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-11T04:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "3R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "matchOrder": 4,
+      "referee": "홍진호(74)",
+      "assistantReferee1": "이건도(105)",
+      "assistantReferee2": "이영제(105)"
+    },
+    {
+      "id": "cmn8xvkaf000h6pwniihm1gao",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tdk070010twnx3dm7h5u2",
+      "awayTeamId": "cmn8szdvy0001twnxpl52p2e7",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-11T05:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "3R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tdzi3001otwnxkxybsicg",
+      "matchOrder": 5,
+      "referee": "정원형(83)",
+      "assistantReferee1": "김영한(83)",
+      "assistantReferee2": "장주록(83)"
+    },
+    {
+      "id": "cmn8xx3yv000j6pwncahv4h31",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tcbfo000wtwnxgduw6vc0",
+      "awayTeamId": "cmn8tc3sf000vtwnx0gxxyxr1",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-18T02:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "4R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "matchOrder": 2,
+      "referee": "홍진호(74)",
+      "assistantReferee1": "권오빈(105)",
+      "assistantReferee2": "박찬수(105)"
+    },
+    {
+      "id": "cmn8xxs11000l6pwnfa75ondb",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tcryu000xtwnxnynz6xbw",
+      "awayTeamId": "cmn8td4m3000ztwnxmg1dgb9l",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-18T03:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "4R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "matchOrder": 3,
+      "referee": "정병준(82)",
+      "assistantReferee1": "정하진(105)",
+      "assistantReferee2": "박선홍(105)"
+    },
+    {
+      "id": "cmn8xy6kf000n6pwne3fpfr8v",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8szdvy0001twnxpl52p2e7",
+      "awayTeamId": "cmn8tdk070010twnx3dm7h5u2",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-18T04:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "4R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tdzi3001otwnxkxybsicg",
+      "matchOrder": 4,
+      "referee": "최재호(79)",
+      "assistantReferee1": "김성중(80)",
+      "assistantReferee2": "장주록(83)"
+    },
+    {
+      "id": "cmn8xyy9k000p6pwntukwcdlp",
+      "tournamentId": "cmn8syz9b0000twnxjhu4t6ad",
+      "homeTeamId": "cmn8tcztl000ytwnxaedl9naj",
+      "awayTeamId": "cmn8tcbfo000wtwnxgduw6vc0",
+      "homeScore": null,
+      "awayScore": null,
+      "date": "2026-04-18T05:00:00.000Z",
+      "venue": "중동중학교",
+      "court": null,
+      "round": "4R",
+      "stage": "",
+      "status": "SCHEDULED",
+      "groupId": "cmn8tecvm0020twnxlyqoopu2",
+      "matchOrder": 5,
+      "referee": "홍태희(83)",
+      "assistantReferee1": "권오빈(105)",
+      "assistantReferee2": "김성호(105)"
+    }
+  ],
+  "goals": []
+}
