@@ -559,8 +559,8 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
           {match.date && (
             <span className="font-semibold text-gray-700 bg-white bg-opacity-80 border border-gray-200 px-2 py-0.5 rounded-full flex-shrink-0 text-xs" suppressHydrationWarning>
               {showDate
-                ? new Date(match.date).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })
-                : new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+                ? new Date(match.date).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" })
+                : new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" })}
             </span>
           )}
           {match.group && !hideGroupBadge && (

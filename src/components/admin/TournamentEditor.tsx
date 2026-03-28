@@ -748,7 +748,7 @@ function MatchesTab({ tournament, onCreateMatch, onEditMatch, onDeleteMatch }: {
                             <div className="flex items-center gap-3 mt-1.5 flex-wrap">
                               {match.date && (
                                 <span className="text-xs text-gray-400" suppressHydrationWarning>
-                                  {new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+                                  {new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" })}
                                 </span>
                               )}
                               {referees.length > 0 && (
