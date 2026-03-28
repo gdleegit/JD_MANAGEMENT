@@ -609,9 +609,9 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
       <div className="flex items-start justify-between gap-2 mb-2.5">
         {/* 태그들 (줄바꿈 허용) */}
         <div className="flex items-center gap-1.5 flex-wrap text-xs flex-1 min-w-0">
-          {showOrder && match.matchOrder != null && (
-            <span className="w-5 h-5 rounded-full bg-gray-200 text-gray-500 font-bold text-xs flex items-center justify-center flex-shrink-0">
-              {match.matchOrder}
+          {showOrder && (match.round || match.matchOrder != null) && (
+            <span className="px-2 py-0.5 rounded-full bg-gray-200 text-gray-500 font-bold text-xs flex-shrink-0">
+              {match.round || match.matchOrder}
             </span>
           )}
           {match.date && (
@@ -626,7 +626,6 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
               {match.group.label || match.group.name}
             </span>
           )}
-          {match.round && <span className="text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{match.round}</span>}
           {match.court && <span className="text-purple-600 bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-full font-medium">{match.court}</span>}
           {match.venue && !match.court && <span className="text-gray-400 truncate">{match.venue}</span>}
         </div>
