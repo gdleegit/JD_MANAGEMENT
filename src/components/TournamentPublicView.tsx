@@ -324,14 +324,6 @@ export default function TournamentPublicView({
 
 // ── 날짜별 일정 뷰 ──────────────────────────────────────
 function ScheduleView({ matches }: { matches: Match[] }) {
-  if (matches.length === 0) {
-    return (
-      <div className="card p-8 sm:p-12 text-center text-gray-400">
-        <p>등록된 경기가 없습니다</p>
-      </div>
-    );
-  }
-
   // 날짜별 그룹핑
   const byDate = new Map<string, Match[]>();
   const sorted = [...matches].sort((a, b) => {
@@ -346,53 +338,117 @@ function ScheduleView({ matches }: { matches: Match[] }) {
     byDate.get(key)!.push(m);
   }
 
+  const dateKeys = [...byDate.keys()];
+  const todayKST = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date()); // "YYYY-MM-DD"
+  const defaultDate = dateKeys.includes(todayKST) ? todayKST : null;
+  const [selectedDate, setSelectedDate] = useState<string | null>(defaultDate);
+
+  if (matches.length === 0) {
+    return (
+      <div className="card p-8 sm:p-12 text-center text-gray-400">
+        <p>등록된 경기가 없습니다</p>
+      </div>
+    );
+  }
+
+  const formatDatePill = (key: string) => {
+    if (key === "__none__") return "미정";
+    const d = new Date(key + "T00:00:00");
+    return d.toLocaleDateString("ko-KR", { month: "numeric", day: "numeric", weekday: "short" });
+  };
+
+  const visibleEntries = selectedDate
+    ? ([[selectedDate, byDate.get(selectedDate)!]] as [string, Match[]][]).filter(([, v]) => v)
+    : [...byDate.entries()];
+
   return (
-    <div className="space-y-6">
-      {[...byDate.entries()].map(([dateKey, dayMatches]) => {
-        // 날짜 내에서 리그별 소그룹
-        const hasGroups = dayMatches.some((m) => m.group);
-        const byGroup = new Map<string, { label: string; color: string; matches: Match[] }>();
-        for (const m of dayMatches) {
-          const gKey = m.group?.id ?? "__none__";
-          if (!byGroup.has(gKey)) byGroup.set(gKey, { label: m.group?.label || m.group?.name || "미배정", color: m.group?.color || "#9ca3af", matches: [] });
-          byGroup.get(gKey)!.matches.push(m);
-        }
-
-        return (
-          <div key={dateKey}>
-            {/* 날짜 헤더 */}
-            <div className="flex items-center gap-2 sm:gap-3 mb-3">
-              <h3 className="font-bold text-sm sm:text-base">
-                {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
-              </h3>
-              <span className="text-xs text-gray-400">{dayMatches.length}경기</span>
-              <div className="flex-1 h-px bg-gray-100" />
-            </div>
-
-            {hasGroups ? (
-              // 리그별 소그룹
-              <div className="space-y-4">
-                {[...byGroup.entries()].map(([gKey, grp]) => (
-                  <div key={gKey}>
-                    {/* 리그 소헤더 */}
-                    <div className="flex items-center gap-2 mb-2 pl-2 border-l-[3px]" style={{ borderLeftColor: grp.color }}>
-                      <span className="text-xs font-bold text-gray-700">{grp.label}</span>
-                      <span className="text-xs text-gray-400">{grp.matches.length}경기</span>
-                    </div>
-                    <div className="space-y-2">
-                      {grp.matches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge />)}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder />)}
-              </div>
-            )}
+    <div className="space-y-4">
+      {/* 날짜 선택 pill */}
+      {dateKeys.length > 1 && (
+        <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0 pb-0.5">
+          <div className="flex gap-1.5 w-max sm:w-auto sm:flex-wrap">
+            <button
+              onClick={() => setSelectedDate(null)}
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap flex-shrink-0 ${
+                selectedDate === null
+                  ? "bg-gray-800 text-white border-gray-800"
+                  : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
+              }`}
+            >
+              전체 <span className="opacity-60">{matches.length}</span>
+            </button>
+            {dateKeys.map((key) => {
+              const isToday = key === todayKST;
+              const isSelected = selectedDate === key;
+              const count = byDate.get(key)!.length;
+              return (
+                <button
+                  key={key}
+                  onClick={() => setSelectedDate(isSelected ? null : key)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap flex-shrink-0 ${
+                    isSelected
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : isToday
+                      ? "bg-blue-50 text-blue-600 border-blue-200 hover:border-blue-400"
+                      : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
+                  }`}
+                >
+                  {isToday && !isSelected && <span className="mr-1">•</span>}
+                  {formatDatePill(key)} <span className="opacity-60">{count}</span>
+                </button>
+              );
+            })}
           </div>
-        );
-      })}
+        </div>
+      )}
+
+      {/* 경기 목록 */}
+      <div className="space-y-6">
+        {visibleEntries.map(([dateKey, dayMatches]) => {
+          const hasGroups = dayMatches.some((m) => m.group);
+          const byGroup = new Map<string, { label: string; color: string; matches: Match[] }>();
+          for (const m of dayMatches) {
+            const gKey = m.group?.id ?? "__none__";
+            if (!byGroup.has(gKey)) byGroup.set(gKey, { label: m.group?.label || m.group?.name || "미배정", color: m.group?.color || "#9ca3af", matches: [] });
+            byGroup.get(gKey)!.matches.push(m);
+          }
+
+          return (
+            <div key={dateKey}>
+              {/* 날짜 헤더 — 전체 보기 시에만 표시 */}
+              {selectedDate === null && (
+                <div className="flex items-center gap-2 sm:gap-3 mb-3">
+                  <h3 className="font-bold text-sm sm:text-base">
+                    {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
+                  </h3>
+                  <span className="text-xs text-gray-400">{dayMatches.length}경기</span>
+                  <div className="flex-1 h-px bg-gray-100" />
+                </div>
+              )}
+
+              {hasGroups ? (
+                <div className="space-y-4">
+                  {[...byGroup.entries()].map(([gKey, grp]) => (
+                    <div key={gKey}>
+                      <div className="flex items-center gap-2 mb-2 pl-2 border-l-[3px]" style={{ borderLeftColor: grp.color }}>
+                        <span className="text-xs font-bold text-gray-700">{grp.label}</span>
+                        <span className="text-xs text-gray-400">{grp.matches.length}경기</span>
+                      </div>
+                      <div className="space-y-2">
+                        {grp.matches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge />)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder />)}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
