@@ -639,24 +639,24 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
 
       {/* Score row */}
       <div className="flex items-center gap-1 sm:gap-2">
-        <div className={`flex-1 flex items-center justify-end gap-1.5 min-w-0 ${homeWin ? "text-blue-700" : ""}`}>
-          <span className="font-semibold text-right text-sm sm:text-base truncate">{match.homeTeam.name}</span>
-          <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
+        <div className={`flex-1 flex items-center justify-end gap-2 min-w-0 ${homeWin ? "text-blue-700" : "text-gray-800"}`}>
+          <span className="font-bold text-right text-sm sm:text-[15px] truncate">{match.homeTeam.name}</span>
+          <span className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
         </div>
-        <div className="flex items-center gap-1.5 min-w-[68px] sm:min-w-[80px] justify-center flex-shrink-0">
+        <div className="flex items-center gap-1.5 min-w-[72px] sm:min-w-[84px] justify-center flex-shrink-0">
           {finished ? (
             <>
-              <span className={`text-xl sm:text-2xl font-bold w-7 sm:w-8 text-right ${homeWin ? "text-blue-700" : ""}`}>{match.homeScore}</span>
-              <span className="text-gray-300 text-sm">:</span>
-              <span className={`text-xl sm:text-2xl font-bold w-7 sm:w-8 text-left ${awayWin ? "text-blue-700" : ""}`}>{match.awayScore}</span>
+              <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-9 text-right tabular-nums ${homeWin ? "text-blue-700" : "text-gray-800"}`}>{match.homeScore}</span>
+              <span className="text-gray-400 font-bold text-base">:</span>
+              <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-9 text-left tabular-nums ${awayWin ? "text-blue-700" : "text-gray-800"}`}>{match.awayScore}</span>
             </>
           ) : (
             <span className="text-gray-300 font-medium text-sm">vs</span>
           )}
         </div>
-        <div className={`flex-1 flex items-center gap-1.5 min-w-0 ${awayWin ? "text-blue-700" : ""}`}>
-          <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
-          <span className="font-semibold text-sm sm:text-base truncate">{match.awayTeam.name}</span>
+        <div className={`flex-1 flex items-center gap-2 min-w-0 ${awayWin ? "text-blue-700" : "text-gray-800"}`}>
+          <span className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
+          <span className="font-bold text-sm sm:text-[15px] truncate">{match.awayTeam.name}</span>
         </div>
       </div>
 
