@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import BracketView from "./BracketView";
 
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
@@ -72,24 +72,24 @@ export default function TournamentPublicView({
 
   const [tab, setTab] = useState<"bracket" | "standings" | "division" | "schedule" | "teams" | "scorers" | "rules">(defaultTab as "bracket");
 
-  // 참가팀 선수 lazy load
+  // 참가팀 선수 — 페이지 로드 직후 백그라운드에서 미리 fetch
   const [teamPlayers, setTeamPlayers] = useState<Record<string, Player[]> | null>(null);
-  const [loadingPlayers, setLoadingPlayers] = useState(false);
+  const [loadingPlayers, setLoadingPlayers] = useState(true);
 
-  const handleTabChange = async (key: string) => {
-    setTab(key as typeof tab);
-    if (key === "teams" && teamPlayers === null && !loadingPlayers) {
-      setLoadingPlayers(true);
-      try {
-        const res = await fetch(`/api/tournaments/${tournament.id}/teams`);
-        const data: Array<{ team: { id: string; players: Player[] } }> = await res.json();
+  useEffect(() => {
+    fetch(`/api/tournaments/${tournament.id}/teams`)
+      .then((r) => r.json())
+      .then((data: Array<{ team: { id: string; players: Player[] } }>) => {
         const map: Record<string, Player[]> = {};
         for (const entry of data) map[entry.team.id] = entry.team.players;
         setTeamPlayers(map);
-      } finally {
-        setLoadingPlayers(false);
-      }
-    }
+      })
+      .catch(() => setTeamPlayers({}))
+      .finally(() => setLoadingPlayers(false));
+  }, [tournament.id]);
+
+  const handleTabChange = (key: string) => {
+    setTab(key as typeof tab);
   };
 
   const tabs = [
