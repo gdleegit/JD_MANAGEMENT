@@ -19,6 +19,7 @@ type Match = {
   court?: string | null;
   round?: string | null;
   stage?: string | null;
+  matchOrder?: number | null;
   status: string;
   goals: Goal[];
   group?: { id: string; name: string; label?: string | null; color?: string | null } | null;
