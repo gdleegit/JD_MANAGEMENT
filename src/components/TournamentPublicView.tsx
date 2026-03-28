@@ -285,7 +285,7 @@ export default function TournamentPublicView({
                           <h3 className="font-bold text-gray-900 truncate">{team.name}</h3>
                         </div>
                         {teamPlayers && (
-                          <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: color }}>
+                          <span className="text-xs font-semibold px-2 py-0.5 rounded-full text-gray-700" style={{ backgroundColor: color + "28", border: `1px solid ${color}66` }}>
                             {players.length}명
                           </span>
                         )}
