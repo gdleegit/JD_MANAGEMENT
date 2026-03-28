@@ -11,20 +11,12 @@ export async function PATCH(req: NextRequest, { params }: Params) {
   const { groupId } = await params;
   const { name, label, color } = await req.json();
 
-  // color 필드는 prisma generate 미완료 시 타입 오류 우회용 raw 처리
-  if (color !== undefined) {
-    await prisma.$executeRawUnsafe(
-      `UPDATE "Group" SET color = ? WHERE id = ?`,
-      color,
-      groupId
-    );
-  }
-
   const group = await prisma.group.update({
     where: { id: groupId },
     data: {
       ...(name !== undefined && { name }),
       ...(label !== undefined && { label: label || null }),
+      ...(color !== undefined && { color }),
     },
     include: { teams: { include: { team: true } } },
   });

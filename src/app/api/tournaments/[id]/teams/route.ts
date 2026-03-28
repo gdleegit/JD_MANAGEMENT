@@ -20,11 +20,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const { id: tournamentId } = await params;
   const { teamId, seed } = await req.json();
 
-  const entry = await prisma.tournamentTeam.create({
-    data: { tournamentId, teamId, seed },
-    include: { team: true },
-  });
-  return NextResponse.json(entry, { status: 201 });
+  try {
+    const entry = await prisma.tournamentTeam.create({
+      data: { tournamentId, teamId, seed },
+      include: { team: true },
+    });
+    return NextResponse.json(entry, { status: 201 });
+  } catch (e: unknown) {
+    if ((e as { code?: string }).code === "P2002") {
+      return NextResponse.json({ error: "이미 참가 중인 팀입니다" }, { status: 409 });
+    }
+    throw e;
+  }
 }
 
 // Remove team from tournament

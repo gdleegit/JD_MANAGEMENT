@@ -139,9 +139,10 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
               fetch(`/api/tournaments/${tournamentId}/teams`, {
                 method: "POST", headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ teamId }),
-              }).then(r => r.json())
+              }).then(r => r.ok ? r.json() : null)
             ));
-            setTournament(t => t ? { ...t, teams: [...t.teams, ...results] } : t);
+            const added = results.filter(Boolean);
+            if (added.length) setTournament(t => t ? { ...t, teams: [...t.teams, ...added] } : t);
           }}
           onRemoveTeam={async (teamId) => {
             await fetch(`/api/tournaments/${tournamentId}/teams`, {
@@ -163,13 +164,17 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
         <GroupsTab
           tournament={tournament}
           onCreateGroup={async (name, label, color, teamIds) => {
-            await fetch(`/api/tournaments/${tournamentId}/groups`, {
+            const res = await fetch(`/api/tournaments/${tournamentId}/groups`, {
               method: "POST", headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ name, label, color, teamIds }),
             });
-            await load();
+            if (res.ok) {
+              const newGroup = await res.json();
+              setTournament(t => t ? { ...t, groups: [...t.groups, newGroup] } : t);
+            }
           }}
-        onReload={load}
+          onUpdateGroup={(group) => setTournament(t => t ? { ...t, groups: t.groups.map(g => g.id === group.id ? group : g) } : t)}
+          onDeleteGroup={(groupId) => setTournament(t => t ? { ...t, groups: t.groups.filter(g => g.id !== groupId) } : t)}
         />
       )}
 
@@ -492,10 +497,11 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onTeam
   );
 }
 
-function GroupsTab({ tournament, onCreateGroup, onReload }: {
+function GroupsTab({ tournament, onCreateGroup, onUpdateGroup, onDeleteGroup }: {
   tournament: Tournament;
   onCreateGroup: (name: string, label: string, color: string, teamIds: string[]) => void;
-  onReload: () => void;
+  onUpdateGroup: (group: Group) => void;
+  onDeleteGroup: (groupId: string) => void;
 }) {
   const [name, setName] = useState("");
   const [label, setLabel] = useState("");
@@ -516,20 +522,20 @@ function GroupsTab({ tournament, onCreateGroup, onReload }: {
   const saveEdit = async () => {
     if (!editingGroup) return;
     setSaving(true);
-    await fetch(`/api/tournaments/${tournament.id}/groups/${editingGroup.id}`, {
+    const res = await fetch(`/api/tournaments/${tournament.id}/groups/${editingGroup.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editForm),
     });
     setSaving(false);
     setEditingGroup(null);
-    onReload();
+    if (res.ok) onUpdateGroup(await res.json());
   };
 
   const deleteGroup = async (groupId: string) => {
     if (!confirm("조를 삭제할까요? 해당 조의 경기 배정도 해제됩니다.")) return;
     await fetch(`/api/tournaments/${tournament.id}/groups/${groupId}`, { method: "DELETE" });
-    onReload();
+    onDeleteGroup(groupId);
   };
 
   return (

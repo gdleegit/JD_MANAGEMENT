@@ -21,7 +21,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       groups: { include: { teams: { include: { team: true } } } },
     },
   });
-  if (!tournament) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!tournament) return NextResponse.json({ error: "대회를 찾을 수 없습니다" }, { status: 404 });
   return NextResponse.json(tournament);
 }
 

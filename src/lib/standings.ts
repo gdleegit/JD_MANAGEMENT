@@ -38,14 +38,11 @@ export async function recalcGroupStandings(groupId: string) {
     }
   }
 
-  for (const gt of groupTeams) {
-    const s = stats[gt.teamId];
-    if (!s) continue;
-    await prisma.groupTeam.update({
-      where: { id: gt.id },
-      data: s,
-    });
-  }
+  await Promise.all(
+    groupTeams
+      .filter((gt) => stats[gt.teamId])
+      .map((gt) => prisma.groupTeam.update({ where: { id: gt.id }, data: stats[gt.teamId] }))
+  );
 }
 
 export async function recalcLeagueStandings(tournamentId: string) {

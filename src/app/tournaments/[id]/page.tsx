@@ -51,8 +51,7 @@ export default async function TournamentDetailPage({ params }: { params: Promise
 
   if (tournament.type === "LEAGUE") {
     const raw = await recalcLeagueStandings(id);
-    const teams = await prisma.team.findMany({ where: { id: { in: raw.map((r) => r.teamId) } } });
-    const teamMap = Object.fromEntries(teams.map((t) => [t.id, t]));
+    const teamMap = Object.fromEntries(tournament.teams.map((tt) => [tt.team.id, tt.team]));
     leagueStandings = raw.map((r) => ({ ...r, team: teamMap[r.teamId] }));
   }
 

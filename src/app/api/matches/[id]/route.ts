@@ -14,7 +14,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
       goals: { include: { player: true, team: true }, orderBy: { minute: "asc" } },
     },
   });
-  if (!match) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!match) return NextResponse.json({ error: "경기를 찾을 수 없습니다" }, { status: 404 });
   return NextResponse.json(match);
 }
 
