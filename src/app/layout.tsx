@@ -28,9 +28,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <span className="text-base sm:text-lg font-extrabold tracking-wide bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent group-hover:from-blue-700 group-hover:to-blue-500 transition-all">Kick-Off</span>
                 </div>
               </Link>
-              <div className="flex items-center gap-3 sm:gap-6 text-xs sm:text-sm font-medium">
-                <Link href="/tournaments" className="text-gray-300 hover:text-white transition-colors">대회 목록</Link>
-                <Link href="/admin" className="text-gray-300 hover:text-white transition-colors">관리자</Link>
+              <div className="flex items-center gap-1 sm:gap-4 text-xs sm:text-sm font-medium">
+                <Link href="/tournaments" className="text-gray-300 hover:text-white transition-colors px-3 py-2">대회 목록</Link>
+                <Link href="/admin" className="text-gray-300 hover:text-white transition-colors px-3 py-2">관리자</Link>
               </div>
             </div>
           </div>

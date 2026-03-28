@@ -111,7 +111,7 @@ export default function TournamentPublicView({
       </div>
 
       {/* Stats bar */}
-      <div className="flex gap-4 text-sm text-gray-500">
+      <div className="flex flex-wrap gap-2 sm:gap-4 text-xs sm:text-sm text-gray-500">
         <span>팀 {tournament.teams.length}개</span>
         <span>경기 {tournament.matches.length}개</span>
         <span>완료 {tournament.matches.filter((m) => m.status === "FINISHED").length}개</span>
@@ -119,12 +119,12 @@ export default function TournamentPublicView({
 
       {/* Tabs */}
       <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
-        <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit min-w-full sm:min-w-0">
+        <div className="flex gap-0.5 bg-gray-100 p-1 rounded-xl w-fit min-w-full sm:min-w-0">
           {tabs.map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key as typeof tab)}
-              className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${tab === t.key ? "bg-white shadow-sm text-blue-600" : "text-gray-600 hover:text-gray-800"}`}
+              className={`px-2.5 sm:px-4 py-2 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap ${tab === t.key ? "bg-white shadow-sm text-blue-600" : "text-gray-600 hover:text-gray-800"}`}
             >
               {t.label}
             </button>
@@ -134,15 +134,15 @@ export default function TournamentPublicView({
 
       {/* Bracket Tab */}
       {tab === "bracket" && (
-        <div className="card p-6">
+        <div className="card p-4 sm:p-6">
           <BracketView matches={tournament.matches} />
         </div>
       )}
 
       {/* League Standings Tab */}
       {tab === "standings" && (
-        <div className="card p-6">
-          <h2 className="text-xl font-bold mb-4">순위표</h2>
+        <div className="card p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold mb-4">순위표</h2>
           <StandingsTable rows={leagueStandings} />
         </div>
       )}
@@ -177,8 +177,8 @@ export default function TournamentPublicView({
                 }
                 const scorers = Object.values(map).sort((a, b) => b.count - a.count).slice(0, 20);
                 return (
-                  <div key={group.id} className="card p-5">
-                    <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                  <div key={group.id} className="card p-4 sm:p-5">
+                    <h3 className="font-bold text-base sm:text-lg mb-4 flex items-center gap-2">
                       <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: group.color || "#6366f1" }} />
                       {group.label || group.name}
                       <span className="text-gray-400 font-normal text-sm">득점 순위</span>
@@ -203,8 +203,8 @@ export default function TournamentPublicView({
             )}
           </div>
         ) : (
-          <div className="card p-6">
-            <h2 className="text-xl font-bold mb-4">득점 순위</h2>
+          <div className="card p-4 sm:p-6">
+            <h2 className="text-lg sm:text-xl font-bold mb-4">득점 순위</h2>
             {topScorers.length === 0 ? (
               <p className="text-gray-400 text-center py-8">득점 기록이 없습니다</p>
             ) : (
@@ -225,8 +225,8 @@ export default function TournamentPublicView({
 
       {/* Rules Tab */}
       {tab === "rules" && tournament.rules && (
-        <div className="card p-6">
-          <h2 className="text-xl font-bold mb-5">운영규칙</h2>
+        <div className="card p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold mb-4">운영규칙</h2>
           <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">
             {tournament.rules}
           </div>
@@ -299,7 +299,7 @@ export default function TournamentPublicView({
 function ScheduleView({ matches }: { matches: Match[] }) {
   if (matches.length === 0) {
     return (
-      <div className="card p-12 text-center text-gray-400">
+      <div className="card p-8 sm:p-12 text-center text-gray-400">
         <p>등록된 경기가 없습니다</p>
       </div>
     );
@@ -323,11 +323,11 @@ function ScheduleView({ matches }: { matches: Match[] }) {
     <div className="space-y-6">
       {[...grouped.entries()].map(([dateKey, dayMatches]) => (
         <div key={dateKey}>
-          <div className="flex items-center gap-3 mb-3">
-            <h3 className="font-bold text-lg">
+          <div className="flex items-center gap-2 sm:gap-3 mb-3">
+            <h3 className="font-bold text-sm sm:text-base">
               {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
             </h3>
-            <span className="text-sm text-gray-400">{dayMatches.length}경기</span>
+            <span className="text-xs text-gray-400">{dayMatches.length}경기</span>
             <div className="flex-1 h-px bg-gray-100" />
           </div>
           <div className="space-y-2">
@@ -359,12 +359,12 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
   return (
     <div className="space-y-4">
       {/* Group Tabs */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-1.5 sm:gap-2 flex-wrap">
         {tournament.groups.map((g) => (
           <button
             key={g.id}
             onClick={() => setActiveGroup(g.id)}
-            className="px-4 py-2 rounded-lg text-sm font-medium border transition-colors"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium border transition-colors"
             style={activeGroup === g.id
               ? { backgroundColor: (g.color || "#6366f1") + "99", color: "#111827", borderColor: g.color || "#6366f1", fontWeight: 700 }
               : { backgroundColor: (g.color || "#6366f1") + "22", color: "#6b7280", borderColor: "#e5e7eb" }
@@ -376,26 +376,26 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
       </div>
 
       {/* Standings */}
-      <div className="card p-5">
-        <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+      <div className="card p-4 sm:p-5">
+        <h3 className="font-bold text-base sm:text-lg mb-4 flex items-center gap-2">
           <span className="w-3 h-3 rounded-full" style={{ backgroundColor: group.color || "#6366f1" }} />
           <span>{group.label || group.name}</span>
-          <span className="text-gray-500 font-normal text-base">순위표</span>
+          <span className="text-gray-500 font-normal text-sm sm:text-base">순위표</span>
         </h3>
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-xs sm:text-sm">
             <thead>
               <tr className="border-b border-gray-200 text-gray-500">
                 <th className="text-left pb-2 font-medium w-6">#</th>
-                <th className="text-left pb-2 font-medium pl-2">팀</th>
-                <th className="text-center pb-2 font-medium px-2">경기</th>
-                <th className="text-center pb-2 font-medium px-2">승</th>
-                <th className="text-center pb-2 font-medium px-2">무</th>
-                <th className="text-center pb-2 font-medium px-2">패</th>
-                <th className="text-center pb-2 font-medium px-2">득</th>
-                <th className="text-center pb-2 font-medium px-2">실</th>
-                <th className="text-center pb-2 font-medium px-2">득실</th>
-                <th className="text-center pb-2 font-bold px-2">승점</th>
+                <th className="text-left pb-2 font-medium pl-1.5">팀</th>
+                <th className="text-center pb-2 font-medium px-1.5">경기</th>
+                <th className="text-center pb-2 font-medium px-1.5">승</th>
+                <th className="text-center pb-2 font-medium px-1.5">무</th>
+                <th className="text-center pb-2 font-medium px-1.5">패</th>
+                <th className="text-center pb-2 font-medium px-1.5 hidden sm:table-cell">득</th>
+                <th className="text-center pb-2 font-medium px-1.5 hidden sm:table-cell">실</th>
+                <th className="text-center pb-2 font-medium px-1.5">득실</th>
+                <th className="text-center pb-2 font-bold px-1.5">승점</th>
               </tr>
             </thead>
             <tbody>
@@ -404,20 +404,20 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
                 .map((gt, i) => (
                   <tr key={gt.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="py-2 text-gray-400 font-medium">{i + 1}</td>
-                    <td className="py-2 pl-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: gt.team.color || "#3b82f6" }} />
-                        <span className="font-medium">{gt.team.name}</span>
+                    <td className="py-2 pl-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: gt.team.color || "#3b82f6" }} />
+                        <span className="font-medium truncate max-w-[72px] sm:max-w-none">{gt.team.name}</span>
                       </div>
                     </td>
-                    <td className="py-2 text-center px-2">{gt.played}</td>
-                    <td className="py-2 text-center px-2">{gt.won}</td>
-                    <td className="py-2 text-center px-2">{gt.drawn}</td>
-                    <td className="py-2 text-center px-2">{gt.lost}</td>
-                    <td className="py-2 text-center px-2">{gt.gf}</td>
-                    <td className="py-2 text-center px-2">{gt.ga}</td>
-                    <td className="py-2 text-center px-2 text-gray-500">{(gt.gf - gt.ga) > 0 ? `+${gt.gf - gt.ga}` : gt.gf - gt.ga}</td>
-                    <td className="py-2 text-center px-2 font-bold text-blue-600">{gt.points}</td>
+                    <td className="py-2 text-center px-1.5">{gt.played}</td>
+                    <td className="py-2 text-center px-1.5">{gt.won}</td>
+                    <td className="py-2 text-center px-1.5">{gt.drawn}</td>
+                    <td className="py-2 text-center px-1.5">{gt.lost}</td>
+                    <td className="py-2 text-center px-1.5 hidden sm:table-cell">{gt.gf}</td>
+                    <td className="py-2 text-center px-1.5 hidden sm:table-cell">{gt.ga}</td>
+                    <td className="py-2 text-center px-1.5 text-gray-500">{(gt.gf - gt.ga) > 0 ? `+${gt.gf - gt.ga}` : gt.gf - gt.ga}</td>
+                    <td className="py-2 text-center px-1.5 font-bold text-blue-600">{gt.points}</td>
                   </tr>
                 ))}
             </tbody>
@@ -440,8 +440,8 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
           grouped.get(key)!.push(m);
         }
         return (
-          <div className="card p-5">
-            <h3 className="font-bold text-lg mb-4">{group.label || group.name} 경기 일정</h3>
+          <div className="card p-4 sm:p-5">
+            <h3 className="font-bold text-base sm:text-lg mb-4">{group.label || group.name} 경기 일정</h3>
             <div className="space-y-5">
               {[...grouped.entries()].map(([dateKey, dayMatches]) => (
                 <div key={dateKey}>
@@ -513,25 +513,25 @@ function MatchCard({ match, showDate, showOrder }: { match: Match; showDate: boo
       </div>
 
       {/* Score row */}
-      <div className="flex items-center justify-between gap-2">
-        <div className={`flex-1 flex items-center justify-end gap-2 ${homeWin ? "text-blue-700" : ""}`}>
-          <span className="font-semibold text-right">{match.homeTeam.name}</span>
+      <div className="flex items-center gap-1 sm:gap-2">
+        <div className={`flex-1 flex items-center justify-end gap-1.5 min-w-0 ${homeWin ? "text-blue-700" : ""}`}>
+          <span className="font-semibold text-right text-sm sm:text-base truncate">{match.homeTeam.name}</span>
           <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
         </div>
-        <div className="flex items-center gap-2 min-w-[80px] justify-center">
+        <div className="flex items-center gap-1.5 min-w-[68px] sm:min-w-[80px] justify-center flex-shrink-0">
           {finished ? (
             <>
-              <span className={`text-2xl font-bold w-8 text-right ${homeWin ? "text-blue-700" : ""}`}>{match.homeScore}</span>
+              <span className={`text-xl sm:text-2xl font-bold w-7 sm:w-8 text-right ${homeWin ? "text-blue-700" : ""}`}>{match.homeScore}</span>
               <span className="text-gray-300 text-sm">:</span>
-              <span className={`text-2xl font-bold w-8 text-left ${awayWin ? "text-blue-700" : ""}`}>{match.awayScore}</span>
+              <span className={`text-xl sm:text-2xl font-bold w-7 sm:w-8 text-left ${awayWin ? "text-blue-700" : ""}`}>{match.awayScore}</span>
             </>
           ) : (
             <span className="text-gray-300 font-medium text-sm">vs</span>
           )}
         </div>
-        <div className={`flex-1 flex items-center gap-2 ${awayWin ? "text-blue-700" : ""}`}>
+        <div className={`flex-1 flex items-center gap-1.5 min-w-0 ${awayWin ? "text-blue-700" : ""}`}>
           <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
-          <span className="font-semibold">{match.awayTeam.name}</span>
+          <span className="font-semibold text-sm sm:text-base truncate">{match.awayTeam.name}</span>
         </div>
       </div>
 
@@ -579,39 +579,39 @@ function StandingsTable({ rows }: { rows: LeagueRow[] }) {
   if (rows.length === 0) return <p className="text-gray-400 text-center py-6">순위 정보 없음</p>;
   return (
     <div className="overflow-x-auto">
-      <table className="w-full text-sm">
+      <table className="w-full text-xs sm:text-sm">
         <thead>
           <tr className="border-b border-gray-200 text-left text-gray-500">
-            <th className="pb-2 pr-3 font-medium w-8">#</th>
-            <th className="pb-2 pr-3 font-medium">팀</th>
-            <th className="pb-2 px-2 text-center font-medium">경기</th>
-            <th className="pb-2 px-2 text-center font-medium">승</th>
-            <th className="pb-2 px-2 text-center font-medium">무</th>
-            <th className="pb-2 px-2 text-center font-medium">패</th>
-            <th className="pb-2 px-2 text-center font-medium">득</th>
-            <th className="pb-2 px-2 text-center font-medium">실</th>
-            <th className="pb-2 px-2 text-center font-medium">득실</th>
-            <th className="pb-2 pl-2 text-center font-bold">승점</th>
+            <th className="pb-2 pr-2 font-medium w-6">#</th>
+            <th className="pb-2 pr-2 font-medium">팀</th>
+            <th className="pb-2 px-1.5 text-center font-medium">경기</th>
+            <th className="pb-2 px-1.5 text-center font-medium">승</th>
+            <th className="pb-2 px-1.5 text-center font-medium">무</th>
+            <th className="pb-2 px-1.5 text-center font-medium">패</th>
+            <th className="pb-2 px-1.5 text-center font-medium hidden sm:table-cell">득</th>
+            <th className="pb-2 px-1.5 text-center font-medium hidden sm:table-cell">실</th>
+            <th className="pb-2 px-1.5 text-center font-medium">득실</th>
+            <th className="pb-2 pl-1.5 text-center font-bold">승점</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((row, i) => (
             <tr key={row.teamId} className="border-b border-gray-100 hover:bg-gray-50">
-              <td className="py-2 pr-3 text-gray-400 font-medium">{i + 1}</td>
-              <td className="py-2 pr-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: row.team?.color || "#3b82f6" }} />
-                  <span className="font-medium">{row.team?.name}</span>
+              <td className="py-2 pr-2 text-gray-400 font-medium">{i + 1}</td>
+              <td className="py-2 pr-2">
+                <div className="flex items-center gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: row.team?.color || "#3b82f6" }} />
+                  <span className="font-medium truncate max-w-[80px] sm:max-w-none">{row.team?.name}</span>
                 </div>
               </td>
-              <td className="py-2 px-2 text-center">{row.played}</td>
-              <td className="py-2 px-2 text-center">{row.won}</td>
-              <td className="py-2 px-2 text-center">{row.drawn}</td>
-              <td className="py-2 px-2 text-center">{row.lost}</td>
-              <td className="py-2 px-2 text-center">{row.gf}</td>
-              <td className="py-2 px-2 text-center">{row.ga}</td>
-              <td className="py-2 px-2 text-center text-gray-500">{row.gd > 0 ? `+${row.gd}` : row.gd}</td>
-              <td className="py-2 pl-2 text-center font-bold text-blue-600">{row.points}</td>
+              <td className="py-2 px-1.5 text-center">{row.played}</td>
+              <td className="py-2 px-1.5 text-center">{row.won}</td>
+              <td className="py-2 px-1.5 text-center">{row.drawn}</td>
+              <td className="py-2 px-1.5 text-center">{row.lost}</td>
+              <td className="py-2 px-1.5 text-center hidden sm:table-cell">{row.gf}</td>
+              <td className="py-2 px-1.5 text-center hidden sm:table-cell">{row.ga}</td>
+              <td className="py-2 px-1.5 text-center text-gray-500">{row.gd > 0 ? `+${row.gd}` : row.gd}</td>
+              <td className="py-2 pl-1.5 text-center font-bold text-blue-600">{row.points}</td>
             </tr>
           ))}
         </tbody>

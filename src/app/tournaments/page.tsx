@@ -20,7 +20,7 @@ export default async function TournamentsPage() {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">대회 목록</h1>
+      <h1 className="text-xl sm:text-3xl font-bold mb-4 sm:mb-6">대회 목록</h1>
       {tournaments.length === 0 ? (
         <div className="card p-12 text-center text-gray-400">
           <p className="text-4xl mb-3">🏆</p>
@@ -31,7 +31,7 @@ export default async function TournamentsPage() {
           {tournaments.map((t) => {
             const st = statusLabel[t.status] || statusLabel.UPCOMING;
             return (
-              <Link key={t.id} href={`/tournaments/${t.id}`} className="card p-5 hover:shadow-md transition-shadow">
+              <Link key={t.id} href={`/tournaments/${t.id}`} className="card p-4 sm:p-5 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between mb-3">
                   <span className={st.cls}>{st.label}</span>
                   <span className="text-xs text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full">{typeLabel[t.type] || t.type}</span>
