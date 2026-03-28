@@ -602,31 +602,110 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
         </div>
       </div>
 
+      {/* 전반/후반 부분 스코어 */}
+      {finished && match.goals.some(g => g.half) && (() => {
+        const calcScore = (halfNum: number) => {
+          const hg = match.goals.filter(g => g.half === halfNum);
+          return {
+            home: hg.filter(g => g.teamId === match.homeTeam.id && g.type !== "OWN_GOAL").length + hg.filter(g => g.teamId === match.awayTeam.id && g.type === "OWN_GOAL").length,
+            away: hg.filter(g => g.teamId === match.awayTeam.id && g.type !== "OWN_GOAL").length + hg.filter(g => g.teamId === match.homeTeam.id && g.type === "OWN_GOAL").length,
+          };
+        };
+        const h1 = calcScore(1);
+        const h2 = calcScore(2);
+        const hasFirst = match.goals.some(g => g.half === 1);
+        const hasSecond = match.goals.some(g => g.half === 2);
+        return (
+          <div className="flex justify-center gap-3 text-xs text-gray-400 mt-1">
+            {hasFirst && <span>전반 <span className="font-semibold tabular-nums text-gray-500">{h1.home}:{h1.away}</span></span>}
+            {hasFirst && hasSecond && <span className="text-gray-200">·</span>}
+            {hasSecond && <span>후반 <span className="font-semibold tabular-nums text-gray-500">{h2.home}:{h2.away}</span></span>}
+          </div>
+        );
+      })()}
+
       {/* Goals */}
-      {match.goals.length > 0 && (
-        <div className="mt-2 pt-2 border-t border-gray-100 flex gap-4 text-xs text-gray-400">
-          <div className="flex-1 text-right">
-            {match.goals
-              .filter((g) => g.teamId === match.homeTeam.id)
-              .map((g, i) => (
-                <span key={i} className="ml-2">
-                  ⚽ {g.player?.name || "미상"}{g.half ? (g.half === 1 ? " 전반" : " 후반") : ""}{g.minute ? ` ${g.minute}'` : ""}
-                  {g.type === "OWN_GOAL" ? "(OG)" : g.type === "PENALTY" ? "(PK)" : ""}
-                </span>
-              ))}
+      {match.goals.length > 0 && (() => {
+        const hasHalf = match.goals.some(g => g.half);
+        const goalTypeLabel = (type: string) => type === "OWN_GOAL" ? " OG" : type === "PENALTY" ? " PK" : "";
+
+        const GoalRow = ({ g, align }: { g: typeof match.goals[0]; align: "left" | "right" }) =>
+          align === "right" ? (
+            <div className="text-right text-gray-500 leading-5">
+              {g.player?.name || "미상"}{g.minute ? ` ${g.minute}'` : ""}{goalTypeLabel(g.type)} ⚽
+            </div>
+          ) : (
+            <div className="text-left text-gray-500 leading-5">
+              ⚽ {g.player?.name || "미상"}{g.minute ? ` ${g.minute}'` : ""}{goalTypeLabel(g.type)}
+            </div>
+          );
+
+        if (!hasHalf) {
+          const homeGoals = match.goals.filter(g => g.teamId === match.homeTeam.id);
+          const awayGoals = match.goals.filter(g => g.teamId === match.awayTeam.id);
+          return (
+            <div className="mt-2 pt-2 border-t border-gray-100">
+              <div className="grid grid-cols-[1fr_1px_1fr] text-xs">
+                <div className="pr-2 space-y-0.5">{homeGoals.map((g, i) => <GoalRow key={i} g={g} align="right" />)}</div>
+                <div className="bg-gray-100" />
+                <div className="pl-2 space-y-0.5">{awayGoals.map((g, i) => <GoalRow key={i} g={g} align="left" />)}</div>
+              </div>
+            </div>
+          );
+        }
+
+        const calcHalfScores = (halfGoals: typeof match.goals) => ({
+          home: halfGoals.filter(g => g.teamId === match.homeTeam.id && g.type !== "OWN_GOAL").length
+              + halfGoals.filter(g => g.teamId === match.awayTeam.id && g.type === "OWN_GOAL").length,
+          away: halfGoals.filter(g => g.teamId === match.awayTeam.id && g.type !== "OWN_GOAL").length
+              + halfGoals.filter(g => g.teamId === match.homeTeam.id && g.type === "OWN_GOAL").length,
+        });
+
+        return (
+          <div className="mt-2 pt-2 border-t border-gray-100 space-y-2 text-xs">
+            {([1, 2] as const).map(half => {
+              const halfGoals = match.goals.filter(g => g.half === half);
+              if (halfGoals.length === 0) return null;
+              const { home, away } = calcHalfScores(halfGoals);
+              const homeHalfGoals = halfGoals.filter(g => g.teamId === match.homeTeam.id);
+              const awayHalfGoals = halfGoals.filter(g => g.teamId === match.awayTeam.id);
+              return (
+                <div key={half}>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="font-bold text-gray-400">{half === 1 ? "전반" : "후반"}</span>
+                    <span className="font-bold text-gray-600 tabular-nums">{home} : {away}</span>
+                    <div className="flex-1 h-px bg-gray-100" />
+                  </div>
+                  <div className="grid grid-cols-[1fr_1px_1fr]">
+                    <div className="pr-2 space-y-0.5">{homeHalfGoals.map((g, i) => <GoalRow key={i} g={g} align="right" />)}</div>
+                    <div className="bg-gray-100" />
+                    <div className="pl-2 space-y-0.5">{awayHalfGoals.map((g, i) => <GoalRow key={i} g={g} align="left" />)}</div>
+                  </div>
+                </div>
+              );
+            })}
+            {(() => {
+              const noHalf = match.goals.filter(g => !g.half);
+              if (!noHalf.length) return null;
+              const homeNoHalf = noHalf.filter(g => g.teamId === match.homeTeam.id);
+              const awayNoHalf = noHalf.filter(g => g.teamId === match.awayTeam.id);
+              return (
+                <div>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <span className="font-bold text-gray-300">기타</span>
+                    <div className="flex-1 h-px bg-gray-100" />
+                  </div>
+                  <div className="grid grid-cols-[1fr_1px_1fr]">
+                    <div className="pr-2 space-y-0.5">{homeNoHalf.map((g, i) => <GoalRow key={i} g={g} align="right" />)}</div>
+                    <div className="bg-gray-100" />
+                    <div className="pl-2 space-y-0.5">{awayNoHalf.map((g, i) => <GoalRow key={i} g={g} align="left" />)}</div>
+                  </div>
+                </div>
+              );
+            })()}
           </div>
-          <div className="flex-1">
-            {match.goals
-              .filter((g) => g.teamId === match.awayTeam.id)
-              .map((g, i) => (
-                <span key={i} className="mr-2">
-                  ⚽ {g.player?.name || "미상"}{g.half ? (g.half === 1 ? " 전반" : " 후반") : ""}{g.minute ? ` ${g.minute}'` : ""}
-                  {g.type === "OWN_GOAL" ? "(OG)" : g.type === "PENALTY" ? "(PK)" : ""}
-                </span>
-              ))}
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Referees */}
       {referees.length > 0 && (
