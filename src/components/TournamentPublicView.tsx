@@ -610,7 +610,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
               .filter((g) => g.teamId === match.homeTeam.id)
               .map((g, i) => (
                 <span key={i} className="ml-2">
-                  {g.player?.name || "미상"}{g.half ? (g.half === 1 ? " 전반" : " 후반") : ""}{g.minute ? ` ${g.minute}'` : ""}
+                  ⚽ {g.player?.name || "미상"}{g.half ? (g.half === 1 ? " 전반" : " 후반") : ""}{g.minute ? ` ${g.minute}'` : ""}
                   {g.type === "OWN_GOAL" ? "(OG)" : g.type === "PENALTY" ? "(PK)" : ""}
                 </span>
               ))}
@@ -620,7 +620,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
               .filter((g) => g.teamId === match.awayTeam.id)
               .map((g, i) => (
                 <span key={i} className="mr-2">
-                  {g.player?.name || "미상"}{g.half ? (g.half === 1 ? " 전반" : " 후반") : ""}{g.minute ? ` ${g.minute}'` : ""}
+                  ⚽ {g.player?.name || "미상"}{g.half ? (g.half === 1 ? " 전반" : " 후반") : ""}{g.minute ? ` ${g.minute}'` : ""}
                   {g.type === "OWN_GOAL" ? "(OG)" : g.type === "PENALTY" ? "(PK)" : ""}
                 </span>
               ))}
