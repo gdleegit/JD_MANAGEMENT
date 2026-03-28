@@ -49,13 +49,16 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     },
   });
 
-  // GROUP: 상태/스코어 변경 여부 관계없이 항상 재계산
-  if (match.groupId) {
+  // GROUP: 스코어 또는 상태 변경 시에만 재계산
+  const scoreOrStatusChanged = homeScore !== undefined || awayScore !== undefined || autoStatus !== undefined;
+  if (match.groupId && scoreOrStatusChanged) {
     await recalcGroupStandings(match.groupId);
   }
 
-  revalidatePath(`/tournaments/${match.tournamentId}`);
-  revalidatePath("/tournaments");
+  if (scoreOrStatusChanged) {
+    revalidatePath(`/tournaments/${match.tournamentId}`);
+    revalidatePath("/tournaments");
+  }
 
   return NextResponse.json(match);
 }

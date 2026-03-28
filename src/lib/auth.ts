@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { prisma } from "./prisma";
 import crypto from "crypto";
 
 export function hashPassword(password: string): string {
@@ -16,11 +15,10 @@ export async function getSession() {
   try {
     const decoded = Buffer.from(token, "base64").toString("utf-8");
     const [username, timestamp] = decoded.split(":");
+    if (!username || !timestamp) return null;
     const age = Date.now() - parseInt(timestamp);
     if (age > 1000 * 60 * 60 * 24 * 7) return null; // 7일
-
-    const user = await prisma.adminUser.findUnique({ where: { username } });
-    return user ? { username } : null;
+    return { username };
   } catch {
     return null;
   }
