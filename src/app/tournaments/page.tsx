@@ -6,7 +6,10 @@ export const revalidate = 300;
 export default async function TournamentsPage() {
   const tournaments = await prisma.tournament.findMany({
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { teams: true, matches: true } } },
+    include: {
+      _count: { select: { teams: true, matches: true } },
+      teams: { include: { team: { include: { _count: { select: { players: true } } } } } },
+    },
   });
 
   const STATUS: Record<string, { label: string; badgeCls: string; borderColor: string }> = {
@@ -41,6 +44,7 @@ export default async function TournamentsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {tournaments.map((t) => {
             const st = STATUS[calcStatus(t)] || STATUS.UPCOMING;
+            const playerCount = t.teams.reduce((sum, tt) => sum + tt.team._count.players, 0);
             const dateStr = t.startDate
               ? new Date(t.startDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "long", day: "numeric" })
                 + (t.endDate ? ` ~ ${new Date(t.endDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric" })}` : "")
@@ -86,6 +90,11 @@ export default async function TournamentsPage() {
                     <span className="flex items-center gap-1">
                       <span className="text-gray-400">팀</span>
                       <span className="font-bold text-gray-700">{t._count.teams}</span>
+                    </span>
+                    <span className="text-gray-200">|</span>
+                    <span className="flex items-center gap-1">
+                      <span className="text-gray-400">선수</span>
+                      <span className="font-bold text-gray-700">{playerCount}</span>
                     </span>
                     <span className="text-gray-200">|</span>
                     <span className="flex items-center gap-1">
