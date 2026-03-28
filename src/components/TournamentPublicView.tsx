@@ -660,28 +660,6 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
         </div>
       </div>
 
-      {/* 전반/후반 부분 스코어 */}
-      {finished && match.goals.some(g => g.half) && (() => {
-        const calcScore = (halfNum: number) => {
-          const hg = match.goals.filter(g => g.half === halfNum);
-          return {
-            home: hg.filter(g => g.teamId === match.homeTeam.id && g.type !== "OWN_GOAL").length + hg.filter(g => g.teamId === match.awayTeam.id && g.type === "OWN_GOAL").length,
-            away: hg.filter(g => g.teamId === match.awayTeam.id && g.type !== "OWN_GOAL").length + hg.filter(g => g.teamId === match.homeTeam.id && g.type === "OWN_GOAL").length,
-          };
-        };
-        const h1 = calcScore(1);
-        const h2 = calcScore(2);
-        const hasFirst = match.goals.some(g => g.half === 1);
-        const hasSecond = match.goals.some(g => g.half === 2);
-        return (
-          <div className="flex justify-center gap-3 text-xs text-gray-400 mt-1">
-            {hasFirst && <span>전반 <span className="font-semibold tabular-nums text-gray-500">{h1.home}:{h1.away}</span></span>}
-            {hasFirst && hasSecond && <span className="text-gray-200">·</span>}
-            {hasSecond && <span>후반 <span className="font-semibold tabular-nums text-gray-500">{h2.home}:{h2.away}</span></span>}
-          </div>
-        );
-      })()}
-
       {/* Goals */}
       {match.goals.length > 0 && (() => {
         const hasHalf = match.goals.some(g => g.half);
