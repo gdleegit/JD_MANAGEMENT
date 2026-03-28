@@ -597,25 +597,24 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
 
   return (
     <div
-      className="rounded-xl overflow-hidden transition-colors hover:brightness-95"
+      className="rounded-2xl overflow-hidden shadow-sm transition-shadow hover:shadow-md"
       style={{
-        border: "1px solid #e2e8f0",
-        borderLeft: match.group ? `4px solid ${groupColor}` : "1px solid #e2e8f0",
-        backgroundColor: match.group ? groupColor + "08" : "white",
+        border: "1.5px solid #e2e8f0",
+        borderLeft: match.group ? `5px solid ${groupColor}` : "1.5px solid #e2e8f0",
+        backgroundColor: "white",
       }}
     >
       <div className="p-3 sm:p-4">
       {/* meta row */}
-      <div className="flex items-start justify-between gap-2 mb-2.5">
-        {/* 태그들 (줄바꿈 허용) */}
+      <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-1.5 flex-wrap text-xs flex-1 min-w-0">
           {showOrder && (match.round || match.matchOrder != null) && (
-            <span className="px-2 py-0.5 rounded-full bg-gray-200 text-gray-500 font-bold text-xs flex-shrink-0">
+            <span className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 font-bold text-xs flex-shrink-0 border border-blue-100">
               {match.round || match.matchOrder}
             </span>
           )}
           {match.date && (
-            <span className="font-semibold text-gray-700 bg-white bg-opacity-80 border border-gray-200 px-2 py-0.5 rounded-full flex-shrink-0 text-xs" suppressHydrationWarning>
+            <span className="font-semibold text-gray-600 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded-full flex-shrink-0 text-xs" suppressHydrationWarning>
               {showDate
                 ? new Date(match.date).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" })
                 : new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Seoul" })}
@@ -629,7 +628,6 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
           {match.court && <span className="text-purple-600 bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-full font-medium">{match.court}</span>}
           {match.venue && !match.court && <span className="text-gray-400 truncate">{match.venue}</span>}
         </div>
-        {/* 상태 배지 — 항상 오른쪽 상단 고정 */}
         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold flex-shrink-0 text-xs ${cfg.cls}`}>
           <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${cfg.dot}`} />
           {cfg.label}
@@ -637,25 +635,25 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
       </div>
 
       {/* Score row */}
-      <div className="flex items-center gap-1 sm:gap-2">
+      <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2.5">
         <div className={`flex-1 flex items-center justify-end gap-2 min-w-0 ${homeWin ? "text-blue-700" : "text-gray-800"}`}>
-          <span className="font-bold text-right text-sm sm:text-[15px] truncate">{match.homeTeam.name}</span>
-          <span className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
+          <span className="font-bold text-right text-sm sm:text-base truncate leading-tight">{match.homeTeam.name}</span>
+          <span className="w-4 h-4 rounded flex-shrink-0 shadow-sm" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
         </div>
-        <div className="flex items-center gap-1.5 min-w-[72px] sm:min-w-[84px] justify-center flex-shrink-0">
+        <div className="flex items-center gap-1 min-w-[76px] sm:min-w-[88px] justify-center flex-shrink-0">
           {finished ? (
             <>
-              <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-9 text-right tabular-nums ${homeWin ? "text-blue-700" : "text-gray-800"}`}>{match.homeScore}</span>
-              <span className="text-gray-400 font-bold text-base">:</span>
-              <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-9 text-left tabular-nums ${awayWin ? "text-blue-700" : "text-gray-800"}`}>{match.awayScore}</span>
+              <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-10 text-right tabular-nums ${homeWin ? "text-blue-700" : "text-gray-900"}`}>{match.homeScore}</span>
+              <span className="text-gray-300 font-black text-xl">:</span>
+              <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-10 text-left tabular-nums ${awayWin ? "text-blue-700" : "text-gray-900"}`}>{match.awayScore}</span>
             </>
           ) : (
-            <span className="text-gray-300 font-medium text-sm">vs</span>
+            <span className="text-gray-300 font-bold text-sm tracking-widest">VS</span>
           )}
         </div>
         <div className={`flex-1 flex items-center gap-2 min-w-0 ${awayWin ? "text-blue-700" : "text-gray-800"}`}>
-          <span className="w-3.5 h-3.5 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
-          <span className="font-bold text-sm sm:text-[15px] truncate">{match.awayTeam.name}</span>
+          <span className="w-4 h-4 rounded flex-shrink-0 shadow-sm" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
+          <span className="font-bold text-sm sm:text-base truncate leading-tight">{match.awayTeam.name}</span>
         </div>
       </div>
 
@@ -679,7 +677,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
           const homeGoals = match.goals.filter(g => g.teamId === match.homeTeam.id);
           const awayGoals = match.goals.filter(g => g.teamId === match.awayTeam.id);
           return (
-            <div className="mt-2 pt-2 border-t border-gray-100">
+            <div className="mt-3 pt-2.5 border-t border-gray-100">
               <div className="grid grid-cols-[1fr_1px_1fr] text-xs">
                 <div className="pr-2 space-y-0.5">{homeGoals.map((g, i) => <GoalRow key={i} g={g} align="right" />)}</div>
                 <div className="bg-gray-100" />
@@ -690,7 +688,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
         }
 
         return (
-          <div className="mt-2 pt-2 border-t border-gray-100 space-y-2 text-xs">
+          <div className="mt-3 pt-2.5 border-t border-gray-100 space-y-2 text-xs">
             {([1, 2] as const).map(half => {
               const halfGoals = match.goals.filter(g => g.half === half);
               if (halfGoals.length === 0) return null;
@@ -735,7 +733,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
 
       {/* Referees */}
       {referees.length > 0 && (
-        <div className="mt-2 pt-2 border-t border-gray-100 text-xs text-gray-400">
+        <div className="mt-3 pt-2 border-t border-gray-100 text-xs text-gray-400">
           {match.referee && <span>주심 {match.referee}</span>}
           {(match.assistantReferee1 || match.assistantReferee2) && (
             <span className="ml-3">부심 {[match.assistantReferee1, match.assistantReferee2].filter(Boolean).join(", ")}</span>
