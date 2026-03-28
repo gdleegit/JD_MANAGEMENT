@@ -519,32 +519,32 @@ function MatchCard({ match, showDate, showOrder }: { match: Match; showDate: boo
     >
       <div className="p-3 sm:p-4">
       {/* meta row */}
-      <div className="flex items-center gap-1.5 flex-wrap text-xs mb-2.5">
-        {/* 경기 순서 번호 */}
-        {showOrder && match.matchOrder != null && (
-          <span className="w-5 h-5 rounded-full bg-gray-200 text-gray-500 font-bold text-xs flex items-center justify-center flex-shrink-0">
-            {match.matchOrder}
-          </span>
-        )}
-        {/* 시간 */}
-        {match.date && (
-          <span className="font-semibold text-gray-700 bg-white bg-opacity-80 border border-gray-200 px-2 py-0.5 rounded-full flex-shrink-0 text-xs" suppressHydrationWarning>
-            {showDate
-              ? new Date(match.date).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })
-              : new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
-          </span>
-        )}
-        {/* 리그 뱃지 */}
-        {match.group && (
-          <span className="px-2 py-0.5 rounded-full font-bold text-white text-xs flex-shrink-0" style={{ backgroundColor: groupColor }}>
-            {match.group.label || match.group.name}
-          </span>
-        )}
-        {match.round && <span className="text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{match.round}</span>}
-        {match.court && <span className="text-purple-600 bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-full font-medium">{match.court}</span>}
-        {match.venue && !match.court && <span className="text-gray-400">{match.venue}</span>}
-        {/* 상태 배지 — 오른쪽 */}
-        <span className={`ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${cfg.cls}`}>
+      <div className="flex items-start justify-between gap-2 mb-2.5">
+        {/* 태그들 (줄바꿈 허용) */}
+        <div className="flex items-center gap-1.5 flex-wrap text-xs flex-1 min-w-0">
+          {showOrder && match.matchOrder != null && (
+            <span className="w-5 h-5 rounded-full bg-gray-200 text-gray-500 font-bold text-xs flex items-center justify-center flex-shrink-0">
+              {match.matchOrder}
+            </span>
+          )}
+          {match.date && (
+            <span className="font-semibold text-gray-700 bg-white bg-opacity-80 border border-gray-200 px-2 py-0.5 rounded-full flex-shrink-0 text-xs" suppressHydrationWarning>
+              {showDate
+                ? new Date(match.date).toLocaleString("ko-KR", { month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" })
+                : new Date(match.date).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit" })}
+            </span>
+          )}
+          {match.group && (
+            <span className="px-2 py-0.5 rounded-full font-bold text-white text-xs flex-shrink-0" style={{ backgroundColor: groupColor }}>
+              {match.group.label || match.group.name}
+            </span>
+          )}
+          {match.round && <span className="text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{match.round}</span>}
+          {match.court && <span className="text-purple-600 bg-purple-50 border border-purple-100 px-2 py-0.5 rounded-full font-medium">{match.court}</span>}
+          {match.venue && !match.court && <span className="text-gray-400 truncate">{match.venue}</span>}
+        </div>
+        {/* 상태 배지 — 항상 오른쪽 상단 고정 */}
+        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold flex-shrink-0 text-xs ${cfg.cls}`}>
           <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${cfg.dot}`} />
           {cfg.label}
         </span>
