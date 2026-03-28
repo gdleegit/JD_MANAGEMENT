@@ -29,7 +29,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
               </Link>
               <div className="flex items-center gap-1 sm:gap-4 text-xs sm:text-sm font-medium">
-                <Link href="/tournaments" className="text-gray-300 hover:text-white transition-colors px-3 py-2">대회 목록</Link>
                 <Link href="/admin" className="text-gray-300 hover:text-white transition-colors px-3 py-2">관리자</Link>
               </div>
             </div>
