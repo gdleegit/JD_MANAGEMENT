@@ -5,9 +5,11 @@ import { recalcGroupStandings } from "@/lib/standings";
 import { revalidatePath } from "next/cache";
 
 async function recalcMatchScore(matchId: string) {
-  const goals = await prisma.goal.findMany({ where: { matchId } });
-  const match = await prisma.match.findUnique({ where: { id: matchId } });
-  if (!match) return match;
+  const [goals, match] = await Promise.all([
+    prisma.goal.findMany({ where: { matchId } }),
+    prisma.match.findUnique({ where: { id: matchId } }),
+  ]);
+  if (!match) return null;
 
   const homeScore = goals.filter((g) => g.teamId === match.homeTeamId && g.type !== "OWN_GOAL").length
     + goals.filter((g) => g.teamId === match.awayTeamId && g.type === "OWN_GOAL").length;
@@ -30,7 +32,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const { playerId, teamId, minute, half, type } = await req.json();
   if (!teamId) return NextResponse.json({ error: "팀 정보 필요" }, { status: 400 });
 
-  await prisma.goal.create({
+  // 골 생성 + 스코어 재계산 병렬 실행 불가 (순서 의존) → 순차 실행하되 findUnique 제거
+  const goal = await prisma.goal.create({
     data: {
       matchId,
       playerId: playerId || null,
@@ -39,23 +42,19 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       half: half ? Number(half) : null,
       type: type || "GOAL",
     },
+    include: { player: true, team: true },
   });
 
-  await recalcMatchScore(matchId);
-
-  const updated = await prisma.match.findUnique({
-    where: { id: matchId },
-    include: {
-      homeTeam: { include: { players: true } },
-      awayTeam: { include: { players: true } },
-      goals: { include: { player: true, team: true }, orderBy: { minute: "asc" } },
-    },
-  });
+  const updated = await recalcMatchScore(matchId);
   if (updated) {
     revalidatePath(`/tournaments/${updated.tournamentId}`);
     revalidatePath("/tournaments");
   }
-  return NextResponse.json(updated, { status: 201 });
+
+  return NextResponse.json(
+    { goal, homeScore: updated?.homeScore ?? 0, awayScore: updated?.awayScore ?? 0 },
+    { status: 201 }
+  );
 }
 
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -66,19 +65,11 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const { goalId } = await req.json();
 
   await prisma.goal.delete({ where: { id: goalId } });
-  await recalcMatchScore(matchId);
-
-  const updated = await prisma.match.findUnique({
-    where: { id: matchId },
-    include: {
-      homeTeam: { include: { players: true } },
-      awayTeam: { include: { players: true } },
-      goals: { include: { player: true, team: true }, orderBy: { minute: "asc" } },
-    },
-  });
+  const updated = await recalcMatchScore(matchId);
   if (updated) {
     revalidatePath(`/tournaments/${updated.tournamentId}`);
     revalidatePath("/tournaments");
   }
-  return NextResponse.json(updated);
+
+  return NextResponse.json({ homeScore: updated?.homeScore ?? 0, awayScore: updated?.awayScore ?? 0 });
 }

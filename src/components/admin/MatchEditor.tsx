@@ -68,7 +68,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         : status;
     if (effectiveStatus !== status) setStatus(effectiveStatus);
 
-    const res = await fetch(`/api/matches/${match.id}`, {
+    await fetch(`/api/matches/${match.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -85,8 +85,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         assistantReferee2: assistantReferee2 || null,
       }),
     });
-    const updated = await res.json();
-    setCurrentMatch({ ...currentMatch, ...updated });
+    setCurrentMatch(m => ({ ...m, status: effectiveStatus, homeScore: parsedHome, awayScore: parsedAway }));
     setSaving(false);
   };
 
@@ -103,10 +102,10 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         type: goalForm.type,
       }),
     });
-    const updated = await res.json();
-    setCurrentMatch(updated);
-    setHomeScore(updated.homeScore?.toString() ?? "");
-    setAwayScore(updated.awayScore?.toString() ?? "");
+    const { goal, homeScore: hs, awayScore: as_ } = await res.json();
+    setCurrentMatch(m => ({ ...m, goals: [...m.goals, goal], homeScore: hs, awayScore: as_ }));
+    setHomeScore(hs?.toString() ?? "");
+    setAwayScore(as_?.toString() ?? "");
     setGoalForm({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
     setAddingGoal(false);
   };
@@ -117,10 +116,10 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ goalId }),
     });
-    const updated = await res.json();
-    setCurrentMatch(updated);
-    setHomeScore(updated.homeScore?.toString() ?? "");
-    setAwayScore(updated.awayScore?.toString() ?? "");
+    const { homeScore: hs, awayScore: as_ } = await res.json();
+    setCurrentMatch(m => ({ ...m, goals: m.goals.filter(g => g.id !== goalId), homeScore: hs, awayScore: as_ }));
+    setHomeScore(hs?.toString() ?? "");
+    setAwayScore(as_?.toString() ?? "");
   };
 
   const selectedTeam = goalForm.teamId === match.homeTeam.id ? match.homeTeam : match.awayTeam;
