@@ -261,26 +261,23 @@ export default function TournamentPublicView({
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-gray-900 truncate">{team.name}</h3>
                       </div>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: color + "33", color }}>
+                      <span className="text-xs font-bold px-2 py-0.5 rounded-full text-white" style={{ backgroundColor: color }}>
                         {team.players.length}명
                       </span>
                     </div>
-                    {/* 선수 목록 */}
+                    {/* 선수 목록 — 2열 그리드 */}
                     <div className="p-3">
                       {sortedPlayers.length > 0 ? (
-                        <div className="space-y-0.5">
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
                           {sortedPlayers.map((p) => (
-                            <div key={p.id} className="flex items-center gap-2 py-1.5 px-1 rounded-lg hover:bg-gray-50 transition-colors">
+                            <div key={p.id} className="flex items-center gap-1.5 py-1 px-1 rounded hover:bg-gray-50 transition-colors min-w-0">
                               <span
-                                className="w-6 h-6 rounded flex items-center justify-center text-xs font-bold flex-shrink-0 text-white"
+                                className="w-5 h-5 rounded text-center leading-5 text-xs font-bold flex-shrink-0 text-white"
                                 style={{ backgroundColor: p.number != null ? color : "#d1d5db" }}
                               >
                                 {p.number ?? "·"}
                               </span>
-                              <span className="text-sm font-medium text-gray-800 flex-1 min-w-0 truncate">{p.name}</span>
-                              {p.position && (
-                                <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 flex-shrink-0">{p.position}</span>
-                              )}
+                              <span className="text-sm font-medium text-gray-800 truncate">{p.name}</span>
                             </div>
                           ))}
                         </div>
