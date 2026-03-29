@@ -550,8 +550,8 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
                 <th className="text-center pb-2 font-medium px-1.5">승</th>
                 <th className="text-center pb-2 font-medium px-1.5">무</th>
                 <th className="text-center pb-2 font-medium px-1.5">패</th>
-                <th className="text-center pb-2 font-medium px-1.5 hidden sm:table-cell">득</th>
-                <th className="text-center pb-2 font-medium px-1.5 hidden sm:table-cell">실</th>
+                <th className="text-center pb-2 font-medium px-1.5 hidden sm:table-cell">득점</th>
+                <th className="text-center pb-2 font-medium px-1.5 hidden sm:table-cell">실점</th>
                 <th className="text-center pb-2 font-medium px-1.5">득실</th>
                 <th className="text-center pb-2 font-bold px-1.5">승점</th>
               </tr>
@@ -804,8 +804,8 @@ function StandingsTable({ rows }: { rows: LeagueRow[] }) {
             <th className="pb-2 px-1.5 text-center font-medium">승</th>
             <th className="pb-2 px-1.5 text-center font-medium">무</th>
             <th className="pb-2 px-1.5 text-center font-medium">패</th>
-            <th className="pb-2 px-1.5 text-center font-medium hidden sm:table-cell">득</th>
-            <th className="pb-2 px-1.5 text-center font-medium hidden sm:table-cell">실</th>
+            <th className="pb-2 px-1.5 text-center font-medium hidden sm:table-cell">득점</th>
+            <th className="pb-2 px-1.5 text-center font-medium hidden sm:table-cell">실점</th>
             <th className="pb-2 px-1.5 text-center font-medium">득실</th>
             <th className="pb-2 pl-1.5 text-center font-bold">승점</th>
           </tr>
