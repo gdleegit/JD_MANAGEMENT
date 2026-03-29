@@ -2,6 +2,9 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
+import { Bebas_Neue } from "next/font/google";
+
+const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "中東 AA | Athletic Archive",
@@ -27,8 +30,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Image src="/jd1.svg" alt="中東 Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-tight">
-                  <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.35em] text-blue-400/80 uppercase">中東 AA</span>
-                  <span className="text-[15px] sm:text-[17px] font-extrabold tracking-tight text-white group-hover:text-blue-300 transition-colors">Athletic Archive</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.35em] text-blue-400/80 uppercase">中東AA</span>
+                  <span className={`${bebas.className} text-[22px] sm:text-[26px] tracking-widest text-white group-hover:text-blue-300 transition-colors`}>Athletic Archive</span>
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
