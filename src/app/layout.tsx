@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <footer className="mt-12 border-t border-gray-200 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-gray-400">
             <p className="text-sm font-medium text-gray-500 mb-1">중동인의 땀방울을 기록하다.</p>
-            <p className="text-xs mb-3">Developed &amp; Designed by 105회 이건도</p>
+            <p className="text-[10px] text-gray-300 mb-3">Developed &amp; Designed by 105회 이건도</p>
             <p className="text-xs">© 2026 중동 체육위원회. All rights reserved.</p>
           </div>
         </footer>
