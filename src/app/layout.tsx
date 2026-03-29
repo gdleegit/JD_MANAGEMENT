@@ -18,18 +18,27 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ko">
       <body>
-        <nav className="bg-gray-900 border-b border-gray-700 sticky top-0 z-50">
+        <nav className="bg-gray-950 border-b border-white/10 sticky top-0 z-50 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
-              <Link href="/tournaments" className="flex items-center gap-2 sm:gap-3 group">
-                <Image src="/jd1.svg" alt="中東 Athletic Archive" width={34} height={34} className="sm:w-[42px] sm:h-[42px]" />
+              <Link href="/tournaments" className="flex items-center gap-2.5 sm:gap-3 group">
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-sm group-hover:bg-blue-500/30 transition-all" />
+                  <Image src="/jd1.svg" alt="中東 Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
+                </div>
                 <div className="flex flex-col leading-tight">
-                  <span className="text-[10px] sm:text-xs font-semibold tracking-[0.3em] text-gray-300 uppercase">中東 AA</span>
-                  <span className="text-base sm:text-lg font-extrabold tracking-wide bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent group-hover:from-blue-700 group-hover:to-blue-500 transition-all">Athletic Archive</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.35em] text-blue-400/80 uppercase">中東 AA</span>
+                  <span className="text-[15px] sm:text-[17px] font-extrabold tracking-tight text-white group-hover:text-blue-300 transition-colors">Athletic Archive</span>
                 </div>
               </Link>
-              <div className="flex items-center gap-1 sm:gap-4 text-xs sm:text-sm font-medium">
-                <Link href="/admin" className="text-gray-300 hover:text-white transition-colors px-3 py-2">관리자</Link>
+              <div className="flex items-center text-xs sm:text-sm font-medium">
+                <Link href="/admin" className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5">
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  관리자
+                </Link>
               </div>
             </div>
           </div>
