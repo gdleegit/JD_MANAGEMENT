@@ -111,6 +111,8 @@ export default function TournamentPublicView({
     tournament.rules && { key: "rules", label: "운영규칙" },
   ].filter(Boolean) as { key: string; label: string }[];
 
+  const playerCount = teamPlayers ? Object.values(teamPlayers).reduce((sum, p) => sum + p.length, 0) : null;
+
   // Top scorers
   const allGoals = tournament.matches.flatMap((m) => m.goals.filter((g) => g.type !== "OWN_GOAL"));
   const scorerMap: Record<string, { name: string; teamName: string; count: number }> = {};
@@ -163,6 +165,11 @@ export default function TournamentPublicView({
             <span className="flex items-center gap-1">
               <span className="text-gray-400">팀</span>
               <span className="font-bold text-gray-700">{tournament.teams.length}</span>
+            </span>
+            <span className="text-gray-200">|</span>
+            <span className="flex items-center gap-1">
+              <span className="text-gray-400">선수</span>
+              <span className="font-bold text-gray-700">{playerCount !== null ? playerCount : "…"}</span>
             </span>
             <span className="text-gray-200">|</span>
             <span className="flex items-center gap-1">
