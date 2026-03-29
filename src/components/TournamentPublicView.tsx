@@ -547,13 +547,13 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
                 <th className="text-left pb-2 font-medium w-6">#</th>
                 <th className="text-left pb-2 font-medium pl-1.5">팀</th>
                 <th className="text-center pb-2 font-medium px-1.5">경기</th>
-                <th className="text-center pb-2 font-medium px-2">승</th>
+                <th className="text-center pb-2 font-medium px-2 border-l border-gray-200">승</th>
                 <th className="text-center pb-2 font-medium px-2">무</th>
                 <th className="text-center pb-2 font-medium px-2">패</th>
-                <th className="text-center pb-2 font-medium px-1.5 border-l border-gray-200">득점</th>
-                <th className="text-center pb-2 font-medium px-1.5">실점</th>
-                <th className="text-center pb-2 font-medium px-1.5">득실</th>
-                <th className="text-center pb-2 font-bold px-1.5">승점</th>
+                <th className="text-center pb-2 font-medium px-1 border-l border-gray-200">득점</th>
+                <th className="text-center pb-2 font-medium px-1">실점</th>
+                <th className="text-center pb-2 font-medium px-1">득실</th>
+                <th className="text-center pb-2 font-bold px-1.5 border-l border-gray-200">승점</th>
               </tr>
             </thead>
             <tbody>
@@ -569,13 +569,13 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
                       </div>
                     </td>
                     <td className="py-2 text-center px-1.5">{gt.played}</td>
-                    <td className="py-2 text-center px-2">{gt.won}</td>
+                    <td className="py-2 text-center px-2 border-l border-gray-100">{gt.won}</td>
                     <td className="py-2 text-center px-2">{gt.drawn}</td>
                     <td className="py-2 text-center px-2">{gt.lost}</td>
-                    <td className="py-2 text-center px-1.5 border-l border-gray-100">{gt.gf}</td>
-                    <td className="py-2 text-center px-1.5">{gt.ga}</td>
-                    <td className="py-2 text-center px-1.5 text-gray-500">{(gt.gf - gt.ga) > 0 ? `+${gt.gf - gt.ga}` : gt.gf - gt.ga}</td>
-                    <td className="py-2 text-center px-1.5 font-bold text-blue-600">{gt.points}</td>
+                    <td className="py-2 text-center px-1 border-l border-gray-100">{gt.gf}</td>
+                    <td className="py-2 text-center px-1">{gt.ga}</td>
+                    <td className="py-2 text-center px-1 text-gray-500">{(gt.gf - gt.ga) > 0 ? `+${gt.gf - gt.ga}` : gt.gf - gt.ga}</td>
+                    <td className="py-2 text-center px-1.5 border-l border-gray-100 font-bold text-blue-600">{gt.points}</td>
                   </tr>
                 ))}
             </tbody>
@@ -801,13 +801,13 @@ function StandingsTable({ rows }: { rows: LeagueRow[] }) {
             <th className="pb-2 pr-2 font-medium w-6">#</th>
             <th className="pb-2 pr-2 font-medium">팀</th>
             <th className="pb-2 px-1.5 text-center font-medium">경기</th>
-            <th className="pb-2 px-2 text-center font-medium">승</th>
+            <th className="pb-2 px-2 text-center font-medium border-l border-gray-200">승</th>
             <th className="pb-2 px-2 text-center font-medium">무</th>
             <th className="pb-2 px-2 text-center font-medium">패</th>
-            <th className="pb-2 px-1.5 text-center font-medium border-l border-gray-200">득점</th>
-            <th className="pb-2 px-1.5 text-center font-medium">실점</th>
-            <th className="pb-2 px-1.5 text-center font-medium">득실</th>
-            <th className="pb-2 pl-1.5 text-center font-bold">승점</th>
+            <th className="pb-2 px-1 text-center font-medium border-l border-gray-200">득점</th>
+            <th className="pb-2 px-1 text-center font-medium">실점</th>
+            <th className="pb-2 px-1 text-center font-medium">득실</th>
+            <th className="pb-2 px-1.5 text-center font-bold border-l border-gray-200">승점</th>
           </tr>
         </thead>
         <tbody>
@@ -821,13 +821,13 @@ function StandingsTable({ rows }: { rows: LeagueRow[] }) {
                 </div>
               </td>
               <td className="py-2 px-1.5 text-center">{row.played}</td>
-              <td className="py-2 px-2 text-center">{row.won}</td>
+              <td className="py-2 px-2 text-center border-l border-gray-100">{row.won}</td>
               <td className="py-2 px-2 text-center">{row.drawn}</td>
               <td className="py-2 px-2 text-center">{row.lost}</td>
-              <td className="py-2 px-1.5 text-center border-l border-gray-100">{row.gf}</td>
-              <td className="py-2 px-1.5 text-center">{row.ga}</td>
-              <td className="py-2 px-1.5 text-center text-gray-500">{row.gd > 0 ? `+${row.gd}` : row.gd}</td>
-              <td className="py-2 pl-1.5 text-center font-bold text-blue-600">{row.points}</td>
+              <td className="py-2 px-1 text-center border-l border-gray-100">{row.gf}</td>
+              <td className="py-2 px-1 text-center">{row.ga}</td>
+              <td className="py-2 px-1 text-center text-gray-500">{row.gd > 0 ? `+${row.gd}` : row.gd}</td>
+              <td className="py-2 px-1.5 text-center border-l border-gray-100 font-bold text-blue-600">{row.points}</td>
             </tr>
           ))}
         </tbody>
