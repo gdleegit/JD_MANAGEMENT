@@ -4,8 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "中東 Kick-Off",
-  description: "中東 Kick-Off 축구 대회 관리 시스템",
+  title: "中東 AA | Athletic Archive",
+  description: "중동 체육위원회 Athletic Archive — 중동인의 땀방울을 기록하다.",
 };
 
 export const viewport: Viewport = {
@@ -22,10 +22,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
               <Link href="/tournaments" className="flex items-center gap-2 sm:gap-3 group">
-                <Image src="/jd1.svg" alt="中東 Kick-Off" width={34} height={34} className="sm:w-[42px] sm:h-[42px]" />
+                <Image src="/jd1.svg" alt="中東 Athletic Archive" width={34} height={34} className="sm:w-[42px] sm:h-[42px]" />
                 <div className="flex flex-col leading-tight">
-                  <span className="text-[10px] sm:text-xs font-semibold tracking-[0.3em] text-gray-300 uppercase">中 東</span>
-                  <span className="text-base sm:text-lg font-extrabold tracking-wide bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent group-hover:from-blue-700 group-hover:to-blue-500 transition-all">Kick-Off</span>
+                  <span className="text-[10px] sm:text-xs font-semibold tracking-[0.3em] text-gray-300 uppercase">中東 AA</span>
+                  <span className="text-base sm:text-lg font-extrabold tracking-wide bg-gradient-to-r from-blue-600 to-blue-400 bg-clip-text text-transparent group-hover:from-blue-700 group-hover:to-blue-500 transition-all">Athletic Archive</span>
                 </div>
               </Link>
               <div className="flex items-center gap-1 sm:gap-4 text-xs sm:text-sm font-medium">
