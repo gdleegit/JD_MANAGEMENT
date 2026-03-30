@@ -21,6 +21,7 @@ type Match = {
   referee?: string | null;
   assistantReferee1?: string | null;
   assistantReferee2?: string | null;
+  videoUrl?: string | null;
 };
 type Tournament = { id: string; name: string; type: string };
 
@@ -56,6 +57,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const [referee,           setReferee]           = useState(match.referee ?? "");
   const [assistantReferee1, setAssistantReferee1] = useState(match.assistantReferee1 ?? "");
   const [assistantReferee2, setAssistantReferee2] = useState(match.assistantReferee2 ?? "");
+  const [videoUrl, setVideoUrl] = useState(match.videoUrl ?? "");
   const [saving,     setSaving]     = useState(false);
   const [goalForm,   setGoalForm]   = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
   const [addingGoal, setAddingGoal] = useState(false);
@@ -86,6 +88,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         referee: referee || null,
         assistantReferee1: assistantReferee1 || null,
         assistantReferee2: assistantReferee2 || null,
+        videoUrl: videoUrl || null,
       }),
     });
     setCurrentMatch(m => ({ ...m, status: effectiveStatus, homeScore: parsedHome, awayScore: parsedAway }));
@@ -409,6 +412,24 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         </div>
         <button onClick={saveResult} className="btn-secondary mt-3" disabled={saving}>
           {saving ? "저장 중..." : "심판진 저장"}
+        </button>
+      </div>
+
+      {/* ── 경기 영상 ── */}
+      <div className="card p-5">
+        <h4 className="font-bold mb-4">경기 영상</h4>
+        <div>
+          <label className="label">영상 URL (YouTube 등)</label>
+          <input
+            type="url"
+            className="input"
+            placeholder="https://www.youtube.com/watch?v=..."
+            value={videoUrl}
+            onChange={(e) => setVideoUrl(e.target.value)}
+          />
+        </div>
+        <button onClick={saveResult} className="btn-secondary mt-3" disabled={saving}>
+          {saving ? "저장 중..." : "영상 저장"}
         </button>
       </div>
     </div>

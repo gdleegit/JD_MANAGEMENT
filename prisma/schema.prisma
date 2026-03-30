@@ -84,6 +84,7 @@ model Match {
   referee           String?
   assistantReferee1 String?
   assistantReferee2 String?
+  videoUrl          String?
 
   goals Goal[]
 }

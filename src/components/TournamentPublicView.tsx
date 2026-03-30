@@ -26,6 +26,7 @@ type Match = {
   referee?: string | null;
   assistantReferee1?: string | null;
   assistantReferee2?: string | null;
+  videoUrl?: string | null;
 };
 type TournamentTeam = { team: Team };
 type Tournament = {
@@ -644,14 +645,21 @@ const STATUS_CFG: Record<string, { label: string; cls: string; dot: string }> = 
   FINISHED:  { label: "종료",  cls: "bg-green-100 text-green-600", dot: "bg-green-500" },
 };
 
+function getYouTubeId(url: string): string | null {
+  const m = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/);
+  return m ? m[1] : null;
+}
+
 function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Match; showDate: boolean; showOrder?: boolean; hideGroupBadge?: boolean }) {
   const finished = match.status === "FINISHED";
   const homeWin = finished && match.homeScore != null && match.awayScore != null && match.homeScore > match.awayScore;
   const awayWin = finished && match.homeScore != null && match.awayScore != null && match.awayScore > match.homeScore;
   const cfg = STATUS_CFG[match.status] ?? STATUS_CFG.SCHEDULED;
   const referees = [match.referee, match.assistantReferee1, match.assistantReferee2].filter(Boolean);
+  const [showVideo, setShowVideo] = useState(false);
 
   const groupColor = match.group?.color || "#6366f1";
+  const youtubeId = match.videoUrl ? getYouTubeId(match.videoUrl) : null;
 
   return (
     <div
@@ -795,6 +803,48 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
           {match.referee && <span>주심 {match.referee}</span>}
           {(match.assistantReferee1 || match.assistantReferee2) && (
             <span className="ml-3">부심 {[match.assistantReferee1, match.assistantReferee2].filter(Boolean).join(", ")}</span>
+          )}
+        </div>
+      )}
+
+      {/* Video */}
+      {match.videoUrl && (
+        <div className="mt-3 pt-2 border-t border-gray-100">
+          {youtubeId ? (
+            <>
+              <button
+                onClick={() => setShowVideo(v => !v)}
+                className="flex items-center gap-1.5 text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                </svg>
+                {showVideo ? "영상 닫기" : "경기 영상 보기"}
+              </button>
+              {showVideo && (
+                <div className="mt-2 rounded-xl overflow-hidden aspect-video">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${youtubeId}`}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              )}
+            </>
+          ) : (
+            <a
+              href={match.videoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-xs font-semibold text-blue-500 hover:text-blue-600 transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              경기 영상 보기
+            </a>
           )}
         </div>
       )}

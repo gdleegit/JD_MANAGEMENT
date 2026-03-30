@@ -46,6 +46,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       ...(body.referee !== undefined && { referee: body.referee }),
       ...(body.assistantReferee1 !== undefined && { assistantReferee1: body.assistantReferee1 }),
       ...(body.assistantReferee2 !== undefined && { assistantReferee2: body.assistantReferee2 }),
+      ...(body.videoUrl !== undefined && { videoUrl: body.videoUrl || null }),
     },
   });
 
