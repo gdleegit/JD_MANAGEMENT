@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
-import Image from "next/image";
 import { Noto_Serif_KR, Cinzel } from "next/font/google";
 
 const notoSerifKR = Noto_Serif_KR({ weight: "400", subsets: ["latin"], display: "swap" });
@@ -28,7 +27,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/tournaments" className="flex items-center gap-2.5 sm:gap-3 group">
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-sm group-hover:bg-blue-500/30 transition-all" />
-                  <Image src="/jd2.svg" alt="중동ArenA Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/jd2.svg" alt="중동ArenA Athletic Archive" className="relative w-8 h-8 sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-none gap-0.5">
                   <div className="flex items-center leading-none">
