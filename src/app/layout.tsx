@@ -35,10 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <span className={`${notoSerifKR.className} text-[22px] sm:text-[27px] text-white group-hover:text-blue-50 transition-colors tracking-wide`}>中東</span>
                     <span className="text-[22px] sm:text-[27px] text-white group-hover:text-blue-50 transition-colors tracking-tight font-medium"> 체육대회관리</span>
                   </div>
-                  <div className={`${cinzel.className} text-[7px] sm:text-[8px] text-gray-500 flex justify-between`}>
-                    <span>Athletic</span>
-                    <span>Archive</span>
-                  </div>
+                  <span className={`${cinzel.className} text-[7px] sm:text-[8px] text-gray-500 w-full`} style={{ textAlign: "justify", textAlignLast: "justify" }}>
+                    Athletic Archive
+                  </span>
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
