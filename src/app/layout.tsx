@@ -30,13 +30,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Image src="/jd1.svg" alt="중동ArenA Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-none gap-0.5">
-                  <div className="flex items-end leading-none">
-                    {/* 중동 — Pretendard ExtraBold */}
+                  <div className="flex items-center leading-none">
+                    {/* 中東 — Pretendard ExtraBold */}
                     <span
                       className="text-[23px] sm:text-[28px] text-white group-hover:text-blue-50 transition-colors"
                       style={{ fontFamily: "'Pretendard Variable', Pretendard, sans-serif", fontWeight: 800 }}
                     >
-                      중동
+                      中東
                     </span>
                     {/* ArenA — Montserrat ExtraBold, 앞뒤 A는 전통 파란색 */}
                     <span className={`${montserrat.className} text-[23px] sm:text-[28px]`}>
