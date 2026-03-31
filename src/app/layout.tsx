@@ -32,9 +32,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Image src="/jd1.svg" alt="中東 Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-none gap-0.5">
-                  <div className="flex items-baseline leading-none">
-                    <span className={`${notoSerifKR.className} text-[26px] sm:text-[32px] text-white group-hover:text-blue-100 transition-colors`}>中東</span>
-                    <span className={`${montserrat.className} text-[22px] sm:text-[27px] text-blue-400 group-hover:text-blue-300 transition-colors tracking-tight`}>AA</span>
+                  <div className="flex items-end leading-none gap-0.5">
+                    <span className={`${notoSerifKR.className} text-[27px] sm:text-[33px] text-white group-hover:text-blue-100 transition-colors`}>中東</span>
+                    <span className={`${montserrat.className} text-[27px] sm:text-[33px] text-blue-400 group-hover:text-blue-300 transition-colors pb-px`}>AA</span>
                   </div>
                   <span className="text-[8px] sm:text-[9px] font-bold tracking-[0.55em] text-gray-500 uppercase">Athletic Archive</span>
                 </div>
