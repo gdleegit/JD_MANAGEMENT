@@ -1,12 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
-import { Bebas_Neue } from "next/font/google";
+import { Bebas_Neue, Noto_Serif_KR } from "next/font/google";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"], display: "swap" });
+const notoSerifKR = Noto_Serif_KR({ weight: "400", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "中東 AA | Athletic Archive",
+  title: "中東 | Athletic Archive",
   description: "중동 체육위원회 Athletic Archive — 중동인의 땀방울을 기록하다.",
 };
 
@@ -30,10 +31,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <img src="/jd2.svg" alt="中東 Athletic Archive" className="relative w-8 h-8 sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-tight">
-                  <span className="font-bold tracking-[0.35em] text-blue-400/80 uppercase">
-                    <span className="text-[11px] sm:text-[13px]">中東</span><span className="text-[9px] sm:text-[10px]">AA</span>
+                  <span className={`${notoSerifKR.className} text-[11px] sm:text-[13px] tracking-[0.35em] text-gray-300`}>中東</span>
+                  <span className={`${bebas.className} text-[22px] sm:text-[26px] tracking-widest group-hover:opacity-90 transition-opacity`}>
+                    <span style={{ color: "#176fc1" }}>A</span>
+                    <span className="text-white">thletic </span>
+                    <span style={{ color: "#176fc1" }}>A</span>
+                    <span className="text-white">rchive</span>
                   </span>
-                  <span className={`${bebas.className} text-[22px] sm:text-[26px] tracking-widest text-white group-hover:text-blue-300 transition-colors`}>Athletic Archive</span>
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
