@@ -539,7 +539,7 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
       {/* Group Selector */}
       <div className="card p-4">
         <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">리그 선택</p>
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-2 overflow-x-auto pb-0.5 -mb-0.5" style={{ scrollbarWidth: "none" }}>
           {tournament.groups.map((g) => {
             const bgColor = g.color || "#6366f1";
             const isActive = activeGroup === g.id;
@@ -549,7 +549,7 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
               <button
                 key={g.id}
                 onClick={() => setActiveGroup(g.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all ${
+                className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all ${
                   isActive
                     ? "border-transparent shadow-sm"
                     : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-700"
