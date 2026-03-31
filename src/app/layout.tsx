@@ -24,21 +24,21 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <nav className="bg-gray-950 border-b border-white/10 sticky top-0 z-50 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
-              <Link href="/tournaments" className="flex items-end gap-2.5 sm:gap-3 group">
+              <Link href="/tournaments" className="flex items-center gap-2.5 sm:gap-3 group">
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-sm group-hover:bg-blue-500/30 transition-all" />
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/jd2.svg" alt="中東 Athletic Archive" className="relative w-10 h-10 sm:w-[46px] sm:h-[46px]" />
                 </div>
-                <div className="flex flex-col leading-tight">
-                  <span className={`${notoSerifKR.className} text-[11px] sm:text-[13px] tracking-[0.35em] text-gray-300`}>中東</span>
-                  <span className={`${bebas.className} text-[22px] sm:text-[26px] tracking-widest group-hover:opacity-90 transition-opacity leading-none`}>
+                <div className="flex items-baseline gap-2 sm:gap-2.5">
+                  <span className={`${notoSerifKR.className} text-[26px] sm:text-[32px] text-white group-hover:text-blue-50 transition-colors tracking-wide`}>中東</span>
+                  <span className="text-gray-500 text-[18px] sm:text-[22px] font-thin">|</span>
+                  <span className={`${bebas.className} text-[13px] sm:text-[15px] tracking-widest group-hover:opacity-90 transition-opacity`}>
                     <span style={{ color: "#176fc1" }}>A</span>
-                    <span className="text-white">thletic </span>
+                    <span className="text-gray-300">thletic </span>
                     <span style={{ color: "#176fc1" }}>A</span>
-                    <span className="text-white">rchive</span>
+                    <span className="text-gray-300">rchive</span>
                   </span>
-                  <div className="h-px bg-white w-[calc(100%+12px)]" style={{ marginTop: "-1px" }} />
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
