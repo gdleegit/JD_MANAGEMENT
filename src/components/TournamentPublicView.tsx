@@ -521,7 +521,7 @@ function getContrastColor(hex: string): string {
 
 // ── 기수/조별 순위 뷰 ──────────────────────────────────
 function DivisionView({ tournament }: { tournament: Tournament }) {
-  const [activeGroup, setActiveGroup] = useState<string>(tournament.groups[0]?.id || "");
+  const [activeGroup, setActiveGroup] = useState<string | null>(tournament.groups[0]?.id || null);
 
   if (tournament.groups.length === 0) {
     return (
@@ -531,32 +531,43 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
     );
   }
 
-  const group = tournament.groups.find((g) => g.id === activeGroup) || tournament.groups[0];
-  const groupMatches = tournament.matches.filter((m) => m.group?.id === group.id);
+  const visibleGroups = activeGroup
+    ? tournament.groups.filter((g) => g.id === activeGroup)
+    : tournament.groups;
+
+  const toKSTDate = (iso: string) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
 
   return (
     <div className="space-y-4">
-      {/* Group Selector */}
-      <div className="card p-4">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">리그 선택</p>
-        <div className="flex gap-2 overflow-x-auto pb-0.5 -mb-0.5" style={{ scrollbarWidth: "none" }}>
+      {/* 날짜 pill 스타일 리그 선택 */}
+      <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0 pb-0.5">
+        <div className="flex gap-1.5 w-max">
+          {/* 전체 버튼 */}
+          <button
+            onClick={() => setActiveGroup(null)}
+            className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap flex-shrink-0 ${
+              activeGroup === null
+                ? "bg-gray-800 text-white border-gray-800"
+                : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
+            }`}
+          >
+            전체 <span className="opacity-60">{tournament.groups.length}</span>
+          </button>
+
+          {/* 리그별 버튼 */}
           {tournament.groups.map((g) => {
             const bgColor = g.color || "#6366f1";
             const isActive = activeGroup === g.id;
             const textColor = isActive ? getContrastColor(bgColor) : undefined;
-            const dotColor = isActive ? (textColor === "#ffffff" ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.3)") : bgColor;
             return (
               <button
                 key={g.id}
-                onClick={() => setActiveGroup(g.id)}
-                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
-                  isActive
-                    ? "border-transparent shadow-sm"
-                    : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-700"
+                onClick={() => setActiveGroup(isActive ? null : g.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap flex-shrink-0 ${
+                  isActive ? "border-transparent" : "bg-white text-gray-500 border-gray-200 hover:border-gray-400"
                 }`}
                 style={isActive ? { backgroundColor: bgColor, borderColor: bgColor, color: textColor } : {}}
               >
-                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: dotColor }} />
                 {g.label || g.name}
               </button>
             );
@@ -564,59 +575,9 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
         </div>
       </div>
 
-      {/* Standings */}
-      <div className="card p-4 sm:p-5">
-        <h3 className="font-bold text-base sm:text-lg mb-4 flex items-center gap-2">
-          <span className="w-3 h-3 rounded-full" style={{ backgroundColor: group.color || "#6366f1" }} />
-          <span>{group.label || group.name}</span>
-          <span className="text-gray-500 font-normal text-sm sm:text-base">순위표</span>
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full text-xs sm:text-sm">
-            <thead>
-              <tr className="border-b border-gray-200 text-gray-500">
-                <th className="text-left pb-2 font-medium w-6">#</th>
-                <th className="text-left pb-2 font-medium pl-1.5">팀</th>
-                <th className="text-center pb-2 font-medium px-1.5">경기</th>
-                <th className="text-center pb-2 font-medium px-2 border-l border-gray-200">승</th>
-                <th className="text-center pb-2 font-medium px-2">무</th>
-                <th className="text-center pb-2 font-medium px-2">패</th>
-                <th className="text-center pb-2 font-medium px-1 border-l border-gray-200">득점</th>
-                <th className="text-center pb-2 font-medium px-1">실점</th>
-                <th className="text-center pb-2 font-medium px-1">득실</th>
-                <th className="text-center pb-2 font-bold px-1.5 border-l border-gray-200">승점</th>
-              </tr>
-            </thead>
-            <tbody>
-              {[...group.teams]
-                .sort((a, b) => b.points - a.points || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf)
-                .map((gt, i) => (
-                  <tr key={gt.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-2 text-gray-400 font-medium">{i + 1}</td>
-                    <td className="py-2 pl-1.5">
-                      <div className="flex items-center gap-1.5">
-                        <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: gt.team.color || "#3b82f6" }} />
-                        <span className="font-medium truncate max-w-[72px] sm:max-w-none">{gt.team.name}</span>
-                      </div>
-                    </td>
-                    <td className="py-2 text-center px-1.5">{gt.played}</td>
-                    <td className="py-2 text-center px-2 border-l border-gray-100">{gt.won}</td>
-                    <td className="py-2 text-center px-2">{gt.drawn}</td>
-                    <td className="py-2 text-center px-2">{gt.lost}</td>
-                    <td className="py-2 text-center px-1 border-l border-gray-100">{gt.gf}</td>
-                    <td className="py-2 text-center px-1">{gt.ga}</td>
-                    <td className="py-2 text-center px-1 text-gray-500">{(gt.gf - gt.ga) > 0 ? `+${gt.gf - gt.ga}` : gt.gf - gt.ga}</td>
-                    <td className="py-2 text-center px-1.5 border-l border-gray-100 font-bold text-blue-600">{gt.points}</td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Matches of this group — grouped by date */}
-      {groupMatches.length > 0 && (() => {
-        const toKSTDate = (iso: string) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
+      {/* 순위표 + 경기 일정 */}
+      {visibleGroups.map((group) => {
+        const groupMatches = tournament.matches.filter((m) => m.group?.id === group.id);
         const grouped = new Map<string, Match[]>();
         const sorted = [...groupMatches].sort((a, b) => {
           const da = a.date ? toKSTDate(a.date) : "9999-99-99";
@@ -629,28 +590,84 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
           if (!grouped.has(key)) grouped.set(key, []);
           grouped.get(key)!.push(m);
         }
+
         return (
-          <div className="card p-4 sm:p-5">
-            <h3 className="font-bold text-base sm:text-lg mb-4">{group.label || group.name} 경기 일정</h3>
-            <div className="space-y-5">
-              {[...grouped.entries()].map(([dateKey, dayMatches]) => (
-                <div key={dateKey}>
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-xs font-semibold text-gray-500">
-                      {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
-                    </span>
-                    <span className="text-xs text-gray-400">({dayMatches.length}경기)</span>
-                    <div className="flex-1 h-px bg-gray-100" />
-                  </div>
-                  <div className="space-y-2">
-                    {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge />)}
-                  </div>
-                </div>
-              ))}
+          <div key={group.id} className="space-y-3">
+            {/* 순위표 */}
+            <div className="card p-4 sm:p-5">
+              <h3 className="font-bold text-base sm:text-lg mb-4 flex items-center gap-2">
+                <span className="w-3 h-3 rounded-full" style={{ backgroundColor: group.color || "#6366f1" }} />
+                <span>{group.label || group.name}</span>
+                <span className="text-gray-500 font-normal text-sm sm:text-base">순위표</span>
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs sm:text-sm">
+                  <thead>
+                    <tr className="border-b border-gray-200 text-gray-500">
+                      <th className="text-left pb-2 font-medium w-6">#</th>
+                      <th className="text-left pb-2 font-medium pl-1.5">팀</th>
+                      <th className="text-center pb-2 font-medium px-1.5">경기</th>
+                      <th className="text-center pb-2 font-medium px-2 border-l border-gray-200">승</th>
+                      <th className="text-center pb-2 font-medium px-2">무</th>
+                      <th className="text-center pb-2 font-medium px-2">패</th>
+                      <th className="text-center pb-2 font-medium px-1 border-l border-gray-200">득점</th>
+                      <th className="text-center pb-2 font-medium px-1">실점</th>
+                      <th className="text-center pb-2 font-medium px-1">득실</th>
+                      <th className="text-center pb-2 font-bold px-1.5 border-l border-gray-200">승점</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[...group.teams]
+                      .sort((a, b) => b.points - a.points || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf)
+                      .map((gt, i) => (
+                        <tr key={gt.id} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="py-2 text-gray-400 font-medium">{i + 1}</td>
+                          <td className="py-2 pl-1.5">
+                            <div className="flex items-center gap-1.5">
+                              <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: gt.team.color || "#3b82f6" }} />
+                              <span className="font-medium truncate max-w-[72px] sm:max-w-none">{gt.team.name}</span>
+                            </div>
+                          </td>
+                          <td className="py-2 text-center px-1.5">{gt.played}</td>
+                          <td className="py-2 text-center px-2 border-l border-gray-100">{gt.won}</td>
+                          <td className="py-2 text-center px-2">{gt.drawn}</td>
+                          <td className="py-2 text-center px-2">{gt.lost}</td>
+                          <td className="py-2 text-center px-1 border-l border-gray-100">{gt.gf}</td>
+                          <td className="py-2 text-center px-1">{gt.ga}</td>
+                          <td className="py-2 text-center px-1 text-gray-500">{(gt.gf - gt.ga) > 0 ? `+${gt.gf - gt.ga}` : gt.gf - gt.ga}</td>
+                          <td className="py-2 text-center px-1.5 border-l border-gray-100 font-bold text-blue-600">{gt.points}</td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
+
+            {/* 경기 일정 */}
+            {groupMatches.length > 0 && (
+              <div className="card p-4 sm:p-5">
+                <h3 className="font-bold text-base sm:text-lg mb-4">{group.label || group.name} 경기 일정</h3>
+                <div className="space-y-5">
+                  {[...grouped.entries()].map(([dateKey, dayMatches]) => (
+                    <div key={dateKey}>
+                      <div className="flex items-center gap-3 mb-2">
+                        <span className="text-xs font-semibold text-gray-500">
+                          {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
+                        </span>
+                        <span className="text-xs text-gray-400">({dayMatches.length}경기)</span>
+                        <div className="flex-1 h-px bg-gray-100" />
+                      </div>
+                      <div className="space-y-2">
+                        {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge />)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         );
-      })()}
+      })}
     </div>
   );
 }
