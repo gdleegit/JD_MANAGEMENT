@@ -29,9 +29,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-sm group-hover:bg-blue-500/30 transition-all" />
                   <Image src="/jd1.svg" alt="中東 Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
                 </div>
-                <div className="flex flex-col leading-tight">
-                  <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.35em] text-blue-400/80 uppercase">中東AA</span>
-                  <span className={`${bebas.className} text-[22px] sm:text-[26px] tracking-widest text-white group-hover:text-blue-300 transition-colors`}>Athletic Archive</span>
+                <div className="flex flex-col leading-none gap-0.5">
+                  <div className={`${bebas.className} flex items-baseline text-[26px] sm:text-[32px] tracking-wider leading-none`}>
+                    <span className="text-white group-hover:text-blue-100 transition-colors">中東</span>
+                    <span className="text-blue-400 group-hover:text-blue-300 transition-colors">AA</span>
+                  </div>
+                  <span className="text-[8px] sm:text-[9px] font-bold tracking-[0.4em] text-gray-500 uppercase">Athletic Archive</span>
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
