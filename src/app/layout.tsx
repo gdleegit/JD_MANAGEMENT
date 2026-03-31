@@ -2,9 +2,6 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
-import { Montserrat } from "next/font/google";
-
-const montserrat = Montserrat({ weight: "800", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "중동ArenA | Athletic Archive",
@@ -24,29 +21,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <nav className="bg-gray-950 border-b border-white/10 sticky top-0 z-50 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
-              <Link href="/tournaments" className="flex items-center gap-2.5 sm:gap-3 group">
-                <div className="relative">
-                  <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-sm group-hover:bg-blue-500/30 transition-all" />
-                  <Image src="/jd1.svg" alt="중동ArenA Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
-                </div>
-                <div className="flex flex-col leading-none gap-0.5">
-                  <div className="flex items-center leading-none">
-                    {/* 中東 — Pretendard ExtraBold */}
-                    <span
-                      className="text-[23px] sm:text-[28px] text-white group-hover:text-blue-50 transition-colors"
-                      style={{ fontFamily: "'Pretendard Variable', Pretendard, sans-serif", fontWeight: 800 }}
-                    >
-                      中東
-                    </span>
-                    {/* ArenA — Montserrat ExtraBold, 앞뒤 A는 전통 파란색 */}
-                    <span className={`${montserrat.className} text-[23px] sm:text-[28px]`}>
-                      <span className="text-blue-400 group-hover:text-blue-300 transition-colors">A</span>
-                      <span className="text-white group-hover:text-blue-50 transition-colors">ren</span>
-                      <span className="text-blue-400 group-hover:text-blue-300 transition-colors">A</span>
-                    </span>
-                  </div>
-                  <span className="text-[8px] sm:text-[9px] font-bold tracking-[0.55em] text-gray-500 uppercase">Athletic Archive</span>
-                </div>
+              <Link href="/tournaments" className="flex items-center group">
+                <Image
+                  src="/중동ArenA.png"
+                  alt="중동ArenA Athletic Archive"
+                  width={200}
+                  height={133}
+                  className="h-9 sm:h-11 w-auto object-contain transition-opacity group-hover:opacity-90"
+                  style={{ mixBlendMode: "screen" }}
+                  priority
+                />
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
                 <Link href="/admin" className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors px-3 py-2 rounded-lg hover:bg-white/5">
