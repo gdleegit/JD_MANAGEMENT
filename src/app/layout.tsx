@@ -37,13 +37,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       {"JOONGDONG".split("").map((c, i) => <span key={i}>{c}</span>)}
                     </div>
                   </div>
-                  <span className="text-gray-500 text-[18px] sm:text-[22px] font-thin self-center">|</span>
-                  <span className={`${bebas.className} text-[13px] sm:text-[15px] tracking-widest group-hover:opacity-90 transition-opacity`}>
-                    <span style={{ color: "#176fc1" }}>A</span>
-                    <span className="text-gray-300">thletic </span>
-                    <span style={{ color: "#176fc1" }}>A</span>
-                    <span className="text-gray-300">rchive</span>
-                  </span>
+                  <div className="flex items-end gap-2 sm:gap-2.5">
+                    <span className="text-gray-500 text-[18px] sm:text-[22px] font-thin leading-none">|</span>
+                    <span className={`${bebas.className} text-[13px] sm:text-[15px] tracking-[0.18em] group-hover:opacity-90 transition-opacity leading-none`}>
+                      <span style={{ color: "#176fc1" }}>A</span>
+                      <span className="text-gray-300">thletic </span>
+                      <span style={{ color: "#176fc1" }}>A</span>
+                      <span className="text-gray-300">rchive</span>
+                    </span>
+                  </div>
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
