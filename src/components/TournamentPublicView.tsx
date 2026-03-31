@@ -643,8 +643,8 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
               </div>
             </div>
 
-            {/* 경기 일정 */}
-            {groupMatches.length > 0 && (
+            {/* 경기 일정 — 개별 리그 선택 시에만 표시 */}
+            {activeGroup !== null && groupMatches.length > 0 && (
               <div className="card p-4 sm:p-5">
                 <h3 className="font-bold text-base sm:text-lg mb-4">{group.label || group.name} 경기 일정</h3>
                 <div className="space-y-5">
