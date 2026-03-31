@@ -2,10 +2,11 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
-import { Bebas_Neue, Noto_Serif_KR } from "next/font/google";
+import { Bebas_Neue, Noto_Serif_KR, Montserrat } from "next/font/google";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"], display: "swap" });
 const notoSerifKR = Noto_Serif_KR({ weight: "700", subsets: ["latin"], display: "swap" });
+const montserrat = Montserrat({ weight: "800", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "中東 AA | Athletic Archive",
@@ -31,11 +32,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <Image src="/jd1.svg" alt="中東 Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-none gap-0.5">
-                  <div className={`${bebas.className} flex items-baseline text-[26px] sm:text-[32px] tracking-wider leading-none`}>
-                    <span className={`${notoSerifKR.className} text-white group-hover:text-blue-100 transition-colors`}>中東</span>
-                    <span className="text-blue-400 group-hover:text-blue-300 transition-colors">AA</span>
+                  <div className="flex items-baseline leading-none">
+                    <span className={`${notoSerifKR.className} text-[26px] sm:text-[32px] text-white group-hover:text-blue-100 transition-colors`}>中東</span>
+                    <span className={`${montserrat.className} text-[22px] sm:text-[27px] text-blue-400 group-hover:text-blue-300 transition-colors tracking-tight`}>AA</span>
                   </div>
-                  <span className="text-[8px] sm:text-[9px] font-bold tracking-[0.4em] text-gray-500 uppercase">Athletic Archive</span>
+                  <span className="text-[8px] sm:text-[9px] font-bold tracking-[0.55em] text-gray-500 uppercase">Athletic Archive</span>
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
