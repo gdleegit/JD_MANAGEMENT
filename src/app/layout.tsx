@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                       <span className="text-blue-400 group-hover:text-blue-300 transition-colors">A</span>
                     </span>
                   </div>
-                  <span className="text-[8px] sm:text-[9px] font-bold tracking-[0.55em] text-gray-500 uppercase">Athletic Archive</span>
+                  <span className={`${cinzel.className} text-[7px] sm:text-[8px] tracking-[0.5em] text-gray-500`}>Athletic Archive</span>
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
