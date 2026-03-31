@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-sm group-hover:bg-blue-500/30 transition-all" />
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/jd2.svg" alt="中東 Athletic Archive" className="relative w-8 h-8 sm:w-[38px] sm:h-[38px]" />
+                  <img src="/jd2.svg" alt="中東 Athletic Archive" className="relative w-10 h-10 sm:w-[46px] sm:h-[46px]" />
                 </div>
                 <div className="flex flex-col leading-tight">
                   <span className={`${notoSerifKR.className} text-[11px] sm:text-[13px] tracking-[0.35em] text-gray-300`}>中東</span>
