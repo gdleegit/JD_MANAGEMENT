@@ -618,7 +618,7 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
                   </thead>
                   <tbody>
                     {[...group.teams]
-                      .sort((a, b) => b.points - a.points || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf)
+                      .sort((a, b) => b.points - a.points || (b.gf - b.ga) - (a.gf - a.ga) || b.gf - a.gf || a.team.name.localeCompare(b.team.name, "ko"))
                       .map((gt, i) => (
                         <tr key={gt.id} className="border-b border-gray-100 hover:bg-gray-50">
                           <td className="py-2 text-gray-400 font-medium">{i + 1}</td>
