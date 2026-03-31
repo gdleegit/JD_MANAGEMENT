@@ -2,12 +2,12 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
-import { Bebas_Neue } from "next/font/google";
+import { Montserrat } from "next/font/google";
 
-const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"], display: "swap" });
+const montserrat = Montserrat({ weight: "800", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "中東 AA | Athletic Archive",
+  title: "중동ArenA | Athletic Archive",
   description: "중동 체육위원회 Athletic Archive — 중동인의 땀방울을 기록하다.",
 };
 
@@ -27,11 +27,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/tournaments" className="flex items-center gap-2.5 sm:gap-3 group">
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-sm group-hover:bg-blue-500/30 transition-all" />
-                  <Image src="/jd1.svg" alt="中東 Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
+                  <Image src="/jd1.svg" alt="중동ArenA Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-none gap-0.5">
-                  <div className="flex items-end leading-none" style={{ fontFamily: "'Pretendard Variable', Pretendard, sans-serif", fontWeight: 800 }}>
-                    <span className="text-[23px] sm:text-[28px] text-white group-hover:text-blue-100 transition-colors">中東AA</span>
+                  <div className="flex items-end leading-none">
+                    {/* 중동 — Pretendard ExtraBold */}
+                    <span
+                      className="text-[23px] sm:text-[28px] text-white group-hover:text-blue-50 transition-colors"
+                      style={{ fontFamily: "'Pretendard Variable', Pretendard, sans-serif", fontWeight: 800 }}
+                    >
+                      중동
+                    </span>
+                    {/* ArenA — Montserrat ExtraBold, 앞뒤 A는 전통 파란색 */}
+                    <span className={`${montserrat.className} text-[23px] sm:text-[28px]`}>
+                      <span className="text-blue-400 group-hover:text-blue-300 transition-colors">A</span>
+                      <span className="text-white group-hover:text-blue-50 transition-colors">ren</span>
+                      <span className="text-blue-400 group-hover:text-blue-300 transition-colors">A</span>
+                    </span>
                   </div>
                   <span className="text-[8px] sm:text-[9px] font-bold tracking-[0.55em] text-gray-500 uppercase">Athletic Archive</span>
                 </div>
