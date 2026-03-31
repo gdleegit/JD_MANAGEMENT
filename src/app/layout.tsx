@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div className="flex items-center justify-between h-14 sm:h-16">
               <Link href="/tournaments" className="flex items-center group">
                 <Image
-                  src="/중동ArenA.png"
+                  src="/arena-logo.png"
                   alt="중동ArenA Athletic Archive"
                   width={200}
                   height={133}
