@@ -530,21 +530,29 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
 
   return (
     <div className="space-y-4">
-      {/* Group Tabs */}
-      <div className="flex gap-1.5 sm:gap-2 flex-wrap">
-        {tournament.groups.map((g) => (
-          <button
-            key={g.id}
-            onClick={() => setActiveGroup(g.id)}
-            className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium border transition-colors"
-            style={activeGroup === g.id
-              ? { backgroundColor: (g.color || "#6366f1") + "99", color: "#111827", borderColor: g.color || "#6366f1", fontWeight: 700 }
-              : { backgroundColor: (g.color || "#6366f1") + "22", color: "#6b7280", borderColor: "#e5e7eb" }
-            }
-          >
-            {g.label || g.name}
-          </button>
-        ))}
+      {/* Group Selector */}
+      <div className="card p-4">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">기수 선택</p>
+        <div className="flex gap-2 flex-wrap">
+          {tournament.groups.map((g) => (
+            <button
+              key={g.id}
+              onClick={() => setActiveGroup(g.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all ${
+                activeGroup === g.id
+                  ? "border-transparent text-white shadow-sm"
+                  : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-700"
+              }`}
+              style={activeGroup === g.id ? { backgroundColor: g.color || "#6366f1", borderColor: g.color || "#6366f1" } : {}}
+            >
+              <span
+                className="w-2 h-2 rounded-full flex-shrink-0"
+                style={{ backgroundColor: activeGroup === g.id ? "rgba(255,255,255,0.7)" : (g.color || "#6366f1") }}
+              />
+              {g.label || g.name}
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Standings */}
