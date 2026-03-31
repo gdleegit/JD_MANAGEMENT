@@ -30,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <img src="/jd2.svg" alt="中東 Athletic Archive" className="relative w-8 h-8 sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-tight">
-                  <span className="text-[9px] sm:text-[10px] font-bold tracking-[0.35em] text-blue-400/80 uppercase">中東AA</span>
+                  <span className="text-[11px] sm:text-[13px] font-bold tracking-[0.35em] text-blue-400/80 uppercase">中東AA</span>
                   <span className={`${bebas.className} text-[22px] sm:text-[26px] tracking-widest text-white group-hover:text-blue-300 transition-colors`}>Athletic Archive</span>
                 </div>
               </Link>
