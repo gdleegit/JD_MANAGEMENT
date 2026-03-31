@@ -33,7 +33,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="flex items-center gap-2 sm:gap-2.5">
                   <div className="flex flex-col leading-none gap-[3px]">
                     <span className={`${notoSerifKR.className} text-[26px] sm:text-[32px] text-white group-hover:text-blue-50 transition-colors tracking-wide`}>中東</span>
-                    <span className="text-[7px] sm:text-[8px] text-gray-400 tracking-[0.1em] w-full" style={{ textAlign: "justify", textAlignLast: "justify" }}>JOONGDONG</span>
+                    <div className="flex justify-between font-light text-[5px] sm:text-[6px] text-gray-500">
+                      {"JOONGDONG".split("").map((c, i) => <span key={i}>{c}</span>)}
+                    </div>
                   </div>
                   <span className="text-gray-500 text-[18px] sm:text-[22px] font-thin self-center">|</span>
                   <span className={`${bebas.className} text-[13px] sm:text-[15px] tracking-widest group-hover:opacity-90 transition-opacity`}>
