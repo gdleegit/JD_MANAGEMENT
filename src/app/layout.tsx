@@ -1,14 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
-import { Noto_Serif_KR, Cinzel } from "next/font/google";
-
-const notoSerifKR = Noto_Serif_KR({ weight: "400", subsets: ["latin"], display: "swap" });
-const cinzel = Cinzel({ weight: "400", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "중동ArenA | Athletic Archive",
-  description: "중동 체육위원회 Athletic Archive — 중동인의 땀방울을 기록하다.",
+  title: "중동 체육대회관리",
+  description: "중동 체육위원회 — 중동인의 땀방울을 기록하다.",
 };
 
 export const viewport: Viewport = {
@@ -28,22 +24,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-sm group-hover:bg-blue-500/30 transition-all" />
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/jd2.svg" alt="중동ArenA Athletic Archive" className="relative w-8 h-8 sm:w-[38px] sm:h-[38px]" />
+                  <img src="/jd2.svg" alt="중동 체육대회관리" className="relative w-8 h-8 sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-none gap-0.5">
-                  <div className="flex items-center leading-none">
-                    {/* 中東 — Noto Serif KR 400, 클래식 세리프 */}
-                    <span className={`${notoSerifKR.className} text-[22px] sm:text-[27px] text-white group-hover:text-blue-50 transition-colors tracking-wide`}>
-                      中東
-                    </span>
-                    {/* ArenA — Cinzel 400, 로마 석판 클래식체, 앞뒤 A 전통 파란색 */}
-                    <span className={`${cinzel.className} text-[22px] sm:text-[27px] tracking-wide`}>
-                      <span className="text-blue-400 group-hover:text-blue-300 transition-colors">A</span>
-                      <span className="text-white group-hover:text-blue-50 transition-colors">ren</span>
-                      <span className="text-blue-400 group-hover:text-blue-300 transition-colors">A</span>
-                    </span>
-                  </div>
-                  <span className={`${cinzel.className} text-[7px] sm:text-[8px] tracking-[0.65em] text-gray-500`}>Athletic Archive</span>
+                  <span className="text-[18px] sm:text-[22px] font-bold text-white group-hover:text-blue-50 transition-colors tracking-tight">
+                    중동 체육대회관리
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] text-gray-500 tracking-wide">중동 체육위원회</span>
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
