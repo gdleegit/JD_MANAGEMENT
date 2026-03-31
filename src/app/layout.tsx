@@ -32,13 +32,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
                 <div className="flex flex-col leading-tight">
                   <span className={`${notoSerifKR.className} text-[11px] sm:text-[13px] tracking-[0.35em] text-gray-300`}>中東</span>
-                  <span className={`${bebas.className} text-[22px] sm:text-[26px] tracking-widest group-hover:opacity-90 transition-opacity`}>
+                  <span className={`${bebas.className} text-[22px] sm:text-[26px] tracking-widest group-hover:opacity-90 transition-opacity leading-none`}>
                     <span style={{ color: "#176fc1" }}>A</span>
                     <span className="text-white">thletic </span>
                     <span style={{ color: "#176fc1" }}>A</span>
                     <span className="text-white">rchive</span>
                   </span>
-                  <div className="h-px bg-white w-[calc(100%+12px)]" style={{ marginTop: "0.02rem" }} />
+                  <div className="h-px bg-white w-[calc(100%+12px)]" style={{ marginTop: "2px" }} />
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
