@@ -2,9 +2,10 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
 import Image from "next/image";
-import { Montserrat } from "next/font/google";
+import { Noto_Serif_KR, Cinzel } from "next/font/google";
 
-const montserrat = Montserrat({ weight: "800", subsets: ["latin"], display: "swap" });
+const notoSerifKR = Noto_Serif_KR({ weight: "400", subsets: ["latin"], display: "swap" });
+const cinzel = Cinzel({ weight: "400", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
   title: "중동ArenA | Athletic Archive",
@@ -31,15 +32,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 </div>
                 <div className="flex flex-col leading-none gap-0.5">
                   <div className="flex items-center leading-none">
-                    {/* 中東 — Pretendard ExtraBold */}
-                    <span
-                      className="text-[23px] sm:text-[28px] text-white group-hover:text-blue-50 transition-colors"
-                      style={{ fontFamily: "'Pretendard Variable', Pretendard, sans-serif", fontWeight: 800 }}
-                    >
+                    {/* 中東 — Noto Serif KR 400, 클래식 세리프 */}
+                    <span className={`${notoSerifKR.className} text-[22px] sm:text-[27px] text-white group-hover:text-blue-50 transition-colors tracking-wide`}>
                       中東
                     </span>
-                    {/* ArenA — Montserrat ExtraBold, 앞뒤 A는 전통 파란색 */}
-                    <span className={`${montserrat.className} text-[23px] sm:text-[28px]`}>
+                    {/* ArenA — Cinzel 400, 로마 석판 클래식체, 앞뒤 A 전통 파란색 */}
+                    <span className={`${cinzel.className} text-[22px] sm:text-[27px] tracking-wide`}>
                       <span className="text-blue-400 group-hover:text-blue-300 transition-colors">A</span>
                       <span className="text-white group-hover:text-blue-50 transition-colors">ren</span>
                       <span className="text-blue-400 group-hover:text-blue-300 transition-colors">A</span>
