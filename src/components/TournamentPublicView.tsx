@@ -549,14 +549,14 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
               <button
                 key={g.id}
                 onClick={() => setActiveGroup(g.id)}
-                className={`flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all ${
+                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
                   isActive
                     ? "border-transparent shadow-sm"
                     : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-700"
                 }`}
                 style={isActive ? { backgroundColor: bgColor, borderColor: bgColor, color: textColor } : {}}
               >
-                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: dotColor }} />
+                <span className="w-1.5 h-1.5 rounded-full flex-shrink-0" style={{ backgroundColor: dotColor }} />
                 {g.label || g.name}
               </button>
             );
