@@ -38,7 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <span style={{ color: "#176fc1" }}>A</span>
                     <span className="text-white">rchive</span>
                   </span>
-                  <div className="h-px bg-white mt-0.5 w-[calc(100%+12px)]" />
+                  <div className="h-px bg-white w-[calc(100%+12px)]" style={{ marginTop: "0.02rem" }} />
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
