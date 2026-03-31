@@ -7,7 +7,7 @@ const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"], display: "swap" })
 const notoSerifKR = Noto_Serif_KR({ weight: "400", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "中東 | Athletic Archive",
+  title: "中東AA | Athletic Archive",
   description: "중동 체육위원회 Athletic Archive — 중동인의 땀방울을 기록하다.",
 };
 
