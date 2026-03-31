@@ -1,9 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
+import { Noto_Serif_KR, Cinzel } from "next/font/google";
+
+const notoSerifKR = Noto_Serif_KR({ weight: "400", subsets: ["latin"], display: "swap" });
+const cinzel = Cinzel({ weight: "400", subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "중동 체육대회관리",
+  title: "중동 체육대회관리 | Athletic Archive",
   description: "중동 체육위원회 — 중동인의 땀방울을 기록하다.",
 };
 
@@ -27,10 +31,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   <img src="/jd2.svg" alt="중동 체육대회관리" className="relative w-8 h-8 sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-none gap-0.5">
-                  <span className="text-[18px] sm:text-[22px] font-bold text-white group-hover:text-blue-50 transition-colors tracking-tight">
-                    중동 체육대회관리
-                  </span>
-                  <span className="text-[10px] sm:text-[11px] text-gray-500 tracking-wide">중동 체육위원회</span>
+                  <div className="flex items-baseline leading-none">
+                    <span className={`${notoSerifKR.className} text-[22px] sm:text-[27px] text-white group-hover:text-blue-50 transition-colors tracking-wide`}>中東</span>
+                    <span className="text-[22px] sm:text-[27px] text-white group-hover:text-blue-50 transition-colors tracking-tight font-medium"> 체육대회관리</span>
+                  </div>
+                  <div className={`${cinzel.className} text-[7px] sm:text-[8px] text-gray-500 flex justify-between`}>
+                    <span>Athletic</span>
+                    <span>Archive</span>
+                  </div>
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
