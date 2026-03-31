@@ -24,7 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <nav className="bg-gray-950 border-b border-white/10 sticky top-0 z-50 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-14 sm:h-16">
-              <Link href="/tournaments" className="flex items-center gap-2.5 sm:gap-3 group">
+              <Link href="/tournaments" className="flex items-end gap-2.5 sm:gap-3 group">
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-sm group-hover:bg-blue-500/30 transition-all" />
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -38,6 +38,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <span style={{ color: "#176fc1" }}>A</span>
                     <span className="text-white">rchive</span>
                   </span>
+                  <div className="h-px bg-white mt-1 w-[calc(100%+12px)]" />
                 </div>
               </Link>
               <div className="flex items-center text-xs sm:text-sm font-medium">
