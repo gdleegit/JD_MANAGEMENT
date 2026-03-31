@@ -8,7 +8,9 @@ import TournamentEditor from "./TournamentEditor";
 type Tournament = { id: string; name: string; type: string; status: string; _count: { teams: number; matches: number } };
 
 const STATUS_LABELS: Record<string, string> = { UPCOMING: "예정", ONGOING: "진행중", FINISHED: "종료" };
+const STATUS_BADGE: Record<string, string> = { UPCOMING: "badge badge-gray", ONGOING: "badge badge-yellow", FINISHED: "badge badge-green" };
 const TYPE_LABELS: Record<string, string> = { KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별리그" };
+const TYPE_BADGE: Record<string, string> = { KNOCKOUT: "badge badge-blue", LEAGUE: "badge badge-blue", GROUP: "badge badge-blue" };
 
 export default function TournamentsTab({ initialTournaments }: { initialTournaments: Tournament[] }) {
   const router = useRouter();
@@ -94,20 +96,24 @@ export default function TournamentsTab({ initialTournaments }: { initialTourname
           ) : (
             <div className="space-y-3">
               {tournaments.map((t) => (
-                <div key={t.id} className="border border-gray-100 rounded-xl p-4 hover:bg-gray-50">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <h3 className="font-bold">{t.name}</h3>
-                        <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{TYPE_LABELS[t.type]}</span>
-                        <span className="text-xs text-gray-500">{STATUS_LABELS[t.status]}</span>
+                <div key={t.id} className={`border rounded-xl p-4 hover:bg-gray-50 transition-colors ${
+                  t.status === "ONGOING" ? "border-l-4 border-l-amber-400 border-amber-100" :
+                  t.status === "FINISHED" ? "border-l-4 border-l-green-400 border-green-100" :
+                  "border-gray-100"
+                }`}>
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                        <h3 className="font-bold truncate">{t.name}</h3>
+                        <span className={TYPE_BADGE[t.type] || "badge badge-blue"}>{TYPE_LABELS[t.type]}</span>
+                        <span className={STATUS_BADGE[t.status] || "badge badge-gray"}>{STATUS_LABELS[t.status]}</span>
                       </div>
-                      <p className="text-sm text-gray-500">팀 {t._count.teams}개 · 경기 {t._count.matches}개</p>
+                      <p className="text-sm text-gray-400">팀 {t._count.teams}개 · 경기 {t._count.matches}개</p>
                     </div>
-                    <div className="flex gap-2">
-                      <Link href={`/tournaments/${t.id}`} target="_blank" className="btn btn-secondary btn-sm text-xs">보기</Link>
-                      <button onClick={() => setEditingId(t.id)} className="btn-primary btn-sm text-xs">편집</button>
-                      <button onClick={() => deleteTournament(t.id)} className="btn-danger btn-sm text-xs">삭제</button>
+                    <div className="flex gap-1.5 flex-shrink-0">
+                      <Link href={`/tournaments/${t.id}`} target="_blank" className="btn btn-secondary btn-sm text-xs" title="공개 페이지 보기">↗ 보기</Link>
+                      <button onClick={() => setEditingId(t.id)} className="btn btn-primary btn-sm text-xs">편집</button>
+                      <button onClick={() => deleteTournament(t.id)} className="btn btn-danger btn-sm text-xs">삭제</button>
                     </div>
                   </div>
                 </div>

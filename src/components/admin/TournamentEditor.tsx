@@ -235,9 +235,21 @@ function InfoTab({ tournament, onSave, saving }: { tournament: Tournament; onSav
         </div>
         <div>
           <label className="label">상태</label>
-          <select className="input" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-            {STATUS_OPTIONS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
-          </select>
+          <div className="grid grid-cols-3 gap-2">
+            {STATUS_OPTIONS.map((o) => {
+              const activeStyle = o.value === "UPCOMING" ? "bg-gray-600 text-white border-gray-600" : o.value === "ONGOING" ? "bg-amber-500 text-white border-amber-500" : "bg-green-600 text-white border-green-600";
+              return (
+                <button
+                  key={o.value}
+                  type="button"
+                  onClick={() => setForm({ ...form, status: o.value })}
+                  className={`py-2 rounded-lg text-sm font-medium border transition-all ${form.status === o.value ? activeStyle : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"}`}
+                >
+                  {o.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
         <div>
           <label className="label">시작일</label>
@@ -371,7 +383,7 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onTeam
               <div key={team.id}>
                 {editingTeam?.id === team.id ? (
                   /* 인라인 편집 폼 */
-                  <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 space-y-2 my-1">
+                  <div className="bg-gray-50 border border-gray-200 rounded-xl p-3 space-y-2 my-1">
                     <div className="flex gap-2">
                       <input
                         className="input flex-1 text-sm"
@@ -745,7 +757,11 @@ function MatchesTab({ tournament, loadingMatchId, onCreateMatch, onEditMatch, on
                       const cfg = STATUS_CFG[match.status] ?? { label: match.status, cls: "bg-gray-100 text-gray-500", dot: "bg-gray-400" };
                       const referees = [match.referee, match.assistantReferee1, match.assistantReferee2].filter(Boolean);
                       return (
-                        <div key={match.id} className="flex items-center justify-between p-4 border border-gray-100 rounded-xl hover:bg-gray-50 transition-colors">
+                        <div key={match.id} className={`flex items-center justify-between p-4 rounded-xl hover:bg-gray-50 transition-colors border ${
+                          match.status === "ONGOING" ? "border-amber-200 border-l-4 border-l-amber-400" :
+                          match.status === "FINISHED" ? "border-green-200 border-l-4 border-l-green-400" :
+                          "border-gray-100"
+                        }`}>
                           <div className="flex-1 min-w-0">
                             {/* Top row: order + status + teams + score */}
                             <div className="flex items-center gap-2 flex-wrap">

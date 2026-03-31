@@ -136,16 +136,22 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
     <div className="space-y-4">
       {/* Header */}
       <div className="flex items-center gap-3 flex-wrap">
-        <button onClick={onBack} className="btn-secondary btn-sm">← 경기 목록</button>
-        <div className="flex items-center gap-2">
-          <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
-          <span className="font-bold">{match.homeTeam.name}</span>
-          <span className="text-gray-400 text-sm mx-1">vs</span>
-          <span className="font-bold">{match.awayTeam.name}</span>
-          <span className="w-3 h-3 rounded-sm" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
+        <button onClick={onBack} className="btn btn-secondary btn-sm">← 경기 목록</button>
+        <div className="flex items-center gap-2 min-w-0">
+          <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
+          <span className="font-bold truncate">{match.homeTeam.name}</span>
+          {currentMatch.homeScore !== null && currentMatch.homeScore !== undefined ? (
+            <span className="font-bold text-base text-gray-800 mx-1 flex-shrink-0">
+              {currentMatch.homeScore} - {currentMatch.awayScore}
+            </span>
+          ) : (
+            <span className="text-gray-400 text-sm mx-1 flex-shrink-0">vs</span>
+          )}
+          <span className="font-bold truncate">{match.awayTeam.name}</span>
+          <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
         </div>
-        {match.round && <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{match.round}</span>}
-        {match.court && <span className="text-xs text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full">{match.court}</span>}
+        {match.round && <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full flex-shrink-0">{match.round}</span>}
+        {match.court && <span className="text-xs text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full flex-shrink-0">{match.court}</span>}
       </div>
 
       {/* ── 스코어보드 + 결과 저장 ── */}
@@ -363,9 +369,11 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         </div>
       )}
 
-      {/* ── 경기 정보 ── */}
+      {/* ── 경기 상세 정보 (경기정보 + 심판진 + 영상) ── */}
       <div className="card p-5">
-        <h4 className="font-bold mb-4">경기 정보</h4>
+        <h4 className="font-bold mb-4">경기 상세 정보</h4>
+
+        {/* 경기 정보 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           <div>
             <label className="label">일시</label>
@@ -388,48 +396,43 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
             <input type="number" className="input" placeholder="순서" value={matchOrder} onChange={(e) => setMatchOrder(e.target.value)} />
           </div>
         </div>
-        <button onClick={saveResult} className="btn-secondary mt-3" disabled={saving}>
-          {saving ? "저장 중..." : "경기 정보 저장"}
-        </button>
-      </div>
 
-      {/* ── 심판진 ── */}
-      <div className="card p-5">
-        <h4 className="font-bold mb-4">심판진</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <div>
-            <label className="label">주심</label>
-            <input type="text" className="input" placeholder="주심 이름" value={referee} onChange={(e) => setReferee(e.target.value)} />
-          </div>
-          <div>
-            <label className="label">부심 1</label>
-            <input type="text" className="input" placeholder="부심 이름" value={assistantReferee1} onChange={(e) => setAssistantReferee1(e.target.value)} />
-          </div>
-          <div>
-            <label className="label">부심 2</label>
-            <input type="text" className="input" placeholder="부심 이름" value={assistantReferee2} onChange={(e) => setAssistantReferee2(e.target.value)} />
+        {/* 심판진 */}
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">심판진</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="label">주심</label>
+              <input type="text" className="input" placeholder="주심 이름" value={referee} onChange={(e) => setReferee(e.target.value)} />
+            </div>
+            <div>
+              <label className="label">부심 1</label>
+              <input type="text" className="input" placeholder="부심 이름" value={assistantReferee1} onChange={(e) => setAssistantReferee1(e.target.value)} />
+            </div>
+            <div>
+              <label className="label">부심 2</label>
+              <input type="text" className="input" placeholder="부심 이름" value={assistantReferee2} onChange={(e) => setAssistantReferee2(e.target.value)} />
+            </div>
           </div>
         </div>
-        <button onClick={saveResult} className="btn-secondary mt-3" disabled={saving}>
-          {saving ? "저장 중..." : "심판진 저장"}
-        </button>
-      </div>
 
-      {/* ── 경기 영상 ── */}
-      <div className="card p-5">
-        <h4 className="font-bold mb-4">경기 영상</h4>
-        <div>
-          <label className="label">영상 URL (YouTube 등)</label>
-          <input
-            type="url"
-            className="input"
-            placeholder="https://www.youtube.com/watch?v=..."
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-          />
+        {/* 경기 영상 */}
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">경기 영상</p>
+          <div>
+            <label className="label">영상 URL (YouTube 등)</label>
+            <input
+              type="url"
+              className="input"
+              placeholder="https://www.youtube.com/watch?v=..."
+              value={videoUrl}
+              onChange={(e) => setVideoUrl(e.target.value)}
+            />
+          </div>
         </div>
-        <button onClick={saveResult} className="btn-secondary mt-3" disabled={saving}>
-          {saving ? "저장 중..." : "영상 저장"}
+
+        <button onClick={saveResult} className="btn btn-secondary mt-4" disabled={saving}>
+          {saving ? "저장 중..." : "상세 정보 저장"}
         </button>
       </div>
     </div>
