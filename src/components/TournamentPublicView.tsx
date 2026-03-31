@@ -305,10 +305,8 @@ export default function TournamentPublicView({
       {/* Rules Tab */}
       {tab === "rules" && tournament.rules && (
         <div className="card p-4 sm:p-6">
-          <h2 className="text-lg sm:text-xl font-bold mb-4">운영규칙</h2>
-          <div className="prose prose-sm max-w-none text-gray-700 whitespace-pre-wrap leading-relaxed">
-            {tournament.rules}
-          </div>
+          <h2 className="text-lg sm:text-xl font-bold mb-5">운영규칙</h2>
+          <RulesRenderer rules={tournament.rules} />
         </div>
       )}
 
@@ -914,6 +912,59 @@ function StandingsTable({ rows }: { rows: LeagueRow[] }) {
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+// ── 운영규칙 렌더러 ─────────────────────────────────────
+function RulesRenderer({ rules }: { rules: string }) {
+  const lines = rules.split("\n");
+
+  return (
+    <div className="space-y-0.5">
+      {lines.map((line, i) => {
+        const trimmed = line.trim();
+
+        // 빈 줄 → 간격
+        if (!trimmed) return <div key={i} className="h-2" />;
+
+        // 숫자 섹션 헤더: "1.", "2." 등
+        const sectionMatch = trimmed.match(/^(\d+)\.\s*(.*)/);
+        if (sectionMatch) {
+          return (
+            <div key={i} className="flex items-baseline gap-2.5 mt-5 first:mt-0 pb-1.5 border-b border-gray-100">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold flex items-center justify-center leading-none">
+                {sectionMatch[1]}
+              </span>
+              <span className="font-bold text-gray-800 text-base">{sectionMatch[2]}</span>
+            </div>
+          );
+        }
+
+        // 불릿 항목: "-", "•", "*" (들여쓰기 유지)
+        const indent = line.match(/^(\s*)/)?.[1].length ?? 0;
+        const bulletMatch = trimmed.match(/^[-•*]\s*(.*)/);
+        if (bulletMatch) {
+          const depth = Math.min(Math.floor(indent / 2), 2);
+          return (
+            <div
+              key={i}
+              className="flex items-start gap-2 py-0.5"
+              style={{ paddingLeft: `${depth * 1 + 1}rem` }}
+            >
+              <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-blue-300 flex-shrink-0" />
+              <span className="text-gray-600 text-sm leading-relaxed">{bulletMatch[1]}</span>
+            </div>
+          );
+        }
+
+        // 일반 텍스트
+        return (
+          <p key={i} className="text-gray-600 text-sm leading-relaxed pl-4">
+            {line}
+          </p>
+        );
+      })}
     </div>
   );
 }
