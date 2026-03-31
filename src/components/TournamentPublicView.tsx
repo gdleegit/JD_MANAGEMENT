@@ -601,31 +601,19 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
                 <span className="text-gray-500 font-normal text-sm sm:text-base">순위표</span>
               </h3>
               <div className="overflow-x-auto">
-                <table className="w-full table-fixed text-xs sm:text-sm">
-                  <colgroup>
-                    <col className="w-6" />
-                    <col />{/* 팀 — 나머지 */}
-                    <col className="w-9" />
-                    <col className="w-8" />
-                    <col className="w-8" />
-                    <col className="w-8" />
-                    <col className="w-9" />
-                    <col className="w-9" />
-                    <col className="w-9" />
-                    <col className="w-10" />
-                  </colgroup>
+                <table className="w-full text-xs sm:text-sm">
                   <thead>
                     <tr className="border-b border-gray-200 text-gray-500">
-                      <th className="text-left pb-2 font-medium">#</th>
+                      <th className="text-left pb-2 font-medium w-6">#</th>
                       <th className="text-left pb-2 font-medium pl-1.5">팀</th>
-                      <th className="text-center pb-2 font-medium">경기</th>
-                      <th className="text-center pb-2 font-medium border-l border-gray-200">승</th>
-                      <th className="text-center pb-2 font-medium">무</th>
-                      <th className="text-center pb-2 font-medium">패</th>
-                      <th className="text-center pb-2 font-medium border-l border-gray-200">득점</th>
-                      <th className="text-center pb-2 font-medium">실점</th>
-                      <th className="text-center pb-2 font-medium">득실</th>
-                      <th className="text-center pb-2 font-bold border-l border-gray-200">승점</th>
+                      <th className="text-center pb-2 font-medium px-1.5">경기</th>
+                      <th className="text-center pb-2 font-medium px-2 border-l border-gray-200">승</th>
+                      <th className="text-center pb-2 font-medium px-2">무</th>
+                      <th className="text-center pb-2 font-medium px-2">패</th>
+                      <th className="text-center pb-2 font-medium px-1 border-l border-gray-200">득점</th>
+                      <th className="text-center pb-2 font-medium px-1">실점</th>
+                      <th className="text-center pb-2 font-medium px-1">득실</th>
+                      <th className="text-center pb-2 font-bold px-1.5 border-l border-gray-200">승점</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -637,16 +625,16 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
                           <td className="py-2 pl-1.5">
                             <div className="flex items-center gap-1.5">
                               <div className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: gt.team.color || "#3b82f6" }} />
-                              <span className="font-medium truncate">{gt.team.name}</span>
+                              <span className="font-medium truncate max-w-[72px] sm:max-w-none">{gt.team.name}</span>
                             </div>
                           </td>
-                          <td className="py-2 text-center">{gt.played}</td>
-                          <td className="py-2 text-center border-l border-gray-100">{gt.won}</td>
-                          <td className="py-2 text-center">{gt.drawn}</td>
-                          <td className="py-2 text-center">{gt.lost}</td>
-                          <td className="py-2 text-center border-l border-gray-100">{gt.gf}</td>
-                          <td className="py-2 text-center">{gt.ga}</td>
-                          <td className="py-2 text-center text-gray-500">{(gt.gf - gt.ga) > 0 ? `+${gt.gf - gt.ga}` : gt.gf - gt.ga}</td>
+                          <td className="py-2 text-center px-1.5">{gt.played}</td>
+                          <td className="py-2 text-center px-2 border-l border-gray-100">{gt.won}</td>
+                          <td className="py-2 text-center px-2">{gt.drawn}</td>
+                          <td className="py-2 text-center px-2">{gt.lost}</td>
+                          <td className="py-2 text-center px-1 border-l border-gray-100">{gt.gf}</td>
+                          <td className="py-2 text-center px-1">{gt.ga}</td>
+                          <td className="py-2 text-center px-1 text-gray-500">{(gt.gf - gt.ga) > 0 ? `+${gt.gf - gt.ga}` : gt.gf - gt.ga}</td>
                           <td className="py-2 text-center px-1.5 border-l border-gray-100 font-bold text-blue-600">{gt.points}</td>
                         </tr>
                       ))}
