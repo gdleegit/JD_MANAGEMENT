@@ -28,7 +28,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Link href="/tournaments" className="flex items-center gap-2.5 sm:gap-3 group">
                 <div className="relative">
                   <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-sm group-hover:bg-blue-500/30 transition-all" />
-                  <Image src="/home_logo2.png" alt="중동ArenA Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
+                  <Image src="/jd2.svg" alt="중동ArenA Athletic Archive" width={32} height={32} className="relative sm:w-[38px] sm:h-[38px]" />
                 </div>
                 <div className="flex flex-col leading-none gap-0.5">
                   <div className="flex items-center leading-none">
