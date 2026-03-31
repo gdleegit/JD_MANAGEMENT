@@ -30,9 +30,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src="/jd2.svg" alt="中東 Athletic Archive" className="relative w-10 h-10 sm:w-[46px] sm:h-[46px]" />
                 </div>
-                <div className="flex items-baseline gap-2 sm:gap-2.5">
-                  <span className={`${notoSerifKR.className} text-[26px] sm:text-[32px] text-white group-hover:text-blue-50 transition-colors tracking-wide`}>中東</span>
-                  <span className="text-gray-500 text-[18px] sm:text-[22px] font-thin">|</span>
+                <div className="flex items-center gap-2 sm:gap-2.5">
+                  <div className="flex flex-col leading-none gap-[3px]">
+                    <span className={`${notoSerifKR.className} text-[26px] sm:text-[32px] text-white group-hover:text-blue-50 transition-colors tracking-wide`}>中東</span>
+                    <span className="text-[7px] sm:text-[8px] text-gray-400 tracking-[0.1em] w-full" style={{ textAlign: "justify", textAlignLast: "justify" }}>JOONGDONG</span>
+                  </div>
+                  <span className="text-gray-500 text-[18px] sm:text-[22px] font-thin self-center">|</span>
                   <span className={`${bebas.className} text-[13px] sm:text-[15px] tracking-widest group-hover:opacity-90 transition-opacity`}>
                     <span style={{ color: "#176fc1" }}>A</span>
                     <span className="text-gray-300">thletic </span>
