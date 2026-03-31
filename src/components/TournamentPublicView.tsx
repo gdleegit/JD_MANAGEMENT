@@ -513,6 +513,14 @@ function ScheduleView({ matches }: { matches: Match[] }) {
   );
 }
 
+function getContrastColor(hex: string): string {
+  const h = hex.replace("#", "");
+  const r = parseInt(h.slice(0, 2), 16);
+  const g = parseInt(h.slice(2, 4), 16);
+  const b = parseInt(h.slice(4, 6), 16);
+  return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.55 ? "#111827" : "#ffffff";
+}
+
 // ── 기수/조별 순위 뷰 ──────────────────────────────────
 function DivisionView({ tournament }: { tournament: Tournament }) {
   const [activeGroup, setActiveGroup] = useState<string>(tournament.groups[0]?.id || "");
@@ -532,26 +540,29 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
     <div className="space-y-4">
       {/* Group Selector */}
       <div className="card p-4">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">기수 선택</p>
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">리그 선택</p>
         <div className="flex gap-2 flex-wrap">
-          {tournament.groups.map((g) => (
-            <button
-              key={g.id}
-              onClick={() => setActiveGroup(g.id)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all ${
-                activeGroup === g.id
-                  ? "border-transparent text-white shadow-sm"
-                  : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-700"
-              }`}
-              style={activeGroup === g.id ? { backgroundColor: g.color || "#6366f1", borderColor: g.color || "#6366f1" } : {}}
-            >
-              <span
-                className="w-2 h-2 rounded-full flex-shrink-0"
-                style={{ backgroundColor: activeGroup === g.id ? "rgba(255,255,255,0.7)" : (g.color || "#6366f1") }}
-              />
-              {g.label || g.name}
-            </button>
-          ))}
+          {tournament.groups.map((g) => {
+            const bgColor = g.color || "#6366f1";
+            const isActive = activeGroup === g.id;
+            const textColor = isActive ? getContrastColor(bgColor) : undefined;
+            const dotColor = isActive ? (textColor === "#ffffff" ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.3)") : bgColor;
+            return (
+              <button
+                key={g.id}
+                onClick={() => setActiveGroup(g.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border-2 transition-all ${
+                  isActive
+                    ? "border-transparent shadow-sm"
+                    : "bg-white text-gray-500 border-gray-200 hover:border-gray-300 hover:text-gray-700"
+                }`}
+                style={isActive ? { backgroundColor: bgColor, borderColor: bgColor, color: textColor } : {}}
+              >
+                <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: dotColor }} />
+                {g.label || g.name}
+              </button>
+            );
+          })}
         </div>
       </div>
 
