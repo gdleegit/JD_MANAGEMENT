@@ -10,13 +10,28 @@
 
 ---
 
+## 헤더 브랜딩 구조 (layout.tsx)
+
+- **폰트**: `Bebas_Neue` (Athletic Archive) + `Noto_Serif_KR` (中東) — next/font/google
+- **로고**: `public/jd2.svg` — 흰 원형 + 파란 링/텍스트(#176fc1, #2252ab). Next.js `<Image>` 대신 `<img>` 태그 사용 (SVG 렌더링 안정성)
+- **브라우저 탭**: `中東AA | Athletic Archive`
+- **헤더 레이아웃** (가로):
+  ```
+  [jd2.svg 로고 46px]  [中東(Noto Serif KR 32px)]  [| 구분선]  [Athletic Archive(Bebas Neue 15px)]
+                        [JOONGDONG (6px, flex justify-between으로 中東 넓이 맞춤)]
+  ```
+- **Athletic Archive** A 색상: `#176fc1` (로고 파란색)
+- **JOONGDONG**: 각 글자를 개별 `<span>`으로 분리 후 `flex justify-between` → 中東 넓이에 정확히 맞춤
+
+---
+
 ## 디렉토리 구조
 
 ```
 src/
 ├── app/
 │   ├── page.tsx                          # redirect("/tournaments")
-│   ├── layout.tsx                        # 헤더 nav + viewport meta
+│   ├── layout.tsx                        # 헤더 nav + viewport meta (Bebas_Neue, Noto_Serif_KR)
 │   ├── globals.css                       # .btn .card .input .label .badge 유틸 클래스
 │   ├── admin/
 │   │   ├── page.tsx                      # 인증 확인 → AdminDashboard (DB fetch 없음)
@@ -252,6 +267,21 @@ awayScore = goals.filter(g => g.teamId === awayTeamId && g.type !== "OWN_GOAL").
 - 득점 기록: half 있으면 전반/후반 섹션 분리 + 부분 스코어 표시
 - 날짜별 일정: 날짜 pill 선택 기능, 오늘 자동 선택
 
+### GROUP 타입 리그 선택기 (DivisionView)
+- 날짜 pill 스타일 버튼으로 리그 선택
+- "전체" 버튼(activeGroup=null) 선택 시 순위표만 표시
+- `getContrastColor(hex)` 함수로 배경색 밝기에 따라 글자색(흰/검) 자동 결정
+- 리그별 순위표 컬럼 순서 일정하게 유지
+
+### 운영규칙 탭 (RulesRenderer)
+- `##` 으로 시작하는 줄 → 섹션 헤더
+- `-` 으로 시작하는 줄 → 불릿 항목
+- 나머지 → 일반 텍스트 단락
+
+### 관리자 UI 개선 사항
+- **TournamentsTab**: 상태별 왼쪽 컬러 보더(진행중=amber, 종료=green), STATUS/TYPE 배지
+- **MatchEditor**: 경기정보·심판진·영상 링크를 "경기 상세 정보" 단일 카드로 통합, 저장 버튼 1개로 통합
+
 ---
 
 ## 주요 개발 주의사항
@@ -272,3 +302,7 @@ awayScore = goals.filter(g => g.teamId === awayTeamId && g.type !== "OWN_GOAL").
 6. **일괄 선수 추가**: `{ players: [...] }` body → `prisma.player.createManyAndReturn()`
 
 7. **모바일**: `sm:` 브레이크포인트 기준, min-height 2.75rem 터치 타겟, font-size 1rem (iOS 줌 방지)
+
+8. **SVG 로고**: Next.js `<Image>` 컴포넌트 대신 `<img>` 태그 사용 (`eslint-disable-next-line @next/next/no-img-element` 주석 필요). Next.js Image로 SVG 렌더링 시 X박스 표시되는 문제 있음
+
+9. **public 파일 커밋**: `public/` 내 신규 파일은 반드시 git add 후 커밋해야 Vercel 배포에 포함됨 (untracked 상태면 배포 누락)
