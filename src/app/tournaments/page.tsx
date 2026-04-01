@@ -20,6 +20,16 @@ export default async function TournamentsPage() {
   const typeLabel: Record<string, string> = {
     KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별리그",
   };
+  const sportLabel: Record<string, string> = {
+    FOOTBALL: "축구", BASKETBALL: "농구", VOLLEYBALL: "배구",
+    BASEBALL: "야구", FUTSAL: "풋살", BADMINTON: "배드민턴",
+    TABLE_TENNIS: "탁구", TENNIS: "테니스", BILLIARDS: "당구", GOLF: "골프",
+  };
+  const sportEmoji: Record<string, string> = {
+    FOOTBALL: "⚽", BASKETBALL: "🏀", VOLLEYBALL: "🏐",
+    BASEBALL: "⚾", FUTSAL: "⚽", BADMINTON: "🏸",
+    TABLE_TENNIS: "🏓", TENNIS: "🎾", BILLIARDS: "🎱", GOLF: "⛳",
+  };
 
   const kstToday = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date());
 
@@ -63,9 +73,14 @@ export default async function TournamentsPage() {
                       <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: st.borderColor }} />
                       {st.label}
                     </span>
-                    <span className="text-xs font-medium text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
-                      {typeLabel[t.type] || t.type}
-                    </span>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-medium text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
+                        {sportEmoji[t.sport]} {sportLabel[t.sport] ?? t.sport}
+                      </span>
+                      <span className="text-xs font-medium text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
+                        {typeLabel[t.type] || t.type}
+                      </span>
+                    </div>
                   </div>
 
                   {/* 대회명 */}
