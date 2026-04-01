@@ -15,11 +15,13 @@ export const SPORT_LABELS: Record<string, string> = {
   FOOTBALL: "축구", BASKETBALL: "농구", VOLLEYBALL: "배구",
   BASEBALL: "야구", FUTSAL: "풋살", BADMINTON: "배드민턴",
   TABLE_TENNIS: "탁구", TENNIS: "테니스",
+  BILLIARDS: "당구", GOLF: "골프",
 };
-const SPORT_EMOJI: Record<string, string> = {
+export const SPORT_EMOJI: Record<string, string> = {
   FOOTBALL: "⚽", BASKETBALL: "🏀", VOLLEYBALL: "🏐",
   BASEBALL: "⚾", FUTSAL: "⚽", BADMINTON: "🏸",
   TABLE_TENNIS: "🏓", TENNIS: "🎾",
+  BILLIARDS: "🎱", GOLF: "⛳",
 };
 
 export default function TournamentsTab({ initialTournaments }: { initialTournaments: Tournament[] }) {
