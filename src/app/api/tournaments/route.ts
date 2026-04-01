@@ -15,12 +15,13 @@ export async function POST(req: NextRequest) {
   if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
 
   const body = await req.json();
-  const { name, type, startDate, endDate, description } = body;
+  const { name, sport, type, startDate, endDate, description } = body;
   if (!name || !type) return NextResponse.json({ error: "이름과 유형은 필수입니다" }, { status: 400 });
 
   const tournament = await prisma.tournament.create({
     data: {
       name,
+      sport: sport || "FOOTBALL",
       type,
       startDate: startDate ? new Date(startDate) : null,
       endDate: endDate ? new Date(endDate) : null,

@@ -31,12 +31,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
   const body = await req.json();
-  const { name, type, status, startDate, endDate, description, rules } = body;
+  const { name, sport, type, status, startDate, endDate, description, rules } = body;
 
   const tournament = await prisma.tournament.update({
     where: { id },
     data: {
       ...(name && { name }),
+      ...(sport && { sport }),
       ...(type && { type }),
       ...(status && { status }),
       ...(startDate !== undefined && { startDate: startDate ? new Date(startDate) : null }),

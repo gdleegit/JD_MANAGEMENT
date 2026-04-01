@@ -29,9 +29,21 @@ type Match = {
   videoUrl?: string | null;
 };
 type TournamentTeam = { team: Team };
+const SPORT_LABELS: Record<string, string> = {
+  FOOTBALL: "축구", BASKETBALL: "농구", VOLLEYBALL: "배구",
+  BASEBALL: "야구", FUTSAL: "풋살", BADMINTON: "배드민턴",
+  TABLE_TENNIS: "탁구", TENNIS: "테니스",
+};
+const SPORT_EMOJI: Record<string, string> = {
+  FOOTBALL: "⚽", BASKETBALL: "🏀", VOLLEYBALL: "🏐",
+  BASEBALL: "⚾", FUTSAL: "⚽", BADMINTON: "🏸",
+  TABLE_TENNIS: "🏓", TENNIS: "🎾",
+};
+
 type Tournament = {
   id: string;
   name: string;
+  sport: string;
   type: string;
   status: string;
   startDate?: string | null;
@@ -138,9 +150,14 @@ export default function TournamentPublicView({
               <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: st.borderColor }} />
               {st.label}
             </span>
-            <span className="text-xs font-medium text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
-              {TYPE_LABEL[tournament.type] || tournament.type}
-            </span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-medium text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
+                {SPORT_EMOJI[tournament.sport]} {SPORT_LABELS[tournament.sport] ?? tournament.sport}
+              </span>
+              <span className="text-xs font-medium text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full">
+                {TYPE_LABEL[tournament.type] || tournament.type}
+              </span>
+            </div>
           </div>
 
           {/* 대회명 */}

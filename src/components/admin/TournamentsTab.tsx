@@ -5,17 +5,27 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import TournamentEditor from "./TournamentEditor";
 
-type Tournament = { id: string; name: string; type: string; status: string; _count: { teams: number; matches: number } };
+type Tournament = { id: string; name: string; sport: string; type: string; status: string; _count: { teams: number; matches: number } };
 
 const STATUS_LABELS: Record<string, string> = { UPCOMING: "예정", ONGOING: "진행중", FINISHED: "종료" };
 const STATUS_BADGE: Record<string, string> = { UPCOMING: "badge badge-gray", ONGOING: "badge badge-yellow", FINISHED: "badge badge-green" };
 const TYPE_LABELS: Record<string, string> = { KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별리그" };
 const TYPE_BADGE: Record<string, string> = { KNOCKOUT: "badge badge-blue", LEAGUE: "badge badge-blue", GROUP: "badge badge-blue" };
+export const SPORT_LABELS: Record<string, string> = {
+  FOOTBALL: "축구", BASKETBALL: "농구", VOLLEYBALL: "배구",
+  BASEBALL: "야구", FUTSAL: "풋살", BADMINTON: "배드민턴",
+  TABLE_TENNIS: "탁구", TENNIS: "테니스",
+};
+const SPORT_EMOJI: Record<string, string> = {
+  FOOTBALL: "⚽", BASKETBALL: "🏀", VOLLEYBALL: "🏐",
+  BASEBALL: "⚾", FUTSAL: "⚽", BADMINTON: "🏸",
+  TABLE_TENNIS: "🏓", TENNIS: "🎾",
+};
 
 export default function TournamentsTab({ initialTournaments }: { initialTournaments: Tournament[] }) {
   const router = useRouter();
   const [tournaments, setTournaments] = useState(initialTournaments);
-  const [form, setForm] = useState({ name: "", type: "KNOCKOUT", startDate: "", endDate: "", description: "" });
+  const [form, setForm] = useState({ name: "", sport: "FOOTBALL", type: "KNOCKOUT", startDate: "", endDate: "", description: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -33,7 +43,7 @@ export default function TournamentsTab({ initialTournaments }: { initialTourname
       if (!res.ok) { const d = await res.json(); setError(d.error); return; }
       const t = await res.json();
       setTournaments([{ ...t, _count: { teams: 0, matches: 0 } }, ...tournaments]);
-      setForm({ name: "", type: "KNOCKOUT", startDate: "", endDate: "", description: "" });
+      setForm({ name: "", sport: "FOOTBALL", type: "KNOCKOUT", startDate: "", endDate: "", description: "" });
       router.refresh();
     } finally {
       setLoading(false);
@@ -60,6 +70,14 @@ export default function TournamentsTab({ initialTournaments }: { initialTourname
             <div>
               <label className="label">대회명 *</label>
               <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required placeholder="예: 2024 봄 토너먼트" />
+            </div>
+            <div>
+              <label className="label">종목 *</label>
+              <select className="input" value={form.sport} onChange={(e) => setForm({ ...form, sport: e.target.value })}>
+                {Object.entries(SPORT_LABELS).map(([v, l]) => (
+                  <option key={v} value={v}>{SPORT_EMOJI[v]} {l}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="label">대회 유형 *</label>
@@ -105,6 +123,7 @@ export default function TournamentsTab({ initialTournaments }: { initialTourname
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                         <h3 className="font-bold truncate">{t.name}</h3>
+                        <span className="badge badge-gray">{SPORT_EMOJI[t.sport]} {SPORT_LABELS[t.sport] ?? t.sport}</span>
                         <span className={TYPE_BADGE[t.type] || "badge badge-blue"}>{TYPE_LABELS[t.type]}</span>
                         <span className={STATUS_BADGE[t.status] || "badge badge-gray"}>{STATUS_LABELS[t.status]}</span>
                       </div>

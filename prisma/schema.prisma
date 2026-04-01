@@ -11,6 +11,7 @@ datasource db {
 model Tournament {
   id          String    @id @default(cuid())
   name        String
+  sport       String    @default("FOOTBALL")
   type        String
   status      String    @default("UPCOMING")
   startDate   DateTime?

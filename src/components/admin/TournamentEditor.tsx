@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import MatchEditor from "./MatchEditor";
 import PlayerManager from "./PlayerManager";
+import { SPORT_LABELS, SPORT_EMOJI } from "./TournamentsTab";
 
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
 type Team = { id: string; name: string; shortName?: string | null; color?: string | null; players?: Player[] };
@@ -31,6 +32,7 @@ type TournamentTeam = { id: string; team: Team };
 type Tournament = {
   id: string;
   name: string;
+  sport: string;
   type: string;
   status: string;
   startDate?: string | null;
@@ -220,6 +222,7 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
 function InfoTab({ tournament, onSave, saving }: { tournament: Tournament; onSave: (d: object) => void; saving: boolean }) {
   const [form, setForm] = useState({
     name: tournament.name,
+    sport: tournament.sport || "FOOTBALL",
     status: tournament.status,
     startDate: tournament.startDate ? tournament.startDate.slice(0, 10) : "",
     endDate: tournament.endDate ? tournament.endDate.slice(0, 10) : "",
@@ -232,6 +235,14 @@ function InfoTab({ tournament, onSave, saving }: { tournament: Tournament; onSav
         <div>
           <label className="label">대회명</label>
           <input className="input" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+        </div>
+        <div>
+          <label className="label">종목</label>
+          <select className="input" value={form.sport} onChange={(e) => setForm({ ...form, sport: e.target.value })}>
+            {Object.entries(SPORT_LABELS).map(([v, l]) => (
+              <option key={v} value={v}>{SPORT_EMOJI[v]} {l}</option>
+            ))}
+          </select>
         </div>
         <div>
           <label className="label">상태</label>
