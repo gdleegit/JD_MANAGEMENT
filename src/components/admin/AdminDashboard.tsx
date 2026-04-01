@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import TournamentsTab from "./TournamentsTab";
 
-type Tournament = { id: string; name: string; type: string; status: string; _count: { teams: number; matches: number } };
+type Tournament = { id: string; name: string; sport: string; type: string; status: string; _count: { teams: number; matches: number } };
 
 export default function AdminDashboard({ username }: { username: string }) {
   const router = useRouter();
