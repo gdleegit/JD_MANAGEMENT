@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Link from "next/link";
 import { Bebas_Neue, Noto_Serif_KR } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 
 const bebas = Bebas_Neue({ weight: "400", subsets: ["latin"], display: "swap" });
 const notoSerifKR = Noto_Serif_KR({ weight: "400", subsets: ["latin"], display: "swap" });
@@ -63,6 +64,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
           {children}
         </main>
+        <Analytics />
         <footer className="mt-12 border-t border-gray-200 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 text-center text-gray-400">
             <p className="text-sm font-medium text-gray-500 mb-1">중동인의 땀방울을 기록하다.</p>
