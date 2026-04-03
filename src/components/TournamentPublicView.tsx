@@ -100,11 +100,12 @@ export default function TournamentPublicView({
   const [teamPlayers, setTeamPlayers] = useState<Record<string, Player[]> | null>(null);
   const [loadingPlayers, setLoadingPlayers] = useState(true);
   const [teamsFetched, setTeamsFetched] = useState(false);
+  const [rosterTeam, setRosterTeam] = useState<{ id: string; name: string; color?: string | null } | null>(null);
 
-  useEffect(() => {
-    if (tab !== "teams" || teamsFetched) return;
+  const doFetchPlayers = (tournamentId: string) => {
     setTeamsFetched(true);
-    fetch(`/api/tournaments/${tournament.id}/teams`)
+    setLoadingPlayers(true);
+    fetch(`/api/tournaments/${tournamentId}/teams`)
       .then((r) => r.json())
       .then((data: Array<{ team: { id: string; players: Player[] } }>) => {
         const map: Record<string, Player[]> = {};
@@ -113,7 +114,17 @@ export default function TournamentPublicView({
       })
       .catch(() => setTeamPlayers({}))
       .finally(() => setLoadingPlayers(false));
-  }, [tab, tournament.id, teamsFetched]);
+  };
+
+  useEffect(() => {
+    if (tab !== "teams" || teamsFetched) return;
+    doFetchPlayers(tournament.id);
+  }, [tab, tournament.id, teamsFetched]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleTeamClick = (team: { id: string; name: string; color?: string | null }) => {
+    setRosterTeam(team);
+    if (!teamsFetched) doFetchPlayers(tournament.id);
+  };
 
   const handleTabChange = (key: string) => {
     setTab(key as typeof tab);
@@ -250,12 +261,12 @@ export default function TournamentPublicView({
 
       {/* Division/기수 Tab */}
       {tab === "division" && (
-        <DivisionView tournament={tournament} />
+        <DivisionView tournament={tournament} onTeamClick={handleTeamClick} />
       )}
 
       {/* Schedule Tab */}
       {tab === "schedule" && (
-        <ScheduleView matches={tournament.matches} />
+        <ScheduleView matches={tournament.matches} onTeamClick={handleTeamClick} />
       )}
 
       {/* Scorers Tab */}
@@ -397,12 +408,44 @@ export default function TournamentPublicView({
           )}
         </div>
       )}
+
+      {/* 명단 모달 */}
+      {rosterTeam && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50" onClick={() => setRosterTeam(null)}>
+          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-sm max-h-[75vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-2.5 p-4 border-b border-gray-100 flex-shrink-0">
+              <span className="w-4 h-4 rounded flex-shrink-0" style={{ backgroundColor: rosterTeam.color || "#3b82f6" }} />
+              <h3 className="font-bold text-gray-900 flex-1">{rosterTeam.name} 명단</h3>
+              <button onClick={() => setRosterTeam(null)} className="text-gray-400 hover:text-gray-600 text-xl leading-none px-1">✕</button>
+            </div>
+            <div className="overflow-y-auto p-4">
+              {loadingPlayers ? (
+                <p className="text-center text-gray-400 py-6 text-sm">불러오는 중...</p>
+              ) : (teamPlayers?.[rosterTeam.id] ?? []).length === 0 ? (
+                <p className="text-center text-gray-400 py-6 text-sm">등록된 선수가 없습니다</p>
+              ) : (
+                <div className="space-y-1.5">
+                  {(teamPlayers?.[rosterTeam.id] ?? []).map((p) => (
+                    <div key={p.id} className="flex items-center gap-3 py-1.5 border-b border-gray-50 last:border-0">
+                      <span className="text-sm font-bold text-gray-400 w-6 text-right flex-shrink-0">{p.number ?? "-"}</span>
+                      <span className="text-sm font-medium text-gray-900 flex-1">{p.name}</span>
+                      {p.position && <span className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{p.position}</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 // ── 날짜별 일정 뷰 ──────────────────────────────────────
-function ScheduleView({ matches }: { matches: Match[] }) {
+type OnTeamClick = (team: { id: string; name: string; color?: string | null }) => void;
+
+function ScheduleView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?: OnTeamClick }) {
   // 날짜별 그룹핑
   const toKSTDate = (iso: string) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
   const byDate = new Map<string, Match[]>();
@@ -515,14 +558,14 @@ function ScheduleView({ matches }: { matches: Match[] }) {
                         <span className="text-xs text-gray-400">{grp.matches.length}경기</span>
                       </div>
                       <div className="space-y-2">
-                        {grp.matches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge />)}
+                        {grp.matches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge onTeamClick={onTeamClick} />)}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder />)}
+                  {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder onTeamClick={onTeamClick} />)}
                 </div>
               )}
             </div>
@@ -542,7 +585,7 @@ function getContrastColor(hex: string): string {
 }
 
 // ── 기수/조별 순위 뷰 ──────────────────────────────────
-function DivisionView({ tournament }: { tournament: Tournament }) {
+function DivisionView({ tournament, onTeamClick }: { tournament: Tournament; onTeamClick?: OnTeamClick }) {
   const [activeGroup, setActiveGroup] = useState<string | null>(tournament.groups[0]?.id || null);
 
   if (tournament.groups.length === 0) {
@@ -680,7 +723,7 @@ function DivisionView({ tournament }: { tournament: Tournament }) {
                         <div className="flex-1 h-px bg-gray-100" />
                       </div>
                       <div className="space-y-2">
-                        {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge />)}
+                        {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge onTeamClick={onTeamClick} />)}
                       </div>
                     </div>
                   ))}
@@ -706,7 +749,7 @@ function getYouTubeId(url: string): string | null {
   return m ? m[1] : null;
 }
 
-function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Match; showDate: boolean; showOrder?: boolean; hideGroupBadge?: boolean }) {
+function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: { match: Match; showDate: boolean; showOrder?: boolean; hideGroupBadge?: boolean; onTeamClick?: OnTeamClick }) {
   const finished = match.status === "FINISHED";
   const homeWin = finished && match.homeScore != null && match.awayScore != null && match.homeScore > match.awayScore;
   const awayWin = finished && match.homeScore != null && match.awayScore != null && match.awayScore > match.homeScore;
@@ -759,7 +802,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
       {/* Score row */}
       <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2.5">
         <div className={`flex-1 flex items-center justify-end gap-2 min-w-0 ${homeWin ? "text-blue-700" : "text-gray-800"}`}>
-          <span className="font-bold text-right text-sm sm:text-base truncate leading-tight">{match.homeTeam.name}</span>
+          <button onClick={() => onTeamClick?.(match.homeTeam)} className="font-bold text-right text-sm sm:text-base truncate leading-tight hover:underline hover:text-blue-600 transition-colors text-inherit bg-transparent border-0 p-0 cursor-pointer max-w-full">{match.homeTeam.name}</button>
           <span className="w-4 h-4 rounded flex-shrink-0 shadow-sm" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
         </div>
         <div className="flex items-center gap-1 min-w-[76px] sm:min-w-[88px] justify-center flex-shrink-0">
@@ -775,7 +818,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge }: { match: Matc
         </div>
         <div className={`flex-1 flex items-center gap-2 min-w-0 ${awayWin ? "text-blue-700" : "text-gray-800"}`}>
           <span className="w-4 h-4 rounded flex-shrink-0 shadow-sm" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
-          <span className="font-bold text-sm sm:text-base truncate leading-tight">{match.awayTeam.name}</span>
+          <button onClick={() => onTeamClick?.(match.awayTeam)} className="font-bold text-sm sm:text-base truncate leading-tight hover:underline hover:text-blue-600 transition-colors text-inherit bg-transparent border-0 p-0 cursor-pointer max-w-full">{match.awayTeam.name}</button>
         </div>
       </div>
 
