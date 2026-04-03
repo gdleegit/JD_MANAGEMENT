@@ -412,24 +412,24 @@ export default function TournamentPublicView({
       {/* 명단 모달 */}
       {rosterTeam && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50" onClick={() => setRosterTeam(null)}>
-          <div className="bg-white rounded-t-2xl sm:rounded-2xl w-full sm:max-w-sm max-h-[75vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2.5 p-4 border-b border-gray-100 flex-shrink-0">
-              <span className="w-4 h-4 rounded flex-shrink-0" style={{ backgroundColor: rosterTeam.color || "#3b82f6" }} />
-              <h3 className="font-bold text-gray-900 flex-1">{rosterTeam.name} 명단</h3>
-              <button onClick={() => setRosterTeam(null)} className="text-gray-400 hover:text-gray-600 text-xl leading-none px-1">✕</button>
+          <div className="bg-white rounded-t-xl sm:rounded-xl w-full sm:max-w-xs max-h-[50vh] sm:max-h-[60vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 flex-shrink-0">
+              <span className="w-3 h-3 rounded flex-shrink-0" style={{ backgroundColor: rosterTeam.color || "#3b82f6" }} />
+              <h3 className="font-bold text-gray-900 text-sm flex-1">{rosterTeam.name} 명단</h3>
+              <button onClick={() => setRosterTeam(null)} className="text-gray-400 hover:text-gray-600 leading-none p-1 text-base">✕</button>
             </div>
-            <div className="overflow-y-auto p-4">
+            <div className="overflow-y-auto px-3 py-2">
               {loadingPlayers ? (
-                <p className="text-center text-gray-400 py-6 text-sm">불러오는 중...</p>
+                <p className="text-center text-gray-400 py-4 text-xs">불러오는 중...</p>
               ) : (teamPlayers?.[rosterTeam.id] ?? []).length === 0 ? (
-                <p className="text-center text-gray-400 py-6 text-sm">등록된 선수가 없습니다</p>
+                <p className="text-center text-gray-400 py-4 text-xs">등록된 선수가 없습니다</p>
               ) : (
-                <div className="space-y-1.5">
+                <div>
                   {(teamPlayers?.[rosterTeam.id] ?? []).map((p) => (
-                    <div key={p.id} className="flex items-center gap-3 py-1.5 border-b border-gray-50 last:border-0">
-                      <span className="text-sm font-bold text-gray-400 w-6 text-right flex-shrink-0">{p.number ?? "-"}</span>
-                      <span className="text-sm font-medium text-gray-900 flex-1">{p.name}</span>
-                      {p.position && <span className="text-xs text-gray-400 bg-gray-100 px-1.5 py-0.5 rounded">{p.position}</span>}
+                    <div key={p.id} className="flex items-center gap-2.5 py-1 border-b border-gray-50 last:border-0">
+                      <span className="text-xs font-bold text-gray-400 w-5 text-right flex-shrink-0">{p.number ?? "-"}</span>
+                      <span className="text-xs font-medium text-gray-900 flex-1">{p.name}</span>
+                      {p.position && <span className="text-[10px] text-gray-400 bg-gray-100 px-1 py-0.5 rounded">{p.position}</span>}
                     </div>
                   ))}
                 </div>
