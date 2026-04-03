@@ -410,34 +410,59 @@ export default function TournamentPublicView({
       )}
 
       {/* 명단 모달 */}
-      {rosterTeam && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50" onClick={() => setRosterTeam(null)}>
-          <div className="bg-white rounded-t-xl sm:rounded-xl w-full sm:max-w-xs max-h-[50vh] sm:max-h-[60vh] flex flex-col" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-2 px-3 py-2.5 border-b border-gray-100 flex-shrink-0">
-              <span className="w-3 h-3 rounded flex-shrink-0" style={{ backgroundColor: rosterTeam.color || "#3b82f6" }} />
-              <h3 className="font-bold text-gray-900 text-sm flex-1">{rosterTeam.name} 명단</h3>
-              <button onClick={() => setRosterTeam(null)} className="text-gray-400 hover:text-gray-600 leading-none p-1 text-base">✕</button>
-            </div>
-            <div className="overflow-y-auto px-3 py-2">
-              {loadingPlayers ? (
-                <p className="text-center text-gray-400 py-4 text-xs">불러오는 중...</p>
-              ) : (teamPlayers?.[rosterTeam.id] ?? []).length === 0 ? (
-                <p className="text-center text-gray-400 py-4 text-xs">등록된 선수가 없습니다</p>
-              ) : (
-                <div>
-                  {(teamPlayers?.[rosterTeam.id] ?? []).map((p) => (
-                    <div key={p.id} className="flex items-center gap-2.5 py-1 border-b border-gray-50 last:border-0">
-                      <span className="text-xs font-bold text-gray-400 w-5 text-right flex-shrink-0">{p.number ?? "-"}</span>
-                      <span className="text-xs font-medium text-gray-900 flex-1">{p.name}</span>
-                      {p.position && <span className="text-[10px] text-gray-400 bg-gray-100 px-1 py-0.5 rounded">{p.position}</span>}
-                    </div>
-                  ))}
+      {rosterTeam && (() => {
+        const color = rosterTeam.color || "#3b82f6";
+        const players = teamPlayers?.[rosterTeam.id] ?? [];
+        const sortedPlayers = [...players].sort((a, b) => {
+          if (a.number != null && b.number != null) return a.number - b.number;
+          if (a.number != null) return -1;
+          if (b.number != null) return 1;
+          return a.name.localeCompare(b.name, "ko", { numeric: true });
+        });
+        return (
+          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50" onClick={() => setRosterTeam(null)}>
+            <div className="bg-white rounded-t-xl sm:rounded-xl w-full sm:max-w-sm max-h-[70vh] sm:max-h-[80vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+              {/* 팀 헤더 — 참가팀 카드와 동일 스타일 */}
+              <div className="px-4 py-3 flex items-center gap-3 flex-shrink-0" style={{ backgroundColor: color + "22", borderBottom: `3px solid ${color}` }}>
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: color }}>
+                  {rosterTeam.name.slice(0, 1)}
                 </div>
-              )}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-900 truncate">{rosterTeam.name}</h3>
+                </div>
+                {teamPlayers && (
+                  <span className="text-xs font-semibold px-2 py-0.5 rounded-full text-gray-700" style={{ backgroundColor: color + "28", border: `1px solid ${color}66` }}>
+                    {players.length}명
+                  </span>
+                )}
+                <button onClick={() => setRosterTeam(null)} className="text-gray-400 hover:text-gray-600 leading-none p-1 ml-1">✕</button>
+              </div>
+              {/* 선수 목록 */}
+              <div className="overflow-y-auto p-3">
+                {loadingPlayers ? (
+                  <p className="text-center text-gray-400 py-6 text-sm">불러오는 중...</p>
+                ) : sortedPlayers.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-6">선수 정보 없음</p>
+                ) : (
+                  <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                    {sortedPlayers.map((p) => (
+                      <div key={p.id} className="flex items-center gap-1.5 py-1 px-1 rounded hover:bg-gray-50 transition-colors min-w-0">
+                        <span
+                          className="w-5 h-5 rounded text-center leading-5 text-xs font-bold flex-shrink-0 text-white"
+                          style={{ backgroundColor: color }}
+                        >
+                          {p.number ?? "·"}
+                        </span>
+                        <span className="text-sm font-medium text-gray-800 truncate">{p.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
