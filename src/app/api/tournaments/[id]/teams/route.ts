@@ -9,7 +9,9 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
     where: { tournamentId },
     include: { team: { include: { players: { orderBy: [{ number: "asc" }, { name: "asc" }] } } } },
   });
-  return NextResponse.json(entries);
+  return NextResponse.json(entries, {
+    headers: { "Cache-Control": "s-maxage=60, stale-while-revalidate=300" },
+  });
 }
 
 // Add team to tournament

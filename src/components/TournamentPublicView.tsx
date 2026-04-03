@@ -99,8 +99,11 @@ export default function TournamentPublicView({
   // 참가팀 선수 — 페이지 로드 직후 백그라운드에서 미리 fetch
   const [teamPlayers, setTeamPlayers] = useState<Record<string, Player[]> | null>(null);
   const [loadingPlayers, setLoadingPlayers] = useState(true);
+  const [teamsFetched, setTeamsFetched] = useState(false);
 
   useEffect(() => {
+    if (tab !== "teams" || teamsFetched) return;
+    setTeamsFetched(true);
     fetch(`/api/tournaments/${tournament.id}/teams`)
       .then((r) => r.json())
       .then((data: Array<{ team: { id: string; players: Player[] } }>) => {
@@ -110,7 +113,7 @@ export default function TournamentPublicView({
       })
       .catch(() => setTeamPlayers({}))
       .finally(() => setLoadingPlayers(false));
-  }, [tournament.id]);
+  }, [tab, tournament.id, teamsFetched]);
 
   const handleTabChange = (key: string) => {
     setTab(key as typeof tab);
