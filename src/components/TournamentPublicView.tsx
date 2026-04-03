@@ -420,8 +420,8 @@ export default function TournamentPublicView({
           return a.name.localeCompare(b.name, "ko", { numeric: true });
         });
         return (
-          <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/50" onClick={() => setRosterTeam(null)}>
-            <div className="bg-white rounded-t-xl sm:rounded-xl w-full sm:max-w-sm max-h-[70vh] sm:max-h-[80vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" onClick={() => setRosterTeam(null)}>
+            <div className="bg-white rounded-xl w-full max-w-sm max-h-[80vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
               {/* 팀 헤더 — 참가팀 카드와 동일 스타일 */}
               <div className="px-4 py-3 flex items-center gap-3 flex-shrink-0" style={{ backgroundColor: color + "22", borderBottom: `3px solid ${color}` }}>
                 <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: color }}>
