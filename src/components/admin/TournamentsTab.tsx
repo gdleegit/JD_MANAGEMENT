@@ -9,7 +9,7 @@ type Tournament = { id: string; name: string; sport: string; type: string; statu
 
 const STATUS_LABELS: Record<string, string> = { UPCOMING: "예정", ONGOING: "진행중", FINISHED: "종료" };
 const STATUS_BADGE: Record<string, string> = { UPCOMING: "badge badge-gray", ONGOING: "badge badge-yellow", FINISHED: "badge badge-green" };
-const TYPE_LABELS: Record<string, string> = { KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별리그" };
+const TYPE_LABELS: Record<string, string> = { KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별·기수 리그" };
 const TYPE_BADGE: Record<string, string> = { KNOCKOUT: "badge badge-blue", LEAGUE: "badge badge-blue", GROUP: "badge badge-blue" };
 export const SPORT_LABELS: Record<string, string> = {
   FOOTBALL: "축구", BASKETBALL: "농구", VOLLEYBALL: "배구",
@@ -86,7 +86,7 @@ export default function TournamentsTab({ initialTournaments }: { initialTourname
               <select className="input" value={form.type} onChange={(e) => setForm({ ...form, type: e.target.value })}>
                 <option value="KNOCKOUT">토너먼트 (녹아웃)</option>
                 <option value="LEAGUE">리그전</option>
-                <option value="GROUP">조별리그</option>
+                <option value="GROUP">조별·기수 리그</option>
               </select>
             </div>
             <div>

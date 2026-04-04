@@ -18,7 +18,7 @@ export default async function TournamentsPage() {
     FINISHED: { label: "종료",   badgeCls: "bg-blue-100 text-blue-700",           borderColor: "#3b82f6" },
   };
   const typeLabel: Record<string, string> = {
-    KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별리그",
+    KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별·기수 리그",
   };
   const sportLabel: Record<string, string> = {
     FOOTBALL: "축구", BASKETBALL: "농구", VOLLEYBALL: "배구",
