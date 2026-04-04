@@ -5,6 +5,7 @@ import { useState } from "react";
 type Player = { id: string; name: string; number?: number | null };
 type Team = { id: string; name: string; color?: string | null; players?: Player[] };
 type Goal = { id: string; type: string; teamId: string; minute?: number | null; half?: number | null; player?: Player | null; team: Team };
+type PendingGoal = { tempId: string; teamId: string; playerId: string; minute: string; half: string; type: string };
 type Match = {
   id: string;
   homeTeam: Team;
@@ -58,22 +59,33 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const [assistantReferee1, setAssistantReferee1] = useState(match.assistantReferee1 ?? "");
   const [assistantReferee2, setAssistantReferee2] = useState(match.assistantReferee2 ?? "");
   const [videoUrl, setVideoUrl] = useState(match.videoUrl ?? "");
-  const [saving,     setSaving]     = useState(false);
-  const [goalForm,   setGoalForm]   = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
-  const [addingGoal, setAddingGoal] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [goalForm, setGoalForm] = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
+  const [pendingGoals, setPendingGoals] = useState<PendingGoal[]>([]);
 
-  const saveResult = async () => {
+  // 로컬에만 추가 (API 호출 없음)
+  const stagePendingGoal = () => {
+    setPendingGoals(prev => [...prev, { ...goalForm, tempId: `${Date.now()}-${Math.random()}` }]);
+    setGoalForm(f => ({ ...f, playerId: "", minute: "" }));
+  };
+
+  const removePendingGoal = (tempId: string) => {
+    setPendingGoals(prev => prev.filter(g => g.tempId !== tempId));
+  };
+
+  // 통합 저장: match PATCH + bulk goals 병렬
+  const saveAll = async () => {
     setSaving(true);
+
     const parsedHome = homeScore !== "" ? parseInt(homeScore) : null;
     const parsedAway = awayScore !== "" ? parseInt(awayScore) : null;
-    // 예정 상태는 유지 — 진행중·미지정인 경우에만 양쪽 스코어 입력 시 자동 FINISHED
     const effectiveStatus =
       (parsedHome !== null && parsedAway !== null && status !== "SCHEDULED")
         ? "FINISHED"
         : status;
     if (effectiveStatus !== status) setStatus(effectiveStatus);
 
-    await fetch(`/api/matches/${match.id}`, {
+    const matchFetch = fetch(`/api/matches/${match.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -91,29 +103,34 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         videoUrl: videoUrl || null,
       }),
     });
-    setCurrentMatch(m => ({ ...m, status: effectiveStatus, homeScore: parsedHome, awayScore: parsedAway }));
-    setSaving(false);
-  };
 
-  const addGoal = async () => {
-    setAddingGoal(true);
-    const res = await fetch(`/api/matches/${match.id}/goals`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        teamId: goalForm.teamId,
-        playerId: goalForm.playerId || null,
-        minute: goalForm.minute ? parseInt(goalForm.minute) : null,
-        half: parseInt(goalForm.half),
-        type: goalForm.type,
-      }),
-    });
-    const { goal, homeScore: hs, awayScore: as_ } = await res.json();
-    setCurrentMatch(m => ({ ...m, goals: [...m.goals, goal], homeScore: hs, awayScore: as_ }));
-    setHomeScore(hs?.toString() ?? "");
-    setAwayScore(as_?.toString() ?? "");
-    setGoalForm({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
-    setAddingGoal(false);
+    if (pendingGoals.length > 0) {
+      const goalsFetch = fetch(`/api/matches/${match.id}/goals`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          goals: pendingGoals.map(g => ({
+            teamId: g.teamId,
+            playerId: g.playerId || null,
+            minute: g.minute ? parseInt(g.minute) : null,
+            half: parseInt(g.half),
+            type: g.type,
+          })),
+        }),
+      });
+
+      const [, goalsRes] = await Promise.all([matchFetch, goalsFetch]);
+      const { goals, homeScore: hs, awayScore: as_ } = await goalsRes.json();
+      setCurrentMatch(m => ({ ...m, status: effectiveStatus, goals, homeScore: hs, awayScore: as_ }));
+      setHomeScore(hs?.toString() ?? "");
+      setAwayScore(as_?.toString() ?? "");
+      setPendingGoals([]);
+    } else {
+      await matchFetch;
+      setCurrentMatch(m => ({ ...m, status: effectiveStatus, homeScore: parsedHome, awayScore: parsedAway }));
+    }
+
+    setSaving(false);
   };
 
   const deleteGoal = async (goalId: string) => {
@@ -131,6 +148,16 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const selectedTeam = goalForm.teamId === match.homeTeam.id ? match.homeTeam : match.awayTeam;
   const homeGoals = currentMatch.goals.filter((g) => g.teamId === match.homeTeam.id).sort((a, b) => (a.minute ?? 999) - (b.minute ?? 999));
   const awayGoals = currentMatch.goals.filter((g) => g.teamId === match.awayTeam.id).sort((a, b) => (a.minute ?? 999) - (b.minute ?? 999));
+  const homePending = pendingGoals.filter(g => g.teamId === match.homeTeam.id);
+  const awayPending = pendingGoals.filter(g => g.teamId === match.awayTeam.id);
+
+  const getPendingPlayerName = (g: PendingGoal) => {
+    const team = g.teamId === match.homeTeam.id ? match.homeTeam : match.awayTeam;
+    const player = team.players?.find(p => p.id === g.playerId);
+    return player ? (player.number ? `${player.number}. ${player.name}` : player.name) : "미상";
+  };
+
+  const totalGoals = currentMatch.goals.length + pendingGoals.length;
 
   return (
     <div className="space-y-4">
@@ -154,7 +181,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         {match.court && <span className="text-xs text-purple-500 bg-purple-50 px-2 py-0.5 rounded-full flex-shrink-0">{match.court}</span>}
       </div>
 
-      {/* ── 스코어보드 + 결과 저장 ── */}
+      {/* ── 스코어보드 ── */}
       <div className="card p-5">
         {/* 상태 토글 */}
         <div className="grid grid-cols-3 gap-2 mb-5">
@@ -173,7 +200,6 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
 
         {/* 스코어 입력 */}
         <div className="flex items-center gap-4">
-          {/* 홈팀 */}
           <div className="flex-1 text-right">
             <div className="flex items-center justify-end gap-2 mb-2">
               <span className="font-semibold text-sm sm:text-base">{match.homeTeam.name}</span>
@@ -189,7 +215,6 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
 
           <div className="text-3xl font-bold text-gray-200 pt-8 flex-shrink-0">:</div>
 
-          {/* 어웨이팀 */}
           <div className="flex-1 text-left">
             <div className="flex items-center gap-2 mb-2">
               <span className="w-3 h-3 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
@@ -203,10 +228,6 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
             />
           </div>
         </div>
-
-        <button onClick={saveResult} className="btn-primary w-full mt-4" disabled={saving}>
-          {saving ? "저장 중..." : "결과 저장"}
-        </button>
       </div>
 
       {/* ── 득점 기록 추가 ── */}
@@ -304,39 +325,59 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
           </div>
         </div>
 
-        <button onClick={addGoal} className="btn-primary w-full mt-3" disabled={addingGoal}>
-          {addingGoal ? "추가 중..." : "득점 추가"}
+        <button onClick={stagePendingGoal} className="btn btn-secondary w-full mt-3">
+          + 목록에 추가
         </button>
       </div>
 
-      {/* ── 득점 기록 목록 (홈/어웨이 컬럼) ── */}
-      {currentMatch.goals.length > 0 && (
+      {/* ── 득점 기록 목록 ── */}
+      {totalGoals > 0 && (
         <div className="card p-5">
-          <h4 className="font-bold mb-4">득점 기록 ({currentMatch.goals.length}골)</h4>
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="font-bold">
+              득점 기록 ({currentMatch.goals.length}골
+              {pendingGoals.length > 0 && <span className="text-amber-600"> + {pendingGoals.length} 미저장</span>})
+            </h4>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             {/* 홈 */}
             <div>
               <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-gray-100">
                 <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
                 <span className="text-xs font-semibold text-gray-600">{match.homeTeam.name}</span>
-                <span className="ml-auto text-xs font-bold text-blue-600">{homeGoals.length}골</span>
+                <span className="ml-auto text-xs font-bold text-blue-600">{homeGoals.length + homePending.length}골</span>
               </div>
               <div className="space-y-1.5">
-                {homeGoals.length === 0
+                {homeGoals.length === 0 && homePending.length === 0
                   ? <p className="text-xs text-gray-300 text-center py-2">-</p>
-                  : homeGoals.map((g) => (
-                    <div key={g.id} className="flex items-center gap-1.5">
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
-                        {g.half && <span className="text-xs text-blue-500 ml-1">{g.half === 1 ? "전반" : "후반"}</span>}
-                        {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
-                        {g.type !== "GOAL" && (
-                          <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
-                        )}
+                  : <>
+                    {homeGoals.map((g) => (
+                      <div key={g.id} className="flex items-center gap-1.5">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
+                          {g.half && <span className="text-xs text-blue-500 ml-1">{g.half === 1 ? "전반" : "후반"}</span>}
+                          {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
+                          {g.type !== "GOAL" && (
+                            <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
+                          )}
+                        </div>
+                        <button onClick={() => deleteGoal(g.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
                       </div>
-                      <button onClick={() => deleteGoal(g.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
-                    </div>
-                  ))}
+                    ))}
+                    {homePending.map((g) => (
+                      <div key={g.tempId} className="flex items-center gap-1.5 bg-amber-50 rounded px-1.5 py-0.5">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-medium truncate text-amber-800">{getPendingPlayerName(g)}</span>
+                          <span className="text-xs text-amber-500 ml-1">{g.half === "1" ? "전반" : "후반"}</span>
+                          {g.minute && <span className="text-xs text-amber-400 ml-1">{g.minute}&apos;</span>}
+                          {g.type !== "GOAL" && (
+                            <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
+                          )}
+                        </div>
+                        <button onClick={() => removePendingGoal(g.tempId)} className="w-6 h-6 flex items-center justify-center rounded text-amber-400 hover:bg-amber-100 hover:text-amber-600 transition-colors flex-shrink-0 text-xs">✕</button>
+                      </div>
+                    ))}
+                  </>}
               </div>
             </div>
 
@@ -345,35 +386,49 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
               <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-gray-100">
                 <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
                 <span className="text-xs font-semibold text-gray-600">{match.awayTeam.name}</span>
-                <span className="ml-auto text-xs font-bold text-blue-600">{awayGoals.length}골</span>
+                <span className="ml-auto text-xs font-bold text-blue-600">{awayGoals.length + awayPending.length}골</span>
               </div>
               <div className="space-y-1.5">
-                {awayGoals.length === 0
+                {awayGoals.length === 0 && awayPending.length === 0
                   ? <p className="text-xs text-gray-300 text-center py-2">-</p>
-                  : awayGoals.map((g) => (
-                    <div key={g.id} className="flex items-center gap-1.5">
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
-                        {g.half && <span className="text-xs text-blue-500 ml-1">{g.half === 1 ? "전반" : "후반"}</span>}
-                        {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
-                        {g.type !== "GOAL" && (
-                          <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
-                        )}
+                  : <>
+                    {awayGoals.map((g) => (
+                      <div key={g.id} className="flex items-center gap-1.5">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
+                          {g.half && <span className="text-xs text-blue-500 ml-1">{g.half === 1 ? "전반" : "후반"}</span>}
+                          {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
+                          {g.type !== "GOAL" && (
+                            <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
+                          )}
+                        </div>
+                        <button onClick={() => deleteGoal(g.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
                       </div>
-                      <button onClick={() => deleteGoal(g.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
-                    </div>
-                  ))}
+                    ))}
+                    {awayPending.map((g) => (
+                      <div key={g.tempId} className="flex items-center gap-1.5 bg-amber-50 rounded px-1.5 py-0.5">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-medium truncate text-amber-800">{getPendingPlayerName(g)}</span>
+                          <span className="text-xs text-amber-500 ml-1">{g.half === "1" ? "전반" : "후반"}</span>
+                          {g.minute && <span className="text-xs text-amber-400 ml-1">{g.minute}&apos;</span>}
+                          {g.type !== "GOAL" && (
+                            <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
+                          )}
+                        </div>
+                        <button onClick={() => removePendingGoal(g.tempId)} className="w-6 h-6 flex items-center justify-center rounded text-amber-400 hover:bg-amber-100 hover:text-amber-600 transition-colors flex-shrink-0 text-xs">✕</button>
+                      </div>
+                    ))}
+                  </>}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── 경기 상세 정보 (경기정보 + 심판진 + 영상) ── */}
+      {/* ── 경기 상세 정보 ── */}
       <div className="card p-5">
         <h4 className="font-bold mb-4">경기 상세 정보</h4>
 
-        {/* 경기 정보 */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
           <div>
             <label className="label">일시</label>
@@ -430,11 +485,16 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
             />
           </div>
         </div>
-
-        <button onClick={saveResult} className="btn btn-secondary mt-4" disabled={saving}>
-          {saving ? "저장 중..." : "상세 정보 저장"}
-        </button>
       </div>
+
+      {/* ── 통합 저장 버튼 ── */}
+      <button onClick={saveAll} className="btn btn-primary w-full" disabled={saving}>
+        {saving
+          ? "저장 중..."
+          : pendingGoals.length > 0
+            ? `저장 (득점 ${pendingGoals.length}개 포함)`
+            : "저장"}
+      </button>
     </div>
   );
 }

@@ -29,10 +29,44 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
 
   const { id: matchId } = await params;
-  const { playerId, teamId, minute, half, type } = await req.json();
+  const body = await req.json();
+
+  // ── Bulk 모드: { goals: [...] } ──
+  if (Array.isArray(body.goals)) {
+    if (body.goals.length === 0) {
+      const goals = await prisma.goal.findMany({ where: { matchId }, include: { player: true, team: true } });
+      const match = await prisma.match.findUnique({ where: { id: matchId } });
+      return NextResponse.json({ goals, homeScore: match?.homeScore ?? 0, awayScore: match?.awayScore ?? 0 }, { status: 201 });
+    }
+
+    await prisma.goal.createMany({
+      data: body.goals.map((g: { teamId: string; playerId?: string | null; minute?: number | null; half?: number | null; type?: string }) => ({
+        matchId,
+        teamId: g.teamId,
+        playerId: g.playerId || null,
+        minute: g.minute != null ? Number(g.minute) : null,
+        half: g.half != null ? Number(g.half) : null,
+        type: g.type || "GOAL",
+      })),
+    });
+
+    const updated = await recalcMatchScore(matchId);
+    if (updated) {
+      revalidatePath(`/tournaments/${updated.tournamentId}`);
+      revalidatePath("/tournaments");
+    }
+
+    const goals = await prisma.goal.findMany({ where: { matchId }, include: { player: true, team: true } });
+    return NextResponse.json(
+      { goals, homeScore: updated?.homeScore ?? 0, awayScore: updated?.awayScore ?? 0 },
+      { status: 201 }
+    );
+  }
+
+  // ── 단일 모드 (기존) ──
+  const { playerId, teamId, minute, half, type } = body;
   if (!teamId) return NextResponse.json({ error: "팀 정보 필요" }, { status: 400 });
 
-  // 골 생성 + 스코어 재계산 병렬 실행 불가 (순서 의존) → 순차 실행하되 findUnique 제거
   const goal = await prisma.goal.create({
     data: {
       matchId,
