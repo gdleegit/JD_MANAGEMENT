@@ -384,7 +384,7 @@ export default function TournamentPublicView({
                         {!teamPlayers ? (
                           <p className="text-xs text-gray-300 text-center py-3">로딩 중...</p>
                         ) : sortedPlayers.length > 0 ? (
-                          <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0.5">
                             {sortedPlayers.map((p) => (
                               <div key={p.id} className="flex items-center gap-1.5 py-1 px-1 rounded hover:bg-gray-50 transition-colors min-w-0">
                                 <span
@@ -393,7 +393,7 @@ export default function TournamentPublicView({
                                 >
                                   {p.number ?? "·"}
                                 </span>
-                                <span className="text-sm font-medium text-gray-800 truncate">{p.name}</span>
+                                <span className="text-sm font-medium text-gray-800">{p.name}</span>
                               </div>
                             ))}
                           </div>
@@ -444,7 +444,7 @@ export default function TournamentPublicView({
                 ) : sortedPlayers.length === 0 ? (
                   <p className="text-sm text-gray-400 text-center py-6">선수 정보 없음</p>
                 ) : (
-                  <div className="grid grid-cols-2 gap-x-2 gap-y-0.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-2 gap-y-0.5">
                     {sortedPlayers.map((p) => (
                       <div key={p.id} className="flex items-center gap-1.5 py-1 px-1 rounded hover:bg-gray-50 transition-colors min-w-0">
                         <span
@@ -453,7 +453,7 @@ export default function TournamentPublicView({
                         >
                           {p.number ?? "·"}
                         </span>
-                        <span className="text-sm font-medium text-gray-800 truncate">{p.name}</span>
+                        <span className="text-sm font-medium text-gray-800">{p.name}</span>
                       </div>
                     ))}
                   </div>
