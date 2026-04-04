@@ -29,7 +29,7 @@ type Match = {
   assistantReferee2?: string | null;
 };
 type TournamentTeam = { id: string; team: Team };
-type Sponsor = { id: string; name: string; logoUrl?: string | null; link?: string | null; type: string; order: number };
+type Sponsor = { id: string; name: string; description?: string | null; logoUrl?: string | null; link?: string | null; type: string; order: number };
 type Tournament = {
   id: string;
   name: string;
@@ -892,7 +892,7 @@ function SponsorsTab({
   onUpdate: (id: string, data: Partial<Sponsor>) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }) {
-  const empty = { name: "", type: "SPONSOR", logoUrl: "", link: "" };
+  const empty = { name: "", type: "SPONSOR", description: "", logoUrl: "", link: "" };
   const [form, setForm] = useState(empty);
   const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -901,18 +901,18 @@ function SponsorsTab({
   const handleAdd = async () => {
     if (!form.name.trim()) return;
     setAdding(true);
-    await onAdd({ name: form.name.trim(), type: form.type, logoUrl: form.logoUrl || null, link: form.link || null });
+    await onAdd({ name: form.name.trim(), type: form.type, description: form.description || null, logoUrl: form.logoUrl || null, link: form.link || null });
     setForm(empty);
     setAdding(false);
   };
 
   const startEdit = (s: Sponsor) => {
     setEditingId(s.id);
-    setEditForm({ name: s.name, type: s.type, logoUrl: s.logoUrl ?? "", link: s.link ?? "" });
+    setEditForm({ name: s.name, type: s.type, description: s.description ?? "", logoUrl: s.logoUrl ?? "", link: s.link ?? "" });
   };
 
   const handleUpdate = async (id: string) => {
-    await onUpdate(id, { name: editForm.name.trim(), type: editForm.type, logoUrl: editForm.logoUrl || null, link: editForm.link || null });
+    await onUpdate(id, { name: editForm.name.trim(), type: editForm.type, description: editForm.description || null, logoUrl: editForm.logoUrl || null, link: editForm.link || null });
     setEditingId(null);
   };
 
@@ -947,6 +947,10 @@ function SponsorsTab({
                               {SPONSOR_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                             </select>
                           </div>
+                          <div className="sm:col-span-2">
+                            <label className="label">부제 (선택)</label>
+                            <input className="input" placeholder="예: 74회 홍길동" value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} />
+                          </div>
                           <div>
                             <label className="label">로고 URL</label>
                             <input className="input" placeholder="https://..." value={editForm.logoUrl} onChange={e => setEditForm(f => ({ ...f, logoUrl: e.target.value }))} />
@@ -969,7 +973,8 @@ function SponsorsTab({
                         )}
                         <div className="flex-1 min-w-0">
                           <span className="font-medium text-sm">{s.name}</span>
-                          {s.link && <span className="text-xs text-gray-400 ml-2 truncate">{s.link}</span>}
+                          {s.description && <span className="text-xs text-gray-400 ml-1.5">{s.description}</span>}
+                          {s.link && <span className="text-xs text-gray-300 ml-2 truncate">{s.link}</span>}
                         </div>
                         <div className="flex gap-1.5 flex-shrink-0">
                           <button onClick={() => startEdit(s)} className="btn btn-secondary btn-sm text-xs">편집</button>
@@ -998,6 +1003,10 @@ function SponsorsTab({
             <select className="input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
               {SPONSOR_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
+          </div>
+          <div className="sm:col-span-2">
+            <label className="label">부제 (선택)</label>
+            <input className="input" placeholder="예: 74회 홍길동" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
           </div>
           <div>
             <label className="label">로고 URL (선택)</label>

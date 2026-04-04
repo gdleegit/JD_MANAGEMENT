@@ -42,7 +42,7 @@ const SPORT_EMOJI: Record<string, string> = {
   BILLIARDS: "🎱", GOLF: "⛳",
 };
 
-type Sponsor = { id: string; name: string; logoUrl?: string | null; link?: string | null; type: string; order: number };
+type Sponsor = { id: string; name: string; description?: string | null; logoUrl?: string | null; link?: string | null; type: string; order: number };
 
 type Tournament = {
   id: string;
@@ -1121,18 +1121,29 @@ function SponsorSection({ sponsors }: { sponsors: Sponsor[] }) {
 
 function SponsorChip({ sponsor, type }: { sponsor: Sponsor; type: string }) {
   const inner = (
-    <span className={`inline-flex items-center gap-1.5 ${
+    <span className={`inline-flex flex-col ${
       type === "TITLE"
-        ? "text-sm font-bold text-gray-800"
+        ? "items-start gap-0"
         : type === "SPONSOR"
-        ? "text-xs font-semibold text-gray-700 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full"
-        : "text-xs text-gray-500"
+        ? "items-center bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full"
+        : "items-start gap-0"
     }`}>
-      {sponsor.logoUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={sponsor.logoUrl} alt={sponsor.name} className="h-4 w-auto object-contain" />
+      <span className={`inline-flex items-center gap-1.5 ${
+        type === "TITLE"
+          ? "text-sm font-bold text-gray-800"
+          : type === "SPONSOR"
+          ? "text-xs font-semibold text-gray-700"
+          : "text-xs text-gray-500"
+      }`}>
+        {sponsor.logoUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={sponsor.logoUrl} alt={sponsor.name} className="h-4 w-auto object-contain" />
+        )}
+        {sponsor.name}
+      </span>
+      {sponsor.description && (
+        <span className="text-[11px] text-gray-400 leading-tight">{sponsor.description}</span>
       )}
-      {sponsor.name}
     </span>
   );
 

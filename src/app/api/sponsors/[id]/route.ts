@@ -8,7 +8,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
 
   const { id } = await params;
-  const { name, type, logoUrl, link, order } = await req.json();
+  const { name, type, logoUrl, link, description, order } = await req.json();
 
   const sponsor = await prisma.sponsor.update({
     where: { id },
@@ -17,6 +17,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       ...(type !== undefined && { type }),
       ...(logoUrl !== undefined && { logoUrl: logoUrl || null }),
       ...(link !== undefined && { link: link || null }),
+      ...(description !== undefined && { description: description || null }),
       ...(order !== undefined && { order }),
     },
   });
