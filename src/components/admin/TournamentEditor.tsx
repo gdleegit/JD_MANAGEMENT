@@ -60,6 +60,8 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
   const [loadingMatchId, setLoadingMatchId] = useState<string | null>(null);
   const [tab, setTab] = useState<"info" | "teams" | "matches" | "groups" | "rules" | "sponsors">("matches");
   const [saving, setSaving] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
 
   // 토너먼트만 재조회 (팀 목록 제외 — 선수 없이 훨씬 빠름)
   const load = async () => {
@@ -85,9 +87,37 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         <button onClick={onBack} className="btn-secondary btn-sm">← 목록으로</button>
-        <h2 className="font-bold text-xl">{tournament.name} 편집</h2>
+        {editingName ? (
+          <form
+            className="flex items-center gap-2"
+            onSubmit={async (e) => {
+              e.preventDefault();
+              if (!nameInput.trim()) return;
+              const res = await fetch(`/api/tournaments/${tournamentId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ name: nameInput.trim() }) });
+              if (res.ok) { const updated = await res.json(); setTournament(t => t ? { ...t, name: updated.name } : t); }
+              setEditingName(false);
+            }}
+          >
+            <input
+              className="input text-lg font-bold py-1"
+              value={nameInput}
+              onChange={(e) => setNameInput(e.target.value)}
+              autoFocus
+            />
+            <button type="submit" className="btn-primary btn-sm">저장</button>
+            <button type="button" onClick={() => setEditingName(false)} className="btn-secondary btn-sm">취소</button>
+          </form>
+        ) : (
+          <button
+            className="flex items-center gap-2 group"
+            onClick={() => { setNameInput(tournament.name); setEditingName(true); }}
+          >
+            <h2 className="font-bold text-xl group-hover:text-blue-600 transition-colors">{tournament.name}</h2>
+            <span className="text-gray-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity">✏️</span>
+          </button>
+        )}
       </div>
 
       {/* Tabs */}
