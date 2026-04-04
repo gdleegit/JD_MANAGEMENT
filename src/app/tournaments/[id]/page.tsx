@@ -36,6 +36,7 @@ export default async function TournamentDetailPage({ params }: { params: Promise
         },
         orderBy: { sortOrder: "asc" },
       },
+      sponsors: { orderBy: [{ order: "asc" }, { createdAt: "asc" }] },
     },
   });
 

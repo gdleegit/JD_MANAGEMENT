@@ -20,9 +20,10 @@ model Tournament {
   rules       String?
   createdAt   DateTime  @default(now())
 
-  teams   TournamentTeam[]
-  matches Match[]
-  groups  Group[]
+  teams    TournamentTeam[]
+  matches  Match[]
+  groups   Group[]
+  sponsors Sponsor[]
 }
 
 model Team {
@@ -131,6 +132,18 @@ model GroupTeam {
   points  Int    @default(0)
 
   @@unique([groupId, teamId])
+}
+
+model Sponsor {
+  id           String     @id @default(cuid())
+  tournamentId String
+  tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  name         String
+  logoUrl      String?
+  link         String?
+  type         String     @default("SPONSOR")
+  order        Int        @default(0)
+  createdAt    DateTime   @default(now())
 }
 
 model AdminUser {

@@ -42,6 +42,8 @@ const SPORT_EMOJI: Record<string, string> = {
   BILLIARDS: "🎱", GOLF: "⛳",
 };
 
+type Sponsor = { id: string; name: string; logoUrl?: string | null; link?: string | null; type: string; order: number };
+
 type Tournament = {
   id: string;
   name: string;
@@ -55,6 +57,7 @@ type Tournament = {
   teams: TournamentTeam[];
   matches: Match[];
   groups: Group[];
+  sponsors: Sponsor[];
 };
 
 type LeagueRow = {
@@ -225,6 +228,11 @@ export default function TournamentPublicView({
             </span>
           </div>
         </div>
+
+        {/* 협찬 & 후원 */}
+        {tournament.sponsors.length > 0 && (
+          <SponsorSection sponsors={tournament.sponsors} />
+        )}
 
         {/* Tabs — 카드 하단에 붙임 */}
         <div className="border-t border-gray-100 overflow-x-auto">
@@ -1076,4 +1084,64 @@ function RulesRenderer({ rules }: { rules: string }) {
       })}
     </div>
   );
+}
+
+// ── 협찬 & 후원 섹션 ──────────────────────────────────────
+const SPONSOR_TYPE_LABEL: Record<string, string> = {
+  TITLE:   "타이틀 협찬",
+  SPONSOR: "협찬",
+  SUPPORT: "후원 · 지원",
+};
+const SPONSOR_TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
+
+function SponsorSection({ sponsors }: { sponsors: Sponsor[] }) {
+  const grouped = SPONSOR_TYPE_ORDER.reduce<Record<string, Sponsor[]>>((acc, t) => {
+    const list = sponsors.filter(s => s.type === t);
+    if (list.length) acc[t] = list;
+    return acc;
+  }, {});
+
+  return (
+    <div className="px-4 sm:px-6 py-3 border-t border-gray-100 space-y-2.5">
+      {Object.entries(grouped).map(([type, list]) => (
+        <div key={type} className="flex items-start gap-3">
+          <span className="text-[11px] font-semibold text-gray-400 whitespace-nowrap mt-0.5 w-16 flex-shrink-0">
+            {SPONSOR_TYPE_LABEL[type]}
+          </span>
+          <div className="flex flex-wrap gap-2">
+            {list.map(s => (
+              <SponsorChip key={s.id} sponsor={s} type={type} />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function SponsorChip({ sponsor, type }: { sponsor: Sponsor; type: string }) {
+  const inner = (
+    <span className={`inline-flex items-center gap-1.5 ${
+      type === "TITLE"
+        ? "text-sm font-bold text-gray-800"
+        : type === "SPONSOR"
+        ? "text-xs font-semibold text-gray-700 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full"
+        : "text-xs text-gray-500"
+    }`}>
+      {sponsor.logoUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={sponsor.logoUrl} alt={sponsor.name} className="h-4 w-auto object-contain" />
+      )}
+      {sponsor.name}
+    </span>
+  );
+
+  if (sponsor.link) {
+    return (
+      <a href={sponsor.link} target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
+        {inner}
+      </a>
+    );
+  }
+  return inner;
 }

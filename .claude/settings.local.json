@@ -8,7 +8,15 @@
       "Bash(npx prisma:*)",
       "Bash(node:*)",
       "Bash(rm:*)",
-      "Bash(taskkill:*)"
+      "Bash(taskkill:*)",
+      "Bash(git pull:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(git push:*)",
+      "Bash(git revert:*)",
+      "Bash(npx tsx --no-deprecation -e ':*)",
+      "Bash(grep -v \"^$\")"
     ]
   }
 }

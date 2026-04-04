@@ -19,6 +19,7 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
         orderBy: [{ matchOrder: "asc" }, { date: "asc" }],
       },
       groups: { include: { teams: { include: { team: true } } }, orderBy: { sortOrder: "asc" } },
+      sponsors: { orderBy: [{ order: "asc" }, { createdAt: "asc" }] },
     },
   });
   if (!tournament) return NextResponse.json({ error: "대회를 찾을 수 없습니다" }, { status: 404 });

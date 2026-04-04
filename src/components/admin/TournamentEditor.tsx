@@ -29,6 +29,7 @@ type Match = {
   assistantReferee2?: string | null;
 };
 type TournamentTeam = { id: string; team: Team };
+type Sponsor = { id: string; name: string; logoUrl?: string | null; link?: string | null; type: string; order: number };
 type Tournament = {
   id: string;
   name: string;
@@ -42,6 +43,7 @@ type Tournament = {
   teams: TournamentTeam[];
   matches: Match[];
   groups: Group[];
+  sponsors: Sponsor[];
 };
 
 const STATUS_OPTIONS = [
@@ -56,7 +58,7 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
   const [loading, setLoading] = useState(true);
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
   const [loadingMatchId, setLoadingMatchId] = useState<string | null>(null);
-  const [tab, setTab] = useState<"info" | "teams" | "matches" | "groups" | "rules">("matches");
+  const [tab, setTab] = useState<"info" | "teams" | "matches" | "groups" | "rules" | "sponsors">("matches");
   const [saving, setSaving] = useState(false);
 
   // 토너먼트만 재조회 (팀 목록 제외 — 선수 없이 훨씬 빠름)
@@ -96,6 +98,7 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
             { key: "teams", label: "팀 구성" },
             { key: "groups", label: "조 편성", show: tournament.type === "GROUP" },
             { key: "rules", label: "운영규칙" },
+            { key: "sponsors", label: "협찬·후원" },
             { key: "info", label: "기본 정보" },
           ].filter((t) => t.show !== false).map((t) => (
             <button
@@ -129,6 +132,37 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
           setTournament(t => t ? { ...t, ...updated } : t);
           setSaving(false);
         }} saving={saving} />
+      )}
+
+      {/* Sponsors Tab */}
+      {tab === "sponsors" && (
+        <SponsorsTab
+          tournament={tournament}
+          onAdd={async (data) => {
+            const res = await fetch(`/api/tournaments/${tournamentId}/sponsors`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            if (res.ok) {
+              const sponsor = await res.json();
+              setTournament(t => t ? { ...t, sponsors: [...t.sponsors, sponsor] } : t);
+            }
+          }}
+          onUpdate={async (id, data) => {
+            const res = await fetch(`/api/sponsors/${id}`, {
+              method: "PATCH", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            if (res.ok) {
+              const updated = await res.json();
+              setTournament(t => t ? { ...t, sponsors: t.sponsors.map(s => s.id === id ? updated : s) } : t);
+            }
+          }}
+          onDelete={async (id) => {
+            await fetch(`/api/sponsors/${id}`, { method: "DELETE" });
+            setTournament(t => t ? { ...t, sponsors: t.sponsors.filter(s => s.id !== id) } : t);
+          }}
+        />
       )}
 
       {/* Teams Tab */}
@@ -835,6 +869,148 @@ function MatchesTab({ tournament, loadingMatchId, onCreateMatch, onEditMatch, on
             </div>
           );
         })()}
+      </div>
+    </div>
+  );
+}
+
+// ── 협찬·후원 탭 ──────────────────────────────────────────
+const SPONSOR_TYPES = [
+  { value: "TITLE",   label: "타이틀 협찬" },
+  { value: "SPONSOR", label: "협찬" },
+  { value: "SUPPORT", label: "후원 · 지원" },
+];
+
+function SponsorsTab({
+  tournament,
+  onAdd,
+  onUpdate,
+  onDelete,
+}: {
+  tournament: Tournament;
+  onAdd: (data: Omit<Sponsor, "id" | "order">) => Promise<void>;
+  onUpdate: (id: string, data: Partial<Sponsor>) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+}) {
+  const empty = { name: "", type: "SPONSOR", logoUrl: "", link: "" };
+  const [form, setForm] = useState(empty);
+  const [adding, setAdding] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState(empty);
+
+  const handleAdd = async () => {
+    if (!form.name.trim()) return;
+    setAdding(true);
+    await onAdd({ name: form.name.trim(), type: form.type, logoUrl: form.logoUrl || null, link: form.link || null });
+    setForm(empty);
+    setAdding(false);
+  };
+
+  const startEdit = (s: Sponsor) => {
+    setEditingId(s.id);
+    setEditForm({ name: s.name, type: s.type, logoUrl: s.logoUrl ?? "", link: s.link ?? "" });
+  };
+
+  const handleUpdate = async (id: string) => {
+    await onUpdate(id, { name: editForm.name.trim(), type: editForm.type, logoUrl: editForm.logoUrl || null, link: editForm.link || null });
+    setEditingId(null);
+  };
+
+  const grouped = SPONSOR_TYPES.map(t => ({
+    ...t,
+    items: tournament.sponsors.filter(s => s.type === t.value),
+  }));
+
+  return (
+    <div className="space-y-4">
+      {/* 목록 */}
+      {tournament.sponsors.length === 0 ? (
+        <div className="card p-8 text-center text-gray-400 text-sm">등록된 협찬·후원이 없습니다</div>
+      ) : (
+        <div className="card p-4 space-y-4">
+          {grouped.map(({ value, label, items }) => items.length === 0 ? null : (
+            <div key={value}>
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">{label}</p>
+              <div className="space-y-2">
+                {items.map(s => (
+                  <div key={s.id}>
+                    {editingId === s.id ? (
+                      <div className="border border-blue-200 rounded-lg p-3 space-y-2 bg-blue-50">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div>
+                            <label className="label">이름</label>
+                            <input className="input" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
+                          </div>
+                          <div>
+                            <label className="label">유형</label>
+                            <select className="input" value={editForm.type} onChange={e => setEditForm(f => ({ ...f, type: e.target.value }))}>
+                              {SPONSOR_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                            </select>
+                          </div>
+                          <div>
+                            <label className="label">로고 URL</label>
+                            <input className="input" placeholder="https://..." value={editForm.logoUrl} onChange={e => setEditForm(f => ({ ...f, logoUrl: e.target.value }))} />
+                          </div>
+                          <div>
+                            <label className="label">링크 URL</label>
+                            <input className="input" placeholder="https://..." value={editForm.link} onChange={e => setEditForm(f => ({ ...f, link: e.target.value }))} />
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => handleUpdate(s.id)} className="btn btn-primary btn-sm">저장</button>
+                          <button onClick={() => setEditingId(null)} className="btn btn-secondary btn-sm">취소</button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-gray-50">
+                        {s.logoUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={s.logoUrl} alt={s.name} className="h-6 w-auto object-contain flex-shrink-0" />
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <span className="font-medium text-sm">{s.name}</span>
+                          {s.link && <span className="text-xs text-gray-400 ml-2 truncate">{s.link}</span>}
+                        </div>
+                        <div className="flex gap-1.5 flex-shrink-0">
+                          <button onClick={() => startEdit(s)} className="btn btn-secondary btn-sm text-xs">편집</button>
+                          <button onClick={() => onDelete(s.id)} className="btn btn-danger btn-sm text-xs">삭제</button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* 추가 폼 */}
+      <div className="card p-4">
+        <h4 className="font-bold mb-3">협찬·후원 추가</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="label">이름 *</label>
+            <input className="input" placeholder="예: A스포츠, 영리그 활성화 지원금 (74회)" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+          </div>
+          <div>
+            <label className="label">유형</label>
+            <select className="input" value={form.type} onChange={e => setForm(f => ({ ...f, type: e.target.value }))}>
+              {SPONSOR_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="label">로고 URL (선택)</label>
+            <input className="input" placeholder="https://..." value={form.logoUrl} onChange={e => setForm(f => ({ ...f, logoUrl: e.target.value }))} />
+          </div>
+          <div>
+            <label className="label">링크 URL (선택)</label>
+            <input className="input" placeholder="https://..." value={form.link} onChange={e => setForm(f => ({ ...f, link: e.target.value }))} />
+          </div>
+        </div>
+        <button onClick={handleAdd} disabled={adding || !form.name.trim()} className="btn btn-primary mt-3">
+          {adding ? "추가 중..." : "추가"}
+        </button>
       </div>
     </div>
   );
