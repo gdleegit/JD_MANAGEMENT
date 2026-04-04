@@ -42,7 +42,7 @@ const SPORT_EMOJI: Record<string, string> = {
   BILLIARDS: "🎱", GOLF: "⛳",
 };
 
-type Sponsor = { id: string; name: string; description?: string | null; logoUrl?: string | null; link?: string | null; type: string; order: number };
+type Sponsor = { id: string; name: string; grade?: string | null; description?: string | null; logoUrl?: string | null; link?: string | null; type: string; order: number };
 
 type Tournament = {
   id: string;
@@ -1142,6 +1142,9 @@ function SponsorChip({ sponsor, type }: { sponsor: Sponsor; type: string }) {
         {sponsor.logoUrl && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={sponsor.logoUrl} alt={sponsor.name} className="h-4 w-auto object-contain" />
+        )}
+        {sponsor.grade && (
+          <span className="text-blue-600 font-semibold">{sponsor.grade}</span>
         )}
         {sponsor.name}
       </span>

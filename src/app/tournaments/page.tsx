@@ -68,7 +68,8 @@ export default async function TournamentsPage() {
                 {list.map(s => {
                   const inner = (
                     <span key={s.id} className={`inline-flex flex-col items-start ${type === "TITLE" ? "gap-0.5" : ""}`}>
-                      <span className={`font-${type === "TITLE" ? "bold text-base" : "medium text-sm"} text-gray-800`}>
+                      <span className={`inline-flex items-center gap-1.5 font-${type === "TITLE" ? "bold text-base" : "medium text-sm"} text-gray-800`}>
+                        {s.grade && <span className="text-blue-600 font-semibold">{s.grade}</span>}
                         {s.name}
                       </span>
                       {s.description && (

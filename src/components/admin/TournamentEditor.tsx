@@ -30,7 +30,7 @@ type Match = {
   assistantReferee2?: string | null;
 };
 type TournamentTeam = { id: string; team: Team };
-type Sponsor = { id: string; name: string; description?: string | null; logoUrl?: string | null; link?: string | null; type: string; order: number };
+type Sponsor = { id: string; name: string; grade?: string | null; description?: string | null; logoUrl?: string | null; link?: string | null; type: string; order: number };
 type Tournament = {
   id: string;
   name: string;
@@ -908,24 +908,24 @@ function SponsorsTab({
   onUpdate: (id: string, data: Partial<Sponsor>) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
 }) {
-  const empty = { name: "", type: "SPONSOR", description: "", logoUrl: "", link: "" };
+  const empty = { name: "", grade: "", type: "SPONSOR", description: "", logoUrl: "", link: "" };
   const [form, setForm] = useState(empty);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState(empty);
 
   const handleAdd = async () => {
     if (!form.name.trim()) return;
-    await onAdd({ name: form.name.trim(), type: form.type, description: form.description || null, logoUrl: form.logoUrl || null, link: form.link || null });
+    await onAdd({ name: form.name.trim(), grade: form.grade || null, type: form.type, description: form.description || null, logoUrl: form.logoUrl || null, link: form.link || null });
     setForm(empty);
   };
 
   const startEdit = (s: Sponsor) => {
     setEditingId(s.id);
-    setEditForm({ name: s.name, type: s.type, description: s.description ?? "", logoUrl: s.logoUrl ?? "", link: s.link ?? "" });
+    setEditForm({ name: s.name, grade: s.grade ?? "", type: s.type, description: s.description ?? "", logoUrl: s.logoUrl ?? "", link: s.link ?? "" });
   };
 
   const handleUpdate = async (id: string) => {
-    await onUpdate(id, { name: editForm.name.trim(), type: editForm.type, description: editForm.description || null, logoUrl: editForm.logoUrl || null, link: editForm.link || null });
+    await onUpdate(id, { name: editForm.name.trim(), grade: editForm.grade || null, type: editForm.type, description: editForm.description || null, logoUrl: editForm.logoUrl || null, link: editForm.link || null });
     setEditingId(null);
   };
 
@@ -949,9 +949,13 @@ function SponsorsTab({
                   <div key={s.id}>
                     {editingId === s.id ? (
                       <div className="border border-blue-200 rounded-lg p-3 space-y-2 bg-blue-50">
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                           <div>
-                            <label className="label">이름</label>
+                            <label className="label">기수 (선택)</label>
+                            <input className="input" placeholder="예: 74회" value={editForm.grade} onChange={e => setEditForm(f => ({ ...f, grade: e.target.value }))} />
+                          </div>
+                          <div>
+                            <label className="label">이름 *</label>
                             <input className="input" value={editForm.name} onChange={e => setEditForm(f => ({ ...f, name: e.target.value }))} />
                           </div>
                           <div>
@@ -960,15 +964,15 @@ function SponsorsTab({
                               {SPONSOR_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                             </select>
                           </div>
-                          <div className="sm:col-span-2">
+                          <div className="sm:col-span-3">
                             <label className="label">부제 (선택)</label>
-                            <input className="input" placeholder="예: 74회 홍길동" value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} />
+                            <input className="input" placeholder="예: 활성화 지원금" value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} />
                           </div>
                           <div>
                             <label className="label">로고 URL</label>
                             <input className="input" placeholder="https://..." value={editForm.logoUrl} onChange={e => setEditForm(f => ({ ...f, logoUrl: e.target.value }))} />
                           </div>
-                          <div>
+                          <div className="sm:col-span-2">
                             <label className="label">링크 URL</label>
                             <input className="input" placeholder="https://..." value={editForm.link} onChange={e => setEditForm(f => ({ ...f, link: e.target.value }))} />
                           </div>
@@ -985,6 +989,7 @@ function SponsorsTab({
                           <img src={s.logoUrl} alt={s.name} className="h-6 w-auto object-contain flex-shrink-0" />
                         )}
                         <div className="flex-1 min-w-0">
+                          {s.grade && <span className="text-xs text-blue-600 font-semibold mr-1.5">{s.grade}</span>}
                           <span className="font-medium text-sm">{s.name}</span>
                           {s.description && <span className="text-xs text-gray-400 ml-1.5">{s.description}</span>}
                           {s.link && <span className="text-xs text-gray-300 ml-2 truncate">{s.link}</span>}
@@ -1006,10 +1011,14 @@ function SponsorsTab({
       {/* 추가 폼 */}
       <div className="card p-4">
         <h4 className="font-bold mb-3">협찬·후원 추가</h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="label">기수 (선택)</label>
+            <input className="input" placeholder="예: 74회" value={form.grade} onChange={e => setForm(f => ({ ...f, grade: e.target.value }))} />
+          </div>
           <div>
             <label className="label">이름 *</label>
-            <input className="input" placeholder="예: A스포츠, 영리그 활성화 지원금 (74회)" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+            <input className="input" placeholder="예: 홍길동, 야베스요거" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
           </div>
           <div>
             <label className="label">유형</label>
@@ -1017,15 +1026,15 @@ function SponsorsTab({
               {SPONSOR_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select>
           </div>
-          <div className="sm:col-span-2">
+          <div className="sm:col-span-3">
             <label className="label">부제 (선택)</label>
-            <input className="input" placeholder="예: 74회 홍길동" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+            <input className="input" placeholder="예: 영리그 활성화 지원금" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
           </div>
           <div>
             <label className="label">로고 URL (선택)</label>
             <input className="input" placeholder="https://..." value={form.logoUrl} onChange={e => setForm(f => ({ ...f, logoUrl: e.target.value }))} />
           </div>
-          <div>
+          <div className="sm:col-span-2">
             <label className="label">링크 URL (선택)</label>
             <input className="input" placeholder="https://..." value={form.link} onChange={e => setForm(f => ({ ...f, link: e.target.value }))} />
           </div>
