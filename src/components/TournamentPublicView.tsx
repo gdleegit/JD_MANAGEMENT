@@ -1094,7 +1094,7 @@ function RulesRenderer({ rules }: { rules: string }) {
 const SPONSOR_TYPE_LABEL: Record<string, string> = {
   TITLE:   "타이틀 협찬",
   SPONSOR: "협찬",
-  SUPPORT: "후원 · 지원",
+  SUPPORT: "후원",
 };
 const SPONSOR_TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
 
@@ -1106,13 +1106,13 @@ function SponsorSection({ sponsors }: { sponsors: Sponsor[] }) {
   }, {});
 
   return (
-    <div className="px-4 sm:px-6 py-3 border-t border-gray-100 space-y-2.5">
+    <div className="space-y-5">
       {Object.entries(grouped).map(([type, list]) => (
-        <div key={type} className="flex items-start gap-3">
-          <span className="text-[11px] font-semibold text-gray-400 whitespace-nowrap mt-0.5 w-16 flex-shrink-0">
+        <div key={type}>
+          <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2.5">
             {SPONSOR_TYPE_LABEL[type]}
-          </span>
-          <div className="flex flex-wrap gap-2">
+          </p>
+          <div className={`flex flex-wrap gap-3 ${type === "TITLE" ? "justify-center" : ""}`}>
             {list.map(s => (
               <SponsorChip key={s.id} sponsor={s} type={type} />
             ))}
@@ -1124,39 +1124,42 @@ function SponsorSection({ sponsors }: { sponsors: Sponsor[] }) {
 }
 
 function SponsorChip({ sponsor, type }: { sponsor: Sponsor; type: string }) {
+  const logoSize =
+    type === "TITLE" ? "h-12 max-w-[140px]" :
+    type === "SPONSOR" ? "h-8 max-w-[100px]" :
+    "h-6 max-w-[80px]";
+
+  const cardCls =
+    type === "TITLE"
+      ? "flex flex-col items-center gap-2 bg-white border border-gray-200 rounded-2xl px-5 py-4 shadow-sm min-w-[100px]"
+      : type === "SPONSOR"
+      ? "flex flex-col items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5"
+      : "flex flex-col items-center gap-1 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2";
+
+  const nameCls =
+    type === "TITLE" ? "text-sm font-bold text-gray-800 text-center" :
+    type === "SPONSOR" ? "text-xs font-semibold text-gray-700 text-center" :
+    "text-xs text-gray-500 text-center";
+
   const inner = (
-    <span className={`inline-flex flex-col ${
-      type === "TITLE"
-        ? "items-start gap-0"
-        : type === "SPONSOR"
-        ? "items-center bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-full"
-        : "items-start gap-0"
-    }`}>
-      <span className={`inline-flex items-center gap-1.5 ${
-        type === "TITLE"
-          ? "text-sm font-bold text-gray-800"
-          : type === "SPONSOR"
-          ? "text-xs font-semibold text-gray-700"
-          : "text-xs text-gray-500"
-      }`}>
-        {sponsor.logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={sponsor.logoUrl} alt={sponsor.name} className="h-4 w-auto object-contain" />
-        )}
-        {sponsor.grade && (
-          <span className="text-blue-600 font-semibold">{sponsor.grade}</span>
-        )}
-        {sponsor.name}
+    <span className={cardCls}>
+      {sponsor.logoUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={sponsor.logoUrl} alt={sponsor.name} className={`object-contain ${logoSize}`} />
+      )}
+      <span className={`flex items-center gap-1 flex-wrap justify-center ${nameCls}`}>
+        {sponsor.grade && <span className="text-blue-600 font-semibold">{sponsor.grade}</span>}
+        <span>{sponsor.name}</span>
       </span>
       {sponsor.description && (
-        <span className="text-[11px] text-gray-400 leading-tight">{sponsor.description}</span>
+        <span className="text-[11px] text-gray-400 leading-tight text-center">{sponsor.description}</span>
       )}
     </span>
   );
 
   if (sponsor.link) {
     return (
-      <a href={sponsor.link} target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
+      <a href={sponsor.link} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
         {inner}
       </a>
     );

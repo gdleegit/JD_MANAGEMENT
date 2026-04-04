@@ -894,7 +894,7 @@ function MatchesTab({ tournament, loadingMatchId, onCreateMatch, onEditMatch, on
 const SPONSOR_TYPES = [
   { value: "TITLE",   label: "타이틀 협찬" },
   { value: "SPONSOR", label: "협찬" },
-  { value: "SUPPORT", label: "후원 · 지원" },
+  { value: "SUPPORT", label: "후원" },
 ];
 
 function SponsorsTab({

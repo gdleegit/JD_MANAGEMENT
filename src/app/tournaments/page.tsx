@@ -46,7 +46,7 @@ export default async function TournamentsPage() {
 
   // 모든 대회에서 협찬사 수집 (TITLE → SPONSOR → SUPPORT 순)
   const TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
-  const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원·지원" };
+  const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원" };
   const allSponsors = tournaments.flatMap(t => t.sponsors);
   const sponsorGroups = TYPE_ORDER
     .map(type => ({ type, list: allSponsors.filter(s => s.type === type) }))
