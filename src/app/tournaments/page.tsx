@@ -67,18 +67,32 @@ export default async function TournamentsPage() {
               <div className="flex items-center gap-2 flex-wrap">
                 {list.map(s => {
                   const inner = (
-                    <span key={s.id} className={`inline-flex flex-col items-start ${type === "TITLE" ? "gap-0.5" : ""}`}>
-                      <span className={`inline-flex items-center gap-1.5 font-${type === "TITLE" ? "bold text-base" : "medium text-sm"} text-gray-800`}>
-                        {s.grade && <span className="text-blue-600 font-semibold">{s.grade}</span>}
-                        {s.name}
-                      </span>
+                    <span key={s.id} className={`inline-flex flex-col items-center gap-1 ${
+                      type === "TITLE"
+                        ? "bg-white border-2 border-blue-100 rounded-xl px-4 py-2.5 shadow-sm"
+                        : type === "SPONSOR"
+                        ? "bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
+                        : "bg-white border border-gray-100 rounded-lg px-2.5 py-1.5"
+                    }`}>
+                      {s.grade && (
+                        <span className={`font-extrabold rounded-full px-2 py-0.5 ${
+                          type === "TITLE"
+                            ? "bg-blue-600 text-white text-[10px] tracking-wide"
+                            : type === "SPONSOR"
+                            ? "bg-blue-100 text-blue-700 text-[10px]"
+                            : "bg-gray-200 text-gray-500 text-[10px]"
+                        }`}>{s.grade}</span>
+                      )}
+                      <span className={`text-gray-900 text-center leading-tight ${
+                        type === "TITLE" ? "text-sm font-extrabold" : "text-xs font-bold"
+                      }`}>{s.name}</span>
                       {s.description && (
-                        <span className="text-[11px] text-gray-400 leading-tight">{s.description}</span>
+                        <span className="text-[10px] text-gray-400 text-center leading-tight">{s.description}</span>
                       )}
                     </span>
                   );
                   return s.link ? (
-                    <a key={s.id} href={s.link} target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
+                    <a key={s.id} href={s.link} target="_blank" rel="noopener noreferrer" className="hover:opacity-75 transition-opacity">
                       {inner}
                     </a>
                   ) : (
