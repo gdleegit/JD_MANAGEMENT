@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import SaveButton from "./SaveButton";
 
 type Player = { id: string; name: string; number?: number | null };
 type Team = { id: string; name: string; color?: string | null; players?: Player[] };
@@ -59,7 +60,6 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const [assistantReferee1, setAssistantReferee1] = useState(match.assistantReferee1 ?? "");
   const [assistantReferee2, setAssistantReferee2] = useState(match.assistantReferee2 ?? "");
   const [videoUrl, setVideoUrl] = useState(match.videoUrl ?? "");
-  const [saving, setSaving] = useState(false);
   const [goalForm, setGoalForm] = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
   const [pendingGoals, setPendingGoals] = useState<PendingGoal[]>([]);
 
@@ -75,8 +75,6 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
 
   // 통합 저장: match PATCH + bulk goals 병렬
   const saveAll = async () => {
-    setSaving(true);
-
     const parsedHome = homeScore !== "" ? parseInt(homeScore) : null;
     const parsedAway = awayScore !== "" ? parseInt(awayScore) : null;
     const effectiveStatus =
@@ -134,8 +132,6 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
       await matchFetch;
       setCurrentMatch(m => ({ ...m, status: effectiveStatus, homeScore: parsedHome, awayScore: parsedAway }));
     }
-
-    setSaving(false);
   };
 
   const deleteGoal = async (goalId: string) => {
@@ -493,13 +489,11 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
       </div>
 
       {/* ── 통합 저장 버튼 ── */}
-      <button onClick={saveAll} className="btn btn-primary w-full" disabled={saving}>
-        {saving
-          ? "저장 중..."
-          : pendingGoals.length > 0
-            ? `저장 (득점 ${pendingGoals.length}개 포함)`
-            : "저장"}
-      </button>
+      <SaveButton
+        onClick={saveAll}
+        label={pendingGoals.length > 0 ? `저장 (득점 ${pendingGoals.length}개 포함)` : "저장"}
+        className="w-full"
+      />
     </div>
   );
 }

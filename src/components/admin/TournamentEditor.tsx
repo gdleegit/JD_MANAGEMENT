@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import MatchEditor from "./MatchEditor";
 import PlayerManager from "./PlayerManager";
 import { SPORT_LABELS, SPORT_EMOJI } from "./TournamentsTab";
+import SaveButton from "./SaveButton";
 
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
 type Team = { id: string; name: string; shortName?: string | null; color?: string | null; players?: Player[] };
@@ -59,7 +60,6 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
   const [loadingMatchId, setLoadingMatchId] = useState<string | null>(null);
   const [tab, setTab] = useState<"info" | "teams" | "matches" | "groups" | "rules" | "sponsors">("matches");
-  const [saving, setSaving] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState("");
 
@@ -145,23 +145,19 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
       {/* Info Tab */}
       {tab === "info" && (
         <InfoTab tournament={tournament} onSave={async (data) => {
-          setSaving(true);
           const res = await fetch(`/api/tournaments/${tournamentId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
           const updated = await res.json();
           setTournament(t => t ? { ...t, ...updated } : t);
-          setSaving(false);
-        }} saving={saving} />
+        }} />
       )}
 
       {/* Rules Tab */}
       {tab === "rules" && (
         <RulesTab tournament={tournament} onSave={async (data) => {
-          setSaving(true);
           const res = await fetch(`/api/tournaments/${tournamentId}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(data) });
           const updated = await res.json();
           setTournament(t => t ? { ...t, ...updated } : t);
-          setSaving(false);
-        }} saving={saving} />
+        }} />
       )}
 
       {/* Sponsors Tab */}
@@ -283,7 +279,7 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
   );
 }
 
-function InfoTab({ tournament, onSave, saving }: { tournament: Tournament; onSave: (d: object) => void; saving: boolean }) {
+function InfoTab({ tournament, onSave }: { tournament: Tournament; onSave: (d: object) => Promise<void> }) {
   const [form, setForm] = useState({
     name: tournament.name,
     sport: tournament.sport || "FOOTBALL",
@@ -338,13 +334,13 @@ function InfoTab({ tournament, onSave, saving }: { tournament: Tournament; onSav
           <label className="label">설명</label>
           <textarea className="input" rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
         </div>
-        <button onClick={() => onSave(form)} className="btn-primary" disabled={saving}>{saving ? "저장 중..." : "저장"}</button>
+        <SaveButton onClick={() => onSave(form)} className="w-full" />
       </div>
     </div>
   );
 }
 
-function RulesTab({ tournament, onSave, saving }: { tournament: Tournament; onSave: (d: object) => void; saving: boolean }) {
+function RulesTab({ tournament, onSave }: { tournament: Tournament; onSave: (d: object) => Promise<void> }) {
   const [rules, setRules] = useState(tournament.rules || "");
   return (
     <div className="card p-5">
@@ -358,11 +354,9 @@ function RulesTab({ tournament, onSave, saving }: { tournament: Tournament; onSa
         onChange={(e) => setRules(e.target.value)}
       />
       <div className="flex items-center gap-3 mt-3">
-        <button onClick={() => onSave({ rules })} className="btn-primary" disabled={saving}>
-          {saving ? "저장 중..." : "저장"}
-        </button>
+        <SaveButton onClick={() => onSave({ rules })} />
         {rules && (
-          <button onClick={() => { if (confirm("운영규칙을 초기화할까요?")) { setRules(""); onSave({ rules: "" }); } }} className="btn-danger btn-sm text-xs">
+          <button onClick={() => { if (confirm("운영규칙을 초기화할까요?")) { setRules(""); onSave({ rules: "" }); } }} className="btn btn-danger btn-sm text-xs">
             초기화
           </button>
         )}
@@ -383,7 +377,6 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onTeam
   const [selected, setSelected] = useState<string[]>([]);
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
   const [editForm, setEditForm] = useState({ name: "", shortName: "", color: "#3b82f6" });
-  const [saving, setSaving] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
   const [newTeamForm, setNewTeamForm] = useState({ name: "", shortName: "", color: "#3b82f6" });
   const [creatingTeam, setCreatingTeam] = useState(false);
@@ -426,10 +419,7 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onTeam
 
   const saveEdit = async () => {
     if (!editingTeam) return;
-    setSaving(true);
     const teamId = editingTeam.id;
-    setLocalColors((prev) => ({ ...prev, [teamId]: editForm.color }));
-    setEditingTeam(null);
     const res = await fetch(`/api/teams/${teamId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -437,9 +427,10 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onTeam
     });
     if (res.ok) {
       const updated = await res.json();
+      setLocalColors((prev) => ({ ...prev, [teamId]: updated.color }));
       onTeamUpdated(updated);
     }
-    setSaving(false);
+    setEditingTeam(null);
   };
 
   const selectedTeam = tournament.teams.find((tt) => tt.team.id === selectedTeamId);
@@ -481,10 +472,8 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onTeam
                         onChange={(e) => setEditForm({ ...editForm, color: e.target.value })}
                       />
                       <span className="text-xs text-gray-500 flex-1">팀 색상</span>
-                      <button onClick={saveEdit} disabled={saving} className="btn-primary btn-sm text-xs">
-                        {saving ? "저장중" : "저장"}
-                      </button>
-                      <button onClick={() => setEditingTeam(null)} className="btn-secondary btn-sm text-xs">취소</button>
+                      <SaveButton onClick={saveEdit} size="sm" />
+                      <button onClick={() => setEditingTeam(null)} className="btn btn-secondary btn-sm text-xs">취소</button>
                     </div>
                   </div>
                 ) : (
@@ -596,7 +585,6 @@ function GroupsTab({ tournament, onCreateGroup, onUpdateGroup, onDeleteGroup }: 
   const [selected, setSelected] = useState<string[]>([]);
   const [editingGroup, setEditingGroup] = useState<Group | null>(null);
   const [editForm, setEditForm] = useState({ name: "", label: "", color: "#6366f1", sortOrder: "0" });
-  const [saving, setSaving] = useState(false);
 
   const assignedTeamIds = new Set(tournament.groups.flatMap((g) => g.teams.map((gt) => gt.team.id)));
   const unassigned = tournament.teams.filter((tt) => !assignedTeamIds.has(tt.team.id));
@@ -608,15 +596,13 @@ function GroupsTab({ tournament, onCreateGroup, onUpdateGroup, onDeleteGroup }: 
 
   const saveEdit = async () => {
     if (!editingGroup) return;
-    setSaving(true);
     const res = await fetch(`/api/tournaments/${tournament.id}/groups/${editingGroup.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(editForm),
     });
-    setSaving(false);
-    setEditingGroup(null);
     if (res.ok) onUpdateGroup(await res.json());
+    setEditingGroup(null);
   };
 
   const deleteGroup = async (groupId: string) => {
@@ -688,8 +674,8 @@ function GroupsTab({ tournament, onCreateGroup, onUpdateGroup, onDeleteGroup }: 
                     <div className="flex items-center gap-3">
                       <input type="color" className="h-8 w-12 rounded border border-gray-300 cursor-pointer" value={editForm.color} onChange={(e) => setEditForm({ ...editForm, color: e.target.value })} />
                       <span className="text-xs font-medium px-2 py-0.5 rounded-full flex-1 text-gray-700" style={{ backgroundColor: editForm.color + "33" }}>{editForm.label || editForm.name || "미리보기"}</span>
-                      <button onClick={saveEdit} disabled={saving} className="btn-primary btn-sm text-xs">{saving ? "저장중" : "저장"}</button>
-                      <button onClick={() => setEditingGroup(null)} className="btn-secondary btn-sm text-xs">취소</button>
+                      <SaveButton onClick={saveEdit} size="sm" />
+                      <button onClick={() => setEditingGroup(null)} className="btn btn-secondary btn-sm text-xs">취소</button>
                     </div>
                   </div>
                 ) : (
@@ -924,16 +910,13 @@ function SponsorsTab({
 }) {
   const empty = { name: "", type: "SPONSOR", description: "", logoUrl: "", link: "" };
   const [form, setForm] = useState(empty);
-  const [adding, setAdding] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState(empty);
 
   const handleAdd = async () => {
     if (!form.name.trim()) return;
-    setAdding(true);
     await onAdd({ name: form.name.trim(), type: form.type, description: form.description || null, logoUrl: form.logoUrl || null, link: form.link || null });
     setForm(empty);
-    setAdding(false);
   };
 
   const startEdit = (s: Sponsor) => {
@@ -991,7 +974,7 @@ function SponsorsTab({
                           </div>
                         </div>
                         <div className="flex gap-2">
-                          <button onClick={() => handleUpdate(s.id)} className="btn btn-primary btn-sm">저장</button>
+                          <SaveButton onClick={() => handleUpdate(s.id)} size="sm" />
                           <button onClick={() => setEditingId(null)} className="btn btn-secondary btn-sm">취소</button>
                         </div>
                       </div>
@@ -1047,9 +1030,7 @@ function SponsorsTab({
             <input className="input" placeholder="https://..." value={form.link} onChange={e => setForm(f => ({ ...f, link: e.target.value }))} />
           </div>
         </div>
-        <button onClick={handleAdd} disabled={adding || !form.name.trim()} className="btn btn-primary mt-3">
-          {adding ? "추가 중..." : "추가"}
-        </button>
+        <SaveButton onClick={handleAdd} disabled={!form.name.trim()} label="추가" className="mt-3" />
       </div>
     </div>
   );
