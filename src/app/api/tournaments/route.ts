@@ -4,6 +4,7 @@ import { getSession } from "@/lib/auth";
 
 export async function GET() {
   const tournaments = await prisma.tournament.findMany({
+    where: { active: true },
     orderBy: { createdAt: "desc" },
     include: { _count: { select: { teams: true, matches: true } } },
   });

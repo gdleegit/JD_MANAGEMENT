@@ -53,7 +53,7 @@ export default function TournamentsTab({ initialTournaments }: { initialTourname
   };
 
   const deleteTournament = async (id: string) => {
-    if (!confirm("대회를 삭제하면 모든 경기와 결과가 삭제됩니다. 계속할까요?")) return;
+    if (!confirm("대회를 목록에서 숨깁니다. 데이터는 유지되며 DB에서 직접 삭제할 수 있습니다. 계속할까요?")) return;
     await fetch(`/api/tournaments/${id}`, { method: "DELETE" });
     setTournaments(tournaments.filter((t) => t.id !== id));
   };

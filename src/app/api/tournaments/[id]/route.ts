@@ -58,7 +58,7 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
 
   const { id } = await params;
-  await prisma.tournament.delete({ where: { id } });
+  await prisma.tournament.update({ where: { id }, data: { active: false } });
   revalidatePath("/tournaments");
   revalidatePath("/");
   return NextResponse.json({ ok: true });

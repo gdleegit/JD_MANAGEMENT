@@ -5,6 +5,7 @@ export const revalidate = 300;
 
 export default async function TournamentsPage() {
   const tournaments = await prisma.tournament.findMany({
+    where: { active: true },
     orderBy: { createdAt: "desc" },
     include: {
       _count: { select: { teams: true, matches: true } },

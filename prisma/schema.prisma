@@ -18,6 +18,7 @@ model Tournament {
   endDate     DateTime?
   description String?
   rules       String?
+  active      Boolean   @default(true)
   createdAt   DateTime  @default(now())
 
   teams    TournamentTeam[]
