@@ -10,6 +10,7 @@ export default async function TournamentsPage() {
     include: {
       _count: { select: { teams: true, matches: true } },
       teams: { include: { team: { include: { _count: { select: { players: true } } } } } },
+      sponsors: { orderBy: [{ order: "asc" }, { createdAt: "asc" }] },
     },
   });
 
@@ -43,9 +44,51 @@ export default async function TournamentsPage() {
     return "UPCOMING";
   }
 
+  // 모든 대회에서 협찬사 수집 (TITLE → SPONSOR → SUPPORT 순)
+  const TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
+  const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원·지원" };
+  const allSponsors = tournaments.flatMap(t => t.sponsors);
+  const sponsorGroups = TYPE_ORDER
+    .map(type => ({ type, list: allSponsors.filter(s => s.type === type) }))
+    .filter(g => g.list.length > 0);
+
   return (
     <div>
       <h1 className="text-xl sm:text-3xl font-bold mb-4 sm:mb-6">대회 목록</h1>
+
+      {/* 협찬 배너 */}
+      {sponsorGroups.length > 0 && (
+        <div className="mb-5 rounded-2xl border border-gray-100 bg-gradient-to-r from-slate-50 to-blue-50 px-4 sm:px-6 py-4 space-y-3">
+          {sponsorGroups.map(({ type, list }) => (
+            <div key={type} className="flex items-center gap-3 flex-wrap">
+              <span className="text-[11px] font-semibold text-gray-400 tracking-wide uppercase whitespace-nowrap">
+                {TYPE_LABEL[type]}
+              </span>
+              <div className="flex items-center gap-2 flex-wrap">
+                {list.map(s => {
+                  const inner = (
+                    <span key={s.id} className={`inline-flex flex-col items-start ${type === "TITLE" ? "gap-0.5" : ""}`}>
+                      <span className={`font-${type === "TITLE" ? "bold text-base" : "medium text-sm"} text-gray-800`}>
+                        {s.name}
+                      </span>
+                      {s.description && (
+                        <span className="text-[11px] text-gray-400 leading-tight">{s.description}</span>
+                      )}
+                    </span>
+                  );
+                  return s.link ? (
+                    <a key={s.id} href={s.link} target="_blank" rel="noopener noreferrer" className="hover:opacity-70 transition-opacity">
+                      {inner}
+                    </a>
+                  ) : (
+                    <span key={s.id}>{inner}</span>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
       {tournaments.length === 0 ? (
         <div className="card p-12 text-center text-gray-400">
           <p className="text-4xl mb-3">🏆</p>
