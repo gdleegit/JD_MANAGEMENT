@@ -99,7 +99,7 @@ export default function TournamentPublicView({
     : tournament.type === "GROUP" ? "division"
     : "standings";
 
-  const [tab, setTab] = useState<"bracket" | "standings" | "division" | "schedule" | "teams" | "scorers" | "rules">(defaultTab as "bracket");
+  const [tab, setTab] = useState<"bracket" | "standings" | "division" | "schedule" | "teams" | "scorers" | "rules" | "sponsors">(defaultTab as "bracket");
 
   // 참가팀 선수 — 페이지 로드 직후 백그라운드에서 미리 fetch
   const [teamPlayers, setTeamPlayers] = useState<Record<string, Player[]> | null>(null);
@@ -143,6 +143,7 @@ export default function TournamentPublicView({
     { key: "scorers", label: "득점 순위" },
     { key: "teams", label: "참가팀" },
     tournament.rules && { key: "rules", label: "운영규칙" },
+    tournament.sponsors.length > 0 && { key: "sponsors", label: "협찬·후원" },
   ].filter(Boolean) as { key: string; label: string }[];
 
   const playerCount = teamPlayers ? Object.values(teamPlayers).reduce((sum, p) => sum + p.length, 0) : initialPlayerCount;
@@ -228,11 +229,6 @@ export default function TournamentPublicView({
             </span>
           </div>
         </div>
-
-        {/* 협찬 & 후원 */}
-        {tournament.sponsors.length > 0 && (
-          <SponsorSection sponsors={tournament.sponsors} />
-        )}
 
         {/* Tabs — 카드 하단에 붙임 */}
         <div className="border-t border-gray-100 overflow-x-auto">
@@ -350,6 +346,14 @@ export default function TournamentPublicView({
         <div className="card p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-bold mb-5">운영규칙</h2>
           <RulesRenderer rules={tournament.rules} />
+        </div>
+      )}
+
+      {/* Sponsors Tab */}
+      {tab === "sponsors" && tournament.sponsors.length > 0 && (
+        <div className="card p-4 sm:p-6">
+          <h2 className="text-lg sm:text-xl font-bold mb-5">협찬·후원</h2>
+          <SponsorSection sponsors={tournament.sponsors} />
         </div>
       )}
 
