@@ -166,7 +166,7 @@ export default async function TournamentsPage() {
                           {s.grade && <span className={gradeBadgeCls}>{s.grade}</span>}
                           <span className={nameCls}>{s.name}</span>
                           {s.description && (
-                            <span className="text-[9px] text-gray-400 text-center leading-tight">{s.description}</span>
+                            <span className="text-[11px] text-gray-500 text-center leading-snug mt-0.5">{s.description}</span>
                           )}
                         </span>
                       );
