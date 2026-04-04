@@ -85,23 +85,28 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         : status;
     if (effectiveStatus !== status) setStatus(effectiveStatus);
 
+    // pending goals가 있으면 스코어는 bulk goals가 재계산 — PATCH에 포함하면 race condition 발생
+    const matchPatchBody: Record<string, unknown> = {
+      status: effectiveStatus,
+      date: date ? new Date(date).toISOString() : null,
+      venue: venue || null,
+      court: court || null,
+      round: round || null,
+      matchOrder: matchOrder !== "" ? parseInt(matchOrder) : null,
+      referee: referee || null,
+      assistantReferee1: assistantReferee1 || null,
+      assistantReferee2: assistantReferee2 || null,
+      videoUrl: videoUrl || null,
+    };
+    if (pendingGoals.length === 0) {
+      matchPatchBody.homeScore = parsedHome;
+      matchPatchBody.awayScore = parsedAway;
+    }
+
     const matchFetch = fetch(`/api/matches/${match.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        status: effectiveStatus,
-        homeScore: parsedHome,
-        awayScore: parsedAway,
-        date: date ? new Date(date).toISOString() : null,
-        venue: venue || null,
-        court: court || null,
-        round: round || null,
-        matchOrder: matchOrder !== "" ? parseInt(matchOrder) : null,
-        referee: referee || null,
-        assistantReferee1: assistantReferee1 || null,
-        assistantReferee2: assistantReferee2 || null,
-        videoUrl: videoUrl || null,
-      }),
+      body: JSON.stringify(matchPatchBody),
     });
 
     if (pendingGoals.length > 0) {
