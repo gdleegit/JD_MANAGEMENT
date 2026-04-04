@@ -201,7 +201,7 @@ export default function TournamentPublicView({
           )}
 
           {/* 통계 */}
-          <div className="flex items-center gap-3 mt-4 pt-3 border-t border-gray-100 text-xs text-gray-500">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-4 pt-3 border-t border-gray-100 text-xs text-gray-500">
             <span className="flex items-center gap-1">
               <span className="text-gray-400">팀</span>
               <span className="font-bold text-gray-700">{tournament.teams.length}</span>
