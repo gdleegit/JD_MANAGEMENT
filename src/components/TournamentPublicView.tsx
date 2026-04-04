@@ -74,9 +74,11 @@ const TYPE_LABEL: Record<string, string> = { KNOCKOUT: "토너먼트", LEAGUE: "
 export default function TournamentPublicView({
   tournament,
   leagueStandings,
+  playerCount: initialPlayerCount = 0,
 }: {
   tournament: Tournament;
   leagueStandings: LeagueRow[];
+  playerCount?: number;
 }) {
   const calcStatus = () => {
     const { startDate, endDate, status } = tournament;
@@ -140,7 +142,7 @@ export default function TournamentPublicView({
     tournament.rules && { key: "rules", label: "운영규칙" },
   ].filter(Boolean) as { key: string; label: string }[];
 
-  const playerCount = teamPlayers ? Object.values(teamPlayers).reduce((sum, p) => sum + p.length, 0) : null;
+  const playerCount = teamPlayers ? Object.values(teamPlayers).reduce((sum, p) => sum + p.length, 0) : initialPlayerCount;
 
   // Top scorers
   const allGoals = tournament.matches.flatMap((m) => m.goals.filter((g) => g.type !== "OWN_GOAL"));
@@ -201,23 +203,23 @@ export default function TournamentPublicView({
           )}
 
           {/* 통계 */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-4 pt-3 border-t border-gray-100 text-xs text-gray-500">
-            <span className="flex items-center gap-1">
+          <div className="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100 text-xs text-gray-500 overflow-x-auto whitespace-nowrap">
+            <span className="flex items-center gap-1 flex-shrink-0">
               <span className="text-gray-400">팀</span>
               <span className="font-bold text-gray-700">{tournament.teams.length}</span>
             </span>
-            <span className="text-gray-200">|</span>
-            <span className="flex items-center gap-1">
+            <span className="text-gray-200 flex-shrink-0">|</span>
+            <span className="flex items-center gap-1 flex-shrink-0">
               <span className="text-gray-400">선수</span>
-              <span className="font-bold text-gray-700">{playerCount !== null ? playerCount : "…"}</span>
+              <span className="font-bold text-gray-700">{playerCount}</span>
             </span>
-            <span className="text-gray-200">|</span>
-            <span className="flex items-center gap-1">
+            <span className="text-gray-200 flex-shrink-0">|</span>
+            <span className="flex items-center gap-1 flex-shrink-0">
               <span className="text-gray-400">경기</span>
               <span className="font-bold text-gray-700">{tournament.matches.length}</span>
             </span>
-            <span className="text-gray-200">|</span>
-            <span className="flex items-center gap-1">
+            <span className="text-gray-200 flex-shrink-0">|</span>
+            <span className="flex items-center gap-1 flex-shrink-0">
               <span className="text-gray-400">완료</span>
               <span className="font-bold text-gray-700">{tournament.matches.filter((m) => m.status === "FINISHED").length}</span>
             </span>

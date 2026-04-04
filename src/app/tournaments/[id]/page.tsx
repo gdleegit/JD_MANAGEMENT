@@ -17,8 +17,7 @@ export default async function TournamentDetailPage({ params }: { params: Promise
   const tournament = await prisma.tournament.findUnique({
     where: { id },
     include: {
-      // 선수 데이터는 제외 — 참가팀 탭에서 lazy load
-      teams: { include: { team: true } },
+      teams: { include: { team: { include: { _count: { select: { players: true } } } } } },
       matches: {
         include: {
           homeTeam: true,
@@ -55,12 +54,14 @@ export default async function TournamentDetailPage({ params }: { params: Promise
     leagueStandings = raw.map((r) => ({ ...r, team: teamMap[r.teamId] }));
   }
 
+  const playerCount = tournament.teams.reduce((sum, tt) => sum + (tt.team as typeof tt.team & { _count: { players: number } })._count.players, 0);
   const serialized = JSON.parse(JSON.stringify(tournament));
 
   return (
     <TournamentPublicView
       tournament={serialized}
       leagueStandings={leagueStandings}
+      playerCount={playerCount}
     />
   );
 }
