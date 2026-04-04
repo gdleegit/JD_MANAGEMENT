@@ -139,6 +139,7 @@ model Sponsor {
   tournamentId String
   tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   name         String
+  description  String?
   logoUrl      String?
   link         String?
   type         String     @default("SPONSOR")
