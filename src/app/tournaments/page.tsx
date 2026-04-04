@@ -44,66 +44,13 @@ export default async function TournamentsPage() {
     return "UPCOMING";
   }
 
-  // 모든 대회에서 협찬사 수집 (TITLE → SPONSOR → SUPPORT 순)
   const TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
   const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원" };
-  const allSponsors = tournaments.flatMap(t => t.sponsors);
-  const sponsorGroups = TYPE_ORDER
-    .map(type => ({ type, list: allSponsors.filter(s => s.type === type) }))
-    .filter(g => g.list.length > 0);
 
   return (
     <div>
       <h1 className="text-xl sm:text-3xl font-bold mb-4 sm:mb-6">대회 목록</h1>
 
-      {/* 협찬 배너 */}
-      {sponsorGroups.length > 0 && (
-        <div className="mb-5 rounded-2xl border border-gray-100 bg-gradient-to-r from-slate-50 to-blue-50 px-4 sm:px-6 py-4 space-y-3">
-          {sponsorGroups.map(({ type, list }) => (
-            <div key={type} className="flex items-center gap-3 flex-wrap">
-              <span className="text-[11px] font-semibold text-gray-400 tracking-wide uppercase whitespace-nowrap">
-                {TYPE_LABEL[type]}
-              </span>
-              <div className="flex items-center gap-2 flex-wrap">
-                {list.map(s => {
-                  const inner = (
-                    <span key={s.id} className={`inline-flex flex-col items-center gap-1 ${
-                      type === "TITLE"
-                        ? "bg-white border-2 border-blue-100 rounded-xl px-4 py-2.5 shadow-sm"
-                        : type === "SPONSOR"
-                        ? "bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm"
-                        : "bg-white border border-gray-100 rounded-lg px-2.5 py-1.5"
-                    }`}>
-                      {s.grade && (
-                        <span className={`font-extrabold rounded-full px-2 py-0.5 ${
-                          type === "TITLE"
-                            ? "bg-blue-600 text-white text-[10px] tracking-wide"
-                            : type === "SPONSOR"
-                            ? "bg-blue-100 text-blue-700 text-[10px]"
-                            : "bg-gray-200 text-gray-500 text-[10px]"
-                        }`}>{s.grade}</span>
-                      )}
-                      <span className={`text-gray-900 text-center leading-tight ${
-                        type === "TITLE" ? "text-sm font-extrabold" : "text-xs font-bold"
-                      }`}>{s.name}</span>
-                      {s.description && (
-                        <span className="text-[10px] text-gray-400 text-center leading-tight">{s.description}</span>
-                      )}
-                    </span>
-                  );
-                  return s.link ? (
-                    <a key={s.id} href={s.link} target="_blank" rel="noopener noreferrer" className="hover:opacity-75 transition-opacity">
-                      {inner}
-                    </a>
-                  ) : (
-                    <span key={s.id}>{inner}</span>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
       {tournaments.length === 0 ? (
         <div className="card p-12 text-center text-gray-400">
           <p className="text-4xl mb-3">🏆</p>
@@ -118,9 +65,10 @@ export default async function TournamentsPage() {
               ? new Date(t.startDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "long", day: "numeric" })
                 + (t.endDate ? ` ~ ${new Date(t.endDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric" })}` : "")
               : null;
+            const sortedSponsors = TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type));
             return (
+              <div key={t.id} className="flex flex-col gap-2">
               <Link
-                key={t.id}
                 href={`/tournaments/${t.id}`}
                 className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
                 style={{ border: "1.5px solid #e2e8f0", borderTop: `4px solid ${st.borderColor}` }}
@@ -186,6 +134,54 @@ export default async function TournamentsPage() {
                   </div>
                 </div>
               </Link>
+
+              {/* 협찬 배너 — 대회 카드 아래 */}
+              {sortedSponsors.length > 0 && (
+                <div className="rounded-xl border border-gray-100 bg-gradient-to-r from-slate-50 to-blue-50 px-3 py-3">
+                  <div className="flex flex-nowrap gap-2 overflow-x-auto pb-0.5">
+                    {sortedSponsors.map(s => {
+                      const gradeBadgeCls =
+                        s.type === "TITLE"   ? "bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide" :
+                        s.type === "SPONSOR" ? "bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full" :
+                                               "bg-gray-200 text-gray-500 text-[9px] font-bold px-1.5 py-0.5 rounded-full";
+                      const cardCls =
+                        s.type === "TITLE"
+                          ? "flex flex-col items-center gap-1.5 bg-white border-2 border-blue-100 rounded-xl px-4 py-3 shadow-sm flex-shrink-0 min-w-[90px]"
+                          : s.type === "SPONSOR"
+                          ? "flex flex-col items-center gap-1 bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm flex-shrink-0"
+                          : "flex flex-col items-center gap-1 bg-white border border-gray-100 rounded-lg px-2.5 py-2 flex-shrink-0";
+                      const nameCls =
+                        s.type === "TITLE" ? "text-xs font-extrabold text-gray-900 text-center" :
+                        "text-xs font-bold text-gray-700 text-center";
+                      const logoSize =
+                        s.type === "TITLE" ? "h-8 max-w-[100px]" : "h-6 max-w-[80px]";
+
+                      const inner = (
+                        <span className={cardCls}>
+                          <span className="self-start text-[8px] font-semibold text-gray-400 leading-none">{TYPE_LABEL[s.type]}</span>
+                          {s.logoUrl && (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={s.logoUrl} alt={s.name} className={`object-contain ${logoSize}`} />
+                          )}
+                          {s.grade && <span className={gradeBadgeCls}>{s.grade}</span>}
+                          <span className={nameCls}>{s.name}</span>
+                          {s.description && (
+                            <span className="text-[9px] text-gray-400 text-center leading-tight">{s.description}</span>
+                          )}
+                        </span>
+                      );
+                      return s.link ? (
+                        <a key={s.id} href={s.link} target="_blank" rel="noopener noreferrer" className="hover:opacity-75 transition-opacity">
+                          {inner}
+                        </a>
+                      ) : (
+                        <span key={s.id}>{inner}</span>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+              </div>
             );
           })}
         </div>

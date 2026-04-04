@@ -1099,84 +1099,52 @@ const SPONSOR_TYPE_LABEL: Record<string, string> = {
 const SPONSOR_TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
 
 function SponsorSection({ sponsors }: { sponsors: Sponsor[] }) {
-  const grouped = SPONSOR_TYPE_ORDER.reduce<Record<string, Sponsor[]>>((acc, t) => {
-    const list = sponsors.filter(s => s.type === t);
-    if (list.length) acc[t] = list;
-    return acc;
-  }, {});
-
+  const sorted = SPONSOR_TYPE_ORDER.flatMap(t => sponsors.filter(s => s.type === t));
   return (
-    <div className="space-y-6">
-      {Object.entries(grouped).map(([type, list]) => (
-        <div key={type}>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{SPONSOR_TYPE_LABEL[type]}</span>
-            <div className="flex-1 h-px bg-gray-100" />
-          </div>
-          <div className={`flex flex-wrap gap-3 ${type === "TITLE" ? "justify-center" : ""}`}>
-            {list.map(s => <SponsorChip key={s.id} sponsor={s} type={type} />)}
-          </div>
-        </div>
-      ))}
+    <div className="flex flex-nowrap gap-3 overflow-x-auto pb-1">
+      {sorted.map(s => <SponsorChip key={s.id} sponsor={s} />)}
     </div>
   );
 }
 
-function SponsorChip({ sponsor, type }: { sponsor: Sponsor; type: string }) {
-  const GradeBadge = ({ grade }: { grade: string }) => (
-    type === "TITLE" ? (
-      <span className="bg-blue-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full tracking-wide">
-        {grade}
-      </span>
-    ) : type === "SPONSOR" ? (
-      <span className="bg-blue-100 text-blue-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
-        {grade}
-      </span>
-    ) : (
-      <span className="bg-gray-200 text-gray-500 text-[10px] font-bold px-1.5 py-0.5 rounded-full">
-        {grade}
-      </span>
-    )
-  );
+function SponsorChip({ sponsor }: { sponsor: Sponsor }) {
+  const type = sponsor.type;
+  const typeLabel = SPONSOR_TYPE_LABEL[type] ?? type;
 
-  const inner =
-    type === "TITLE" ? (
-      <span className="flex flex-col items-center gap-2 bg-white border-2 border-blue-100 rounded-2xl px-6 py-5 shadow-md min-w-[110px] hover:shadow-lg transition-shadow">
-        {sponsor.logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={sponsor.logoUrl} alt={sponsor.name} className="h-14 max-w-[160px] object-contain" />
-        )}
-        {sponsor.grade && <GradeBadge grade={sponsor.grade} />}
-        <span className="text-base font-extrabold text-gray-900 text-center leading-tight">{sponsor.name}</span>
-        {sponsor.description && (
-          <span className="text-xs text-gray-400 text-center leading-snug">{sponsor.description}</span>
-        )}
-      </span>
-    ) : type === "SPONSOR" ? (
-      <span className="flex flex-col items-center gap-1.5 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm min-w-[80px]">
-        {sponsor.logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={sponsor.logoUrl} alt={sponsor.name} className="h-9 max-w-[110px] object-contain" />
-        )}
-        {sponsor.grade && <GradeBadge grade={sponsor.grade} />}
-        <span className="text-sm font-bold text-gray-800 text-center">{sponsor.name}</span>
-        {sponsor.description && (
-          <span className="text-[11px] text-gray-400 text-center">{sponsor.description}</span>
-        )}
-      </span>
-    ) : (
-      <span className="flex flex-col items-center gap-1 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2">
-        {sponsor.logoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={sponsor.logoUrl} alt={sponsor.name} className="h-6 max-w-[80px] object-contain" />
-        )}
-        {sponsor.grade && <GradeBadge grade={sponsor.grade} />}
-        <span className="text-xs font-semibold text-gray-600 text-center">{sponsor.name}</span>
-        {sponsor.description && (
-          <span className="text-[10px] text-gray-400 text-center">{sponsor.description}</span>
-        )}
-      </span>
-    );
+  const gradeBadgeCls =
+    type === "TITLE"   ? "bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide" :
+    type === "SPONSOR" ? "bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full" :
+                         "bg-gray-200 text-gray-500 text-[9px] font-bold px-1.5 py-0.5 rounded-full";
+
+  const cardCls =
+    type === "TITLE"
+      ? "flex flex-col items-center gap-1.5 bg-white border-2 border-blue-100 rounded-2xl px-5 py-4 shadow-md min-w-[110px] flex-shrink-0"
+      : type === "SPONSOR"
+      ? "flex flex-col items-center gap-1.5 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm min-w-[80px] flex-shrink-0"
+      : "flex flex-col items-center gap-1 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2.5 flex-shrink-0";
+
+  const nameCls =
+    type === "TITLE"   ? "text-sm font-extrabold text-gray-900 text-center leading-tight" :
+    type === "SPONSOR" ? "text-sm font-bold text-gray-800 text-center" :
+                         "text-xs font-semibold text-gray-600 text-center";
+
+  const logoSize =
+    type === "TITLE" ? "h-12 max-w-[140px]" : type === "SPONSOR" ? "h-8 max-w-[100px]" : "h-6 max-w-[80px]";
+
+  const inner = (
+    <span className={cardCls}>
+      <span className="self-start text-[9px] font-semibold text-gray-400 leading-none">{typeLabel}</span>
+      {sponsor.logoUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={sponsor.logoUrl} alt={sponsor.name} className={`object-contain ${logoSize}`} />
+      )}
+      {sponsor.grade && <span className={gradeBadgeCls}>{sponsor.grade}</span>}
+      <span className={nameCls}>{sponsor.name}</span>
+      {sponsor.description && (
+        <span className="text-[10px] text-gray-400 text-center leading-tight">{sponsor.description}</span>
+      )}
+    </span>
+  );
 
   if (sponsor.link) {
     return (
