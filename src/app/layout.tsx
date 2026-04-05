@@ -13,7 +13,6 @@ export const metadata: Metadata = {
   openGraph: {
     title: "中東AA | Athletic Archive",
     description: "중동 체육위원회 Athletic Archive — 중동인의 땀방울을 기록하다.",
-    images: [{ url: "/home_logo.png" }],
     type: "website",
   },
 };
