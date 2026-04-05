@@ -62,6 +62,8 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const [videoUrl, setVideoUrl] = useState(match.videoUrl ?? "");
   const [goalForm, setGoalForm] = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
   const [pendingGoals, setPendingGoals] = useState<PendingGoal[]>([]);
+  const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
+  const [editGoalForm, setEditGoalForm] = useState({ half: "1", minute: "" });
 
   // 로컬에만 추가 (API 호출 없음)
   const stagePendingGoal = () => {
@@ -132,6 +134,22 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
       await matchFetch;
       setCurrentMatch(m => ({ ...m, status: effectiveStatus, homeScore: parsedHome, awayScore: parsedAway }));
     }
+  };
+
+  const startEditGoal = (g: Goal) => {
+    setEditingGoalId(g.id);
+    setEditGoalForm({ half: g.half?.toString() ?? "1", minute: g.minute?.toString() ?? "" });
+  };
+
+  const patchGoal = async (goalId: string) => {
+    const res = await fetch(`/api/matches/${match.id}/goals`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ goalId, half: parseInt(editGoalForm.half), minute: editGoalForm.minute !== "" ? parseInt(editGoalForm.minute) : null }),
+    });
+    const { goal } = await res.json();
+    setCurrentMatch(m => ({ ...m, goals: m.goals.map(g => g.id === goalId ? { ...g, half: goal.half, minute: goal.minute } : g) }));
+    setEditingGoalId(null);
   };
 
   const deleteGoal = async (goalId: string) => {
@@ -353,16 +371,36 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
                   ? <p className="text-xs text-gray-300 text-center py-2">-</p>
                   : <>
                     {homeGoals.map((g) => (
-                      <div key={g.id} className="flex items-center gap-1.5">
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
-                          {g.half && <span className="text-xs text-blue-500 ml-1">{g.half === 1 ? "전반" : "후반"}</span>}
-                          {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
-                          {g.type !== "GOAL" && (
-                            <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
-                          )}
+                      <div key={g.id} className="space-y-1">
+                        <div className="flex items-center gap-1.5">
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
+                            {g.half && <span className="text-xs text-blue-500 ml-1">{g.half === 1 ? "전반" : "후반"}</span>}
+                            {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
+                            {g.type !== "GOAL" && (
+                              <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
+                            )}
+                          </div>
+                          <button onClick={() => startEditGoal(g)} className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors flex-shrink-0 text-xs">✎</button>
+                          <button onClick={() => deleteGoal(g.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
                         </div>
-                        <button onClick={() => deleteGoal(g.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
+                        {editingGoalId === g.id && (
+                          <div className="flex items-center gap-1.5 bg-blue-50 rounded px-2 py-1.5">
+                            <div className="flex gap-1">
+                              {[{ v: "1", l: "전반" }, { v: "2", l: "후반" }].map(h => (
+                                <button key={h.v} onClick={() => setEditGoalForm(f => ({ ...f, half: h.v }))}
+                                  className={`px-2 py-0.5 rounded text-xs font-medium border transition-all ${editGoalForm.half === h.v ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-500 border-gray-200"}`}>
+                                  {h.l}
+                                </button>
+                              ))}
+                            </div>
+                            <input type="number" min="1" max="120" placeholder="분" value={editGoalForm.minute}
+                              onChange={e => setEditGoalForm(f => ({ ...f, minute: e.target.value }))}
+                              className="w-14 text-xs border border-gray-200 rounded px-1.5 py-0.5 text-center" />
+                            <button onClick={() => patchGoal(g.id)} className="px-2 py-0.5 bg-blue-600 text-white rounded text-xs font-medium">확인</button>
+                            <button onClick={() => setEditingGoalId(null)} className="px-2 py-0.5 bg-white text-gray-500 border border-gray-200 rounded text-xs">취소</button>
+                          </div>
+                        )}
                       </div>
                     ))}
                     {homePending.map((g) => (
@@ -394,16 +432,36 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
                   ? <p className="text-xs text-gray-300 text-center py-2">-</p>
                   : <>
                     {awayGoals.map((g) => (
-                      <div key={g.id} className="flex items-center gap-1.5">
-                        <div className="flex-1 min-w-0">
-                          <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
-                          {g.half && <span className="text-xs text-blue-500 ml-1">{g.half === 1 ? "전반" : "후반"}</span>}
-                          {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
-                          {g.type !== "GOAL" && (
-                            <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
-                          )}
+                      <div key={g.id} className="space-y-1">
+                        <div className="flex items-center gap-1.5">
+                          <div className="flex-1 min-w-0">
+                            <span className="text-sm font-medium truncate">{g.player?.name || "미상"}</span>
+                            {g.half && <span className="text-xs text-blue-500 ml-1">{g.half === 1 ? "전반" : "후반"}</span>}
+                            {g.minute && <span className="text-xs text-gray-400 ml-1">{g.minute}&apos;</span>}
+                            {g.type !== "GOAL" && (
+                              <span className="text-xs text-amber-600 ml-1">({g.type === "OWN_GOAL" ? "자책" : "PK"})</span>
+                            )}
+                          </div>
+                          <button onClick={() => startEditGoal(g)} className="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors flex-shrink-0 text-xs">✎</button>
+                          <button onClick={() => deleteGoal(g.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
                         </div>
-                        <button onClick={() => deleteGoal(g.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
+                        {editingGoalId === g.id && (
+                          <div className="flex items-center gap-1.5 bg-blue-50 rounded px-2 py-1.5">
+                            <div className="flex gap-1">
+                              {[{ v: "1", l: "전반" }, { v: "2", l: "후반" }].map(h => (
+                                <button key={h.v} onClick={() => setEditGoalForm(f => ({ ...f, half: h.v }))}
+                                  className={`px-2 py-0.5 rounded text-xs font-medium border transition-all ${editGoalForm.half === h.v ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-500 border-gray-200"}`}>
+                                  {h.l}
+                                </button>
+                              ))}
+                            </div>
+                            <input type="number" min="1" max="120" placeholder="분" value={editGoalForm.minute}
+                              onChange={e => setEditGoalForm(f => ({ ...f, minute: e.target.value }))}
+                              className="w-14 text-xs border border-gray-200 rounded px-1.5 py-0.5 text-center" />
+                            <button onClick={() => patchGoal(g.id)} className="px-2 py-0.5 bg-blue-600 text-white rounded text-xs font-medium">확인</button>
+                            <button onClick={() => setEditingGoalId(null)} className="px-2 py-0.5 bg-white text-gray-500 border border-gray-200 rounded text-xs">취소</button>
+                          </div>
+                        )}
                       </div>
                     ))}
                     {awayPending.map((g) => (

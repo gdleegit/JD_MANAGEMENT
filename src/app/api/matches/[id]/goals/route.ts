@@ -91,6 +91,30 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   );
 }
 
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  const session = await getSession();
+  if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
+
+  const { id: matchId } = await params;
+  const { goalId, half, minute } = await req.json();
+  if (!goalId) return NextResponse.json({ error: "goalId 필요" }, { status: 400 });
+
+  const goal = await prisma.goal.update({
+    where: { id: goalId },
+    data: {
+      half: half != null ? Number(half) : null,
+      minute: minute !== "" && minute != null ? Number(minute) : null,
+    },
+    include: { player: true, team: true },
+  });
+
+  revalidatePath(`/tournaments`);
+  const match = await prisma.match.findUnique({ where: { id: matchId } });
+  if (match) revalidatePath(`/tournaments/${match.tournamentId}`);
+
+  return NextResponse.json({ goal });
+}
+
 export async function DELETE(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const session = await getSession();
   if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
