@@ -4,9 +4,9 @@ import { prisma } from "@/lib/prisma";
 export const revalidate = 300;
 
 export default async function TournamentsPage() {
-  const tournaments = await prisma.tournament.findMany({
+  const rawTournaments = await prisma.tournament.findMany({
     where: { active: true },
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ startDate: "desc" }, { createdAt: "desc" }],
     include: {
       _count: { select: { teams: true, matches: true } },
       teams: { include: { team: { include: { _count: { select: { players: true } } } } } },
@@ -43,6 +43,13 @@ export default async function TournamentsPage() {
     if (kstToday >= start)       return "ONGOING";
     return "UPCOMING";
   }
+
+  // 진행중 먼저, 나머지는 startDate 최신순 (이미 DB 쿼리에서 정렬됨)
+  const tournaments = [...rawTournaments].sort((a, b) => {
+    const sa = calcStatus(a) === "ONGOING" ? 0 : 1;
+    const sb = calcStatus(b) === "ONGOING" ? 0 : 1;
+    return sa - sb;
+  });
 
   const TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
   const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원" };
