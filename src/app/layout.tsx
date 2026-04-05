@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: "중동고 체육대회 기록 보관소 | 중동인의 땀방울을 기록하다",
   openGraph: {
     title: "中東AA | Athletic Archive",
-    description: "中東AA | 중동중고 체육대회 기록 보관소⚽⛳🎱",
+    description: "중동중고 체육대회 기록 보관소⚽⛳🎱",
     type: "website",
   },
 };
