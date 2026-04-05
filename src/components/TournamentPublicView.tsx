@@ -1122,7 +1122,7 @@ function SponsorSection({ sponsors }: { sponsors: Sponsor[] }) {
             )}
             {s.grade && <span className={gradeBadgeCls}>{s.grade}</span>}
             {s.description && (
-              <span className="text-[9px] text-gray-500 truncate">{s.description}</span>
+              <span className="text-[11px] text-gray-600 truncate">{s.description}</span>
             )}
           </div>
         );
