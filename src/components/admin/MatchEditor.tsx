@@ -35,8 +35,8 @@ const GOAL_TYPES = [
 
 const STATUS_OPTS = [
   { value: "SCHEDULED", label: "예정",   cls: "bg-gray-100 text-gray-600 border-gray-200" },
-  { value: "ONGOING",   label: "진행중", cls: "bg-amber-100 text-amber-700 border-amber-300" },
-  { value: "FINISHED",  label: "종료",   cls: "bg-green-100 text-green-700 border-green-300" },
+  { value: "ONGOING",   label: "진행중", cls: "bg-emerald-100 text-emerald-700 border-emerald-300" },
+  { value: "FINISHED",  label: "종료",   cls: "bg-red-100 text-red-600 border-red-300" },
 ];
 
 export default function MatchEditor({ match, tournament, onBack }: { match: Match; tournament: Tournament; onBack: () => void }) {

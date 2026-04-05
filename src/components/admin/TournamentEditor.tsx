@@ -721,8 +721,8 @@ function MatchesTab({ tournament, loadingMatchId, onCreateMatch, onEditMatch, on
 
   const STATUS_CFG: Record<string, { label: string; cls: string; dot: string }> = {
     SCHEDULED: { label: "예정", cls: "bg-gray-100 text-gray-500", dot: "bg-gray-400" },
-    ONGOING:   { label: "진행중", cls: "bg-amber-100 text-amber-600", dot: "bg-amber-400" },
-    FINISHED:  { label: "종료", cls: "bg-green-100 text-green-600", dot: "bg-green-500" },
+    ONGOING:   { label: "진행중", cls: "bg-emerald-100 text-emerald-700", dot: "bg-emerald-500" },
+    FINISHED:  { label: "종료",  cls: "bg-red-100 text-red-600",       dot: "bg-red-500" },
   };
 
   return (
