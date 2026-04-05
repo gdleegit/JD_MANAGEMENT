@@ -1106,8 +1106,8 @@ function SponsorSection({ sponsors }: { sponsors: Sponsor[] }) {
         const typeLabel = SPONSOR_TYPE_LABEL[s.type] ?? s.type;
         const gradeBadgeCls =
           s.type === "TITLE"
-            ? "bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide flex-shrink-0 leading-none"
-            : "bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 leading-none";
+            ? "inline-flex items-center bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide flex-shrink-0 leading-none"
+            : "inline-flex items-center bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 leading-none";
 
         const row = (
           <div className="flex items-center gap-2 w-full py-1.5 px-3 rounded-xl bg-gray-50 border border-gray-100">
