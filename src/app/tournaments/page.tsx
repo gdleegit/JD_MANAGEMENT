@@ -73,12 +73,13 @@ export default async function TournamentsPage() {
                 + (t.endDate ? ` ~ ${new Date(t.endDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric" })}` : "")
               : null;
             const sortedSponsors = TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type));
+            const hasSponsor = sortedSponsors.length > 0;
             return (
-              <div key={t.id} className="flex flex-col gap-2">
+              <div key={t.id} className="flex flex-col shadow-sm hover:shadow-lg transition-shadow duration-200" style={{ borderRadius: "1rem", border: "1.5px solid #e2e8f0", borderTop: `4px solid ${st.borderColor}` }}>
               <Link
                 href={`/tournaments/${t.id}`}
-                className="group flex flex-col bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-0.5"
-                style={{ border: "1.5px solid #e2e8f0", borderTop: `4px solid ${st.borderColor}` }}
+                className={`group flex flex-col bg-white overflow-hidden transition-all duration-200 ${hasSponsor ? "rounded-t-2xl" : "rounded-2xl"}`}
+                style={{ borderBottom: hasSponsor ? "1px solid #e2e8f0" : undefined }}
               >
                 <div className="p-4 sm:p-5 flex flex-col flex-1">
                   {/* 상단: 상태 + 대회 유형 */}
@@ -142,9 +143,9 @@ export default async function TournamentsPage() {
                 </div>
               </Link>
 
-              {/* 협찬 배너 — 대회 카드 아래, 한 행씩 */}
+              {/* 협찬 배너 — 대회 카드와 이어붙임 */}
               {sortedSponsors.length > 0 && (
-                <div className="rounded-xl border border-gray-100 bg-gradient-to-r from-slate-50 to-blue-50 px-3 py-2 space-y-1.5">
+                <div className="rounded-b-2xl bg-gradient-to-r from-slate-50 to-blue-50 px-3 py-2 space-y-1.5">
                   {sortedSponsors.map(s => {
                     const gradeBadgeCls =
                       s.type === "TITLE"
@@ -182,6 +183,7 @@ export default async function TournamentsPage() {
             );
           })}
         </div>
+
       )}
     </div>
   );
