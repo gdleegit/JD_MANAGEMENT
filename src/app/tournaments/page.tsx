@@ -17,7 +17,7 @@ export default async function TournamentsPage() {
   const STATUS: Record<string, { label: string; badgeCls: string; borderColor: string }> = {
     UPCOMING: { label: "예정",   badgeCls: "bg-gray-100 text-gray-500",           borderColor: "#d1d5db" },
     ONGOING:  { label: "진행중", badgeCls: "bg-emerald-100 text-emerald-700",     borderColor: "#10b981" },
-    FINISHED: { label: "종료",   badgeCls: "bg-blue-100 text-blue-700",           borderColor: "#3b82f6" },
+    FINISHED: { label: "종료",   badgeCls: "bg-red-100 text-red-600",             borderColor: "#ef4444" },
   };
   const typeLabel: Record<string, string> = {
     KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별·기수 리그",

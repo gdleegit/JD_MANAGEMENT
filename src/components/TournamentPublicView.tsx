@@ -70,7 +70,7 @@ type LeagueRow = {
 const STATUS_LABEL: Record<string, { label: string; cls: string; badgeCls: string; borderColor: string }> = {
   UPCOMING: { label: "예정",   cls: "badge-gray",  badgeCls: "bg-gray-100 text-gray-500",       borderColor: "#d1d5db" },
   ONGOING:  { label: "진행중", cls: "badge-green", badgeCls: "bg-emerald-100 text-emerald-700", borderColor: "#10b981" },
-  FINISHED: { label: "종료",   cls: "badge-blue",  badgeCls: "bg-blue-100 text-blue-700",       borderColor: "#3b82f6" },
+  FINISHED: { label: "종료",   cls: "badge-red",   badgeCls: "bg-red-100 text-red-600",         borderColor: "#ef4444" },
 };
 const TYPE_LABEL: Record<string, string> = { KNOCKOUT: "토너먼트", LEAGUE: "리그", GROUP: "조별·기수 리그" };
 
