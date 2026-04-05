@@ -9,10 +9,10 @@ const notoSerifKR = Noto_Serif_KR({ weight: "400", subsets: ["latin"], display: 
 
 export const metadata: Metadata = {
   title: "中東AA | Athletic Archive",
-  description: "체육대회 기록 보관소 | 중동인의 땀방울을 기록하다",
+  description: "중동고 체육대회 기록 보관소 | 중동인의 땀방울을 기록하다",
   openGraph: {
     title: "中東AA | Athletic Archive",
-    description: "체육대회 기록 보관소 | 중동인의 땀방울을 기록하다",
+    description: "중동고 체육대회 기록 보관소 | 중동인의 땀방울을 기록하다 | 중동중고 체육위원회",
     type: "website",
   },
 };
