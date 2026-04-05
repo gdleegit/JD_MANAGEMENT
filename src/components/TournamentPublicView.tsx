@@ -1112,9 +1112,9 @@ function SponsorChip({ sponsor }: { sponsor: Sponsor }) {
   const typeLabel = SPONSOR_TYPE_LABEL[type] ?? type;
 
   const gradeBadgeCls =
-    type === "TITLE"   ? "bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide" :
-    type === "SPONSOR" ? "bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full" :
-                         "bg-gray-200 text-gray-500 text-[9px] font-bold px-1.5 py-0.5 rounded-full";
+    type === "TITLE"
+      ? "bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide"
+      : "bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full";
 
   const cardCls =
     type === "TITLE"

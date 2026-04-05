@@ -135,50 +135,40 @@ export default async function TournamentsPage() {
                 </div>
               </Link>
 
-              {/* 협찬 배너 — 대회 카드 아래 */}
+              {/* 협찬 배너 — 대회 카드 아래, 한 행씩 */}
               {sortedSponsors.length > 0 && (
-                <div className="rounded-xl border border-gray-100 bg-gradient-to-r from-slate-50 to-blue-50 px-3 py-3">
-                  <div className="flex flex-nowrap gap-2 overflow-x-auto pb-0.5">
-                    {sortedSponsors.map(s => {
-                      const gradeBadgeCls =
-                        s.type === "TITLE"   ? "bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide" :
-                        s.type === "SPONSOR" ? "bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full" :
-                                               "bg-gray-200 text-gray-500 text-[9px] font-bold px-1.5 py-0.5 rounded-full";
-                      const cardCls =
-                        s.type === "TITLE"
-                          ? "flex flex-col items-center gap-1.5 bg-white border-2 border-blue-100 rounded-xl px-4 py-3 shadow-sm flex-shrink-0 min-w-[90px]"
-                          : s.type === "SPONSOR"
-                          ? "flex flex-col items-center gap-1 bg-white border border-gray-200 rounded-lg px-3 py-2 shadow-sm flex-shrink-0"
-                          : "flex flex-col items-center gap-1 bg-white border border-gray-100 rounded-lg px-2.5 py-2 flex-shrink-0";
-                      const nameCls =
-                        s.type === "TITLE" ? "text-xs font-extrabold text-gray-900 text-center" :
-                        "text-xs font-bold text-gray-700 text-center";
-                      const logoSize =
-                        s.type === "TITLE" ? "h-8 max-w-[100px]" : "h-6 max-w-[80px]";
+                <div className="rounded-xl border border-gray-100 bg-gradient-to-r from-slate-50 to-blue-50 px-3 py-2 space-y-1.5">
+                  {sortedSponsors.map(s => {
+                    const gradeBadgeCls =
+                      s.type === "TITLE"
+                        ? "bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide flex-shrink-0"
+                        : "bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0";
 
-                      const inner = (
-                        <span className={cardCls}>
-                          <span className="self-start text-[8px] font-semibold text-gray-400 leading-none">{TYPE_LABEL[s.type]}</span>
-                          {s.logoUrl && (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={s.logoUrl} alt={s.name} className={`object-contain ${logoSize}`} />
-                          )}
-                          {s.grade && <span className={gradeBadgeCls}>{s.grade}</span>}
-                          <span className={nameCls}>{s.name}</span>
-                          {s.description && (
-                            <span className="text-[11px] text-gray-500 text-center leading-snug mt-0.5">{s.description}</span>
-                          )}
-                        </span>
-                      );
-                      return s.link ? (
-                        <a key={s.id} href={s.link} target="_blank" rel="noopener noreferrer" className="hover:opacity-75 transition-opacity">
-                          {inner}
-                        </a>
-                      ) : (
-                        <span key={s.id}>{inner}</span>
-                      );
-                    })}
-                  </div>
+                    const row = (
+                      <div className="flex items-center gap-2 w-full">
+                        <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wide w-9 flex-shrink-0">{TYPE_LABEL[s.type]}</span>
+                        {s.logoUrl && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={s.logoUrl} alt={s.name} className="h-5 w-auto max-w-[60px] object-contain flex-shrink-0" />
+                        )}
+                        <span className={`font-bold flex-shrink-0 ${s.type === "TITLE" ? "text-sm text-gray-900" : "text-xs text-gray-800"}`}>{s.name}</span>
+                        {(s.grade || s.description) && (
+                          <span className="text-gray-300 flex-shrink-0 text-xs">|</span>
+                        )}
+                        {s.grade && <span className={gradeBadgeCls}>{s.grade}</span>}
+                        {s.description && (
+                          <span className="text-[9px] text-gray-500 truncate">{s.description}</span>
+                        )}
+                      </div>
+                    );
+                    return s.link ? (
+                      <a key={s.id} href={s.link} target="_blank" rel="noopener noreferrer" className="block hover:opacity-75 transition-opacity">
+                        {row}
+                      </a>
+                    ) : (
+                      <div key={s.id}>{row}</div>
+                    );
+                  })}
                 </div>
               )}
               </div>
