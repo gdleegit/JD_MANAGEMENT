@@ -54,8 +54,9 @@ export default async function Image() {
         <img src={logoSrc} width={180} height={180} style={{ flexShrink: 0 }} />
 
         {/* 사이트명 */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+          {/* 中東 + JOONGDONG */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             <span
               style={{
                 color: "white",
@@ -66,36 +67,37 @@ export default async function Image() {
             >
               中東
             </span>
-            <span style={{ color: "#374151", fontSize: "56px", fontFamily: "Inter", fontWeight: 100, lineHeight: 1 }}>
-              |
+            <span
+              style={{
+                color: "#4b5563",
+                fontSize: "18px",
+                letterSpacing: "0.28em",
+                fontFamily: "Inter",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              JOONGDONG
             </span>
-            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-              <span
-                style={{
-                  color: "#d1d5db",
-                  fontSize: "40px",
-                  letterSpacing: "0.18em",
-                  fontFamily: "Inter",
-                  lineHeight: 1,
-                }}
-              >
-                <span style={{ color: "#176fc1" }}>A</span>thletic{" "}
-                <span style={{ color: "#176fc1" }}>A</span>rchive
-              </span>
-              <span
-                style={{
-                  color: "#4b5563",
-                  fontSize: "16px",
-                  letterSpacing: "0.22em",
-                  fontFamily: "Inter",
-                }}
-              >
-                JOONGDONG
-              </span>
-            </div>
           </div>
-          <span style={{ color: "#374151", fontSize: "22px", fontFamily: "Inter" }}>
-            Athletic Archive — Joongdong
+
+          {/* 구분선 */}
+          <span style={{ color: "#374151", fontSize: "56px", fontFamily: "Inter", fontWeight: 100, lineHeight: 1 }}>
+            |
+          </span>
+
+          {/* Athletic Archive */}
+          <span
+            style={{
+              color: "#d1d5db",
+              fontSize: "40px",
+              letterSpacing: "0.18em",
+              fontFamily: "Inter",
+              lineHeight: 1,
+            }}
+          >
+            <span style={{ color: "#176fc1" }}>A</span>thletic{" "}
+            <span style={{ color: "#176fc1" }}>A</span>rchive
           </span>
         </div>
       </div>
