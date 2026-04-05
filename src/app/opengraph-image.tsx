@@ -10,8 +10,8 @@ export default async function Image() {
   const logoBuffer = readFileSync(join(process.cwd(), "public/jd2.svg"));
   const logoSrc = `data:image/svg+xml;base64,${logoBuffer.toString("base64")}`;
 
-  // Inter TTF: 항상 로드 (woff2는 @vercel/og 미지원)
-  const interData = readFileSync(join(process.cwd(), "src/app/inter.ttf"));
+  // Noto Sans TTF: 항상 로드 (@vercel/og 번들 폰트)
+  const interData = readFileSync(join(process.cwd(), "src/app/noto-sans.ttf"));
 
   // Noto Serif KR: 中東 한자 렌더링용, 실패해도 무시
   let notoData: ArrayBuffer | null = null;
