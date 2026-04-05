@@ -10,31 +10,8 @@ export default async function Image() {
   const logoBuffer = readFileSync(join(process.cwd(), "public/jd2.svg"));
   const logoSrc = `data:image/svg+xml;base64,${logoBuffer.toString("base64")}`;
 
-  // Noto Sans TTF: 항상 로드 (@vercel/og 번들 폰트)
-  const interData = readFileSync(join(process.cwd(), "src/app/noto-sans.ttf"));
-
-  // Noto Serif KR: 中東 한자 렌더링용, 실패해도 무시
-  let notoData: ArrayBuffer | null = null;
-  try {
-    const css = await fetch(
-      `https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400&text=${encodeURIComponent("中東")}`,
-      { headers: { "User-Agent": "Mozilla/5.0" } }
-    ).then((r) => r.text());
-    const urlMatch = css.match(/url\(([^)]+)\)\s+format\('woff2'\)/);
-    if (urlMatch) {
-      notoData = await fetch(urlMatch[1]).then((r) => r.arrayBuffer());
-    }
-  } catch {
-    // 폰트 로드 실패 → 中東은 박스로 표시될 수 있음 (빌드는 정상)
-  }
-
-  type FontConfig = { name: string; data: ArrayBuffer; weight: 400; style: "normal" };
-  const fonts: FontConfig[] = [
-    { name: "Inter", data: interData.buffer as ArrayBuffer, weight: 400, style: "normal" },
-  ];
-  if (notoData) {
-    fonts.push({ name: "NotoSerifKR", data: notoData, weight: 400, style: "normal" });
-  }
+  const notoSansData = readFileSync(join(process.cwd(), "src/app/noto-sans.ttf"));
+  const notoSerifData = readFileSync(join(process.cwd(), "src/app/noto-serif-kr.ttf"));
 
   return new ImageResponse(
     (
@@ -46,43 +23,54 @@ export default async function Image() {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          gap: "60px",
+          gap: "56px",
           padding: "0 100px",
         }}
       >
         {/* 로고 */}
         <img src={logoSrc} width={180} height={180} style={{ flexShrink: 0 }} />
 
-        {/* 사이트명 */}
-        <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
+        {/* 사이트명 — 헤더와 동일한 구조 */}
+        <div style={{ display: "flex", alignItems: "center", gap: "28px" }}>
           {/* 中東 + JOONGDONG */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
             <span
               style={{
                 color: "white",
-                fontSize: "100px",
-                fontFamily: notoData ? "NotoSerifKR" : "Inter",
+                fontSize: "96px",
+                fontFamily: "NotoSerifKR",
                 lineHeight: 1,
+                letterSpacing: "0.05em",
               }}
             >
               中東
             </span>
-            <span
+            <div
               style={{
-                color: "#4b5563",
-                fontSize: "18px",
-                letterSpacing: "0.28em",
-                fontFamily: "Inter",
                 display: "flex",
                 justifyContent: "space-between",
+                color: "#4b5563",
+                fontSize: "15px",
+                letterSpacing: "0.05em",
+                fontFamily: "NotoSans",
               }}
             >
-              JOONGDONG
-            </span>
+              {"JOONGDONG".split("").map((c, i) => (
+                <span key={i}>{c}</span>
+              ))}
+            </div>
           </div>
 
           {/* 구분선 */}
-          <span style={{ color: "#374151", fontSize: "56px", fontFamily: "Inter", fontWeight: 100, lineHeight: 1 }}>
+          <span
+            style={{
+              color: "#374151",
+              fontSize: "64px",
+              fontFamily: "NotoSans",
+              fontWeight: 100,
+              lineHeight: 1,
+            }}
+          >
             |
           </span>
 
@@ -90,9 +78,9 @@ export default async function Image() {
           <span
             style={{
               color: "#d1d5db",
-              fontSize: "40px",
+              fontSize: "38px",
               letterSpacing: "0.18em",
-              fontFamily: "Inter",
+              fontFamily: "NotoSans",
               lineHeight: 1,
             }}
           >
@@ -102,6 +90,12 @@ export default async function Image() {
         </div>
       </div>
     ),
-    { ...size, fonts }
+    {
+      ...size,
+      fonts: [
+        { name: "NotoSans",   data: notoSansData.buffer  as ArrayBuffer, weight: 400, style: "normal" },
+        { name: "NotoSerifKR", data: notoSerifData.buffer as ArrayBuffer, weight: 400, style: "normal" },
+      ],
+    }
   );
 }
