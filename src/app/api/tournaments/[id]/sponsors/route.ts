@@ -34,5 +34,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   });
 
   revalidatePath(`/tournaments/${tournamentId}`);
+  revalidatePath("/tournaments");
   return NextResponse.json(sponsor, { status: 201 });
 }

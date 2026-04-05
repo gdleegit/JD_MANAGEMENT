@@ -24,6 +24,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   });
 
   revalidatePath(`/tournaments/${sponsor.tournamentId}`);
+  revalidatePath("/tournaments");
   return NextResponse.json(sponsor);
 }
 
@@ -34,5 +35,6 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const { id } = await params;
   const sponsor = await prisma.sponsor.delete({ where: { id } });
   revalidatePath(`/tournaments/${sponsor.tournamentId}`);
+  revalidatePath("/tournaments");
   return NextResponse.json({ ok: true });
 }
