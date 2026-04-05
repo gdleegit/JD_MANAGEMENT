@@ -10,6 +10,12 @@ const notoSerifKR = Noto_Serif_KR({ weight: "400", subsets: ["latin"], display: 
 export const metadata: Metadata = {
   title: "中東AA | Athletic Archive",
   description: "중동 체육위원회 Athletic Archive — 중동인의 땀방울을 기록하다.",
+  openGraph: {
+    title: "中東AA | Athletic Archive",
+    description: "중동 체육위원회 Athletic Archive — 중동인의 땀방울을 기록하다.",
+    images: [{ url: "/home_logo.png" }],
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
