@@ -10,8 +10,11 @@ export default async function Image() {
   const logoBuffer = readFileSync(join(process.cwd(), "public/jd2.svg"));
   const logoSrc = `data:image/svg+xml;base64,${logoBuffer.toString("base64")}`;
 
-  // 중동 한자 렌더링용 Korean/CJK 폰트 로드 시도
-  let fontData: ArrayBuffer | null = null;
+  // Inter: 항상 로드 (빌드 실패 방지)
+  const interData = readFileSync(join(process.cwd(), "src/app/inter.woff2"));
+
+  // Noto Serif KR: 中東 한자 렌더링용, 실패해도 무시
+  let notoData: ArrayBuffer | null = null;
   try {
     const css = await fetch(
       `https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400&text=${encodeURIComponent("中東")}`,
@@ -19,10 +22,18 @@ export default async function Image() {
     ).then((r) => r.text());
     const urlMatch = css.match(/url\(([^)]+)\)\s+format\('woff2'\)/);
     if (urlMatch) {
-      fontData = await fetch(urlMatch[1]).then((r) => r.arrayBuffer());
+      notoData = await fetch(urlMatch[1]).then((r) => r.arrayBuffer());
     }
   } catch {
-    // 폰트 로드 실패 시 시스템 serif 사용
+    // 폰트 로드 실패 → 中東은 박스로 표시될 수 있음 (빌드는 정상)
+  }
+
+  type FontConfig = { name: string; data: ArrayBuffer; weight: 400; style: "normal" };
+  const fonts: FontConfig[] = [
+    { name: "Inter", data: interData.buffer as ArrayBuffer, weight: 400, style: "normal" },
+  ];
+  if (notoData) {
+    fonts.push({ name: "NotoSerifKR", data: notoData, weight: 400, style: "normal" });
   }
 
   return new ImageResponse(
@@ -49,13 +60,13 @@ export default async function Image() {
               style={{
                 color: "white",
                 fontSize: "100px",
-                fontFamily: fontData ? "NotoSerifKR" : "serif",
+                fontFamily: notoData ? "NotoSerifKR" : "Inter",
                 lineHeight: 1,
               }}
             >
               中東
             </span>
-            <span style={{ color: "#374151", fontSize: "56px", fontWeight: 100, lineHeight: 1 }}>
+            <span style={{ color: "#374151", fontSize: "56px", fontFamily: "Inter", fontWeight: 100, lineHeight: 1 }}>
               |
             </span>
             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
@@ -64,7 +75,7 @@ export default async function Image() {
                   color: "#d1d5db",
                   fontSize: "40px",
                   letterSpacing: "0.18em",
-                  fontFamily: "sans-serif",
+                  fontFamily: "Inter",
                   lineHeight: 1,
                 }}
               >
@@ -76,24 +87,19 @@ export default async function Image() {
                   color: "#4b5563",
                   fontSize: "16px",
                   letterSpacing: "0.22em",
-                  fontFamily: "sans-serif",
+                  fontFamily: "Inter",
                 }}
               >
                 JOONGDONG
               </span>
             </div>
           </div>
-          <span style={{ color: "#374151", fontSize: "22px", fontFamily: "sans-serif" }}>
-            중동인의 땀방울을 기록하다
+          <span style={{ color: "#374151", fontSize: "22px", fontFamily: "Inter" }}>
+            Athletic Archive — Joongdong
           </span>
         </div>
       </div>
     ),
-    {
-      ...size,
-      fonts: fontData
-        ? [{ name: "NotoSerifKR", data: fontData, weight: 400, style: "normal" }]
-        : [],
-    }
+    { ...size, fonts }
   );
 }
