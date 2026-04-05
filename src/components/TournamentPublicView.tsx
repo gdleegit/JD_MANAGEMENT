@@ -1101,57 +1101,40 @@ const SPONSOR_TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
 function SponsorSection({ sponsors }: { sponsors: Sponsor[] }) {
   const sorted = SPONSOR_TYPE_ORDER.flatMap(t => sponsors.filter(s => s.type === t));
   return (
-    <div className="flex flex-nowrap gap-3 overflow-x-auto pb-1">
-      {sorted.map(s => <SponsorChip key={s.id} sponsor={s} />)}
+    <div className="space-y-2">
+      {sorted.map(s => {
+        const typeLabel = SPONSOR_TYPE_LABEL[s.type] ?? s.type;
+        const gradeBadgeCls =
+          s.type === "TITLE"
+            ? "bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide flex-shrink-0"
+            : "bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0";
+
+        const row = (
+          <div className="flex items-center gap-2 w-full py-1.5 px-3 rounded-xl bg-gray-50 border border-gray-100">
+            <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wide w-9 flex-shrink-0">{typeLabel}</span>
+            {s.logoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={s.logoUrl} alt={s.name} className="h-5 w-auto max-w-[60px] object-contain flex-shrink-0" />
+            )}
+            <span className={`font-bold flex-shrink-0 ${s.type === "TITLE" ? "text-sm text-gray-900" : "text-xs text-gray-800"}`}>{s.name}</span>
+            {(s.grade || s.description) && (
+              <span className="text-gray-300 flex-shrink-0 text-xs">|</span>
+            )}
+            {s.grade && <span className={gradeBadgeCls}>{s.grade}</span>}
+            {s.description && (
+              <span className="text-[9px] text-gray-500 truncate">{s.description}</span>
+            )}
+          </div>
+        );
+
+        return s.link ? (
+          <a key={s.id} href={s.link} target="_blank" rel="noopener noreferrer" className="block hover:opacity-75 transition-opacity">
+            {row}
+          </a>
+        ) : (
+          <div key={s.id}>{row}</div>
+        );
+      })}
     </div>
   );
-}
-
-function SponsorChip({ sponsor }: { sponsor: Sponsor }) {
-  const type = sponsor.type;
-  const typeLabel = SPONSOR_TYPE_LABEL[type] ?? type;
-
-  const gradeBadgeCls =
-    type === "TITLE"
-      ? "bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide"
-      : "bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full";
-
-  const cardCls =
-    type === "TITLE"
-      ? "flex flex-col items-center gap-1.5 bg-white border-2 border-blue-100 rounded-2xl px-5 py-4 shadow-md min-w-[110px] flex-shrink-0"
-      : type === "SPONSOR"
-      ? "flex flex-col items-center gap-1.5 bg-white border border-gray-200 rounded-xl px-4 py-3 shadow-sm min-w-[80px] flex-shrink-0"
-      : "flex flex-col items-center gap-1 bg-gray-50 border border-gray-100 rounded-lg px-3 py-2.5 flex-shrink-0";
-
-  const nameCls =
-    type === "TITLE"   ? "text-sm font-extrabold text-gray-900 text-center leading-tight" :
-    type === "SPONSOR" ? "text-sm font-bold text-gray-800 text-center" :
-                         "text-xs font-semibold text-gray-600 text-center";
-
-  const logoSize =
-    type === "TITLE" ? "h-12 max-w-[140px]" : type === "SPONSOR" ? "h-8 max-w-[100px]" : "h-6 max-w-[80px]";
-
-  const inner = (
-    <span className={cardCls}>
-      <span className="self-start text-[9px] font-semibold text-gray-400 leading-none">{typeLabel}</span>
-      {sponsor.logoUrl && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={sponsor.logoUrl} alt={sponsor.name} className={`object-contain ${logoSize}`} />
-      )}
-      {sponsor.grade && <span className={gradeBadgeCls}>{sponsor.grade}</span>}
-      <span className={nameCls}>{sponsor.name}</span>
-      {sponsor.description && (
-        <span className="text-[10px] text-gray-400 text-center leading-tight">{sponsor.description}</span>
-      )}
-    </span>
-  );
-
-  if (sponsor.link) {
-    return (
-      <a href={sponsor.link} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-        {inner}
-      </a>
-    );
-  }
-  return inner;
 }
