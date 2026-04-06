@@ -203,22 +203,30 @@ export default async function TournamentsPage() {
             <SponsorMarquee>
               {[...allSponsors, ...allSponsors].map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-2xl border bg-gradient-to-b from-white to-amber-50 border-amber-200 shadow-md hover:shadow-lg transition-shadow w-[140px]">
-                    {(s.grade || s.personName) && (
-                      <div className="flex items-center gap-1 whitespace-nowrap bg-amber-100 rounded-full px-2.5 py-0.5">
-                        {s.grade && <span className="text-[10px] font-extrabold text-amber-600">{s.grade}</span>}
-                        {s.grade && s.personName && <span className="text-amber-300 text-[10px]">·</span>}
-                        {s.personName && <span className="text-[10px] font-bold text-amber-700">{s.personName}</span>}
-                      </div>
-                    )}
+                  <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-white to-amber-50 border-amber-200 shadow-md hover:shadow-lg transition-shadow" style={{ height: "168px" }}>
+                    {/* 기수·성명 슬롯 — 없어도 공간 유지 */}
+                    <div className="flex items-center h-6">
+                      {(s.grade || s.personName) && (
+                        <div className="flex items-center gap-0.5 whitespace-nowrap bg-amber-200 rounded-full px-2.5 py-0.5">
+                          {s.grade && <span className="text-xs font-black text-amber-900">{s.grade}</span>}
+                          {s.grade && s.personName && <span className="text-amber-400 text-xs">·</span>}
+                          {s.personName && <span className="text-xs font-bold text-amber-900">{s.personName}</span>}
+                        </div>
+                      )}
+                    </div>
+                    {/* 로고 */}
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={s.logoUrl ?? "/chungdong_logo.png"}
                       alt={s.name}
-                      className="h-10 w-auto object-contain"
+                      className="h-12 w-auto object-contain flex-shrink-0"
                     />
-                    <span className="text-xs font-extrabold text-amber-900 text-center leading-tight tracking-tight line-clamp-2">{s.name}</span>
-                    {s.description && <span className="text-[10px] text-amber-500 text-center whitespace-nowrap">{s.description}</span>}
+                    {/* 협찬사명 — 한 줄 유지 */}
+                    <span className="text-sm font-extrabold text-amber-900 whitespace-nowrap tracking-tight">{s.name}</span>
+                    {/* 설명 슬롯 — 없어도 공간 유지 */}
+                    <div className="flex items-center h-4">
+                      {s.description && <span className="text-[10px] text-amber-500 whitespace-nowrap">{s.description}</span>}
+                    </div>
                   </div>
                 );
                 return s.link ? (
