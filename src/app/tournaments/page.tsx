@@ -233,19 +233,19 @@ export default async function TournamentsPage() {
           </div>
         </section>
       )}
-    </div>
 
-    <style>{`
-      @keyframes sponsor-scroll {
-        from { transform: translateX(0); }
-        to { transform: translateX(-50%); }
-      }
-      .sponsor-marquee {
-        animation: sponsor-scroll 40s linear infinite;
-      }
-      .sponsor-marquee:hover {
-        animation-play-state: paused;
-      }
-    `}</style>
+      <style>{`
+        @keyframes sponsor-scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+        .sponsor-marquee {
+          animation: sponsor-scroll 40s linear infinite;
+        }
+        .sponsor-marquee:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+    </div>
   );
 }
