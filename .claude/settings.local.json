@@ -16,7 +16,11 @@
       "Bash(git push:*)",
       "Bash(git revert:*)",
       "Bash(npx tsx --no-deprecation -e ':*)",
-      "Bash(grep -v \"^$\")"
+      "Bash(grep -v \"^$\")",
+      "Bash(npx next:*)",
+      "Bash(node -e \"console.log\\(encodeURIComponent\\(''중동ArenA.png''\\)\\)\")",
+      "Bash(grep -o '#[0-9a-fA-F]\\\\{3,6\\\\}' \"C:/GD개발테스트/JD_management/public/jd2.svg\")",
+      "Bash(ls .env*)"
     ]
   }
 }

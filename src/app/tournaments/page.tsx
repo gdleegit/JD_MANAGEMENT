@@ -53,6 +53,10 @@ export default async function TournamentsPage() {
 
   const TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
   const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원" };
+  const allSponsors = tournaments.flatMap(t =>
+    TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type))
+      .map(s => ({ ...s, tournamentName: t.name }))
+  );
 
   return (
     <div>
@@ -74,6 +78,7 @@ export default async function TournamentsPage() {
               : null;
             const sortedSponsors = TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type));
             const hasSponsor = sortedSponsors.length > 0;
+            const hasTitleSponsor = sortedSponsors.some(s => s.type === "TITLE");
             return (
               <div key={t.id} className="flex flex-col shadow-sm hover:shadow-lg transition-shadow duration-200" style={{ borderRadius: "1rem", border: "1.5px solid #e2e8f0", borderTop: `4px solid ${st.borderColor}` }}>
               <Link
@@ -145,21 +150,22 @@ export default async function TournamentsPage() {
 
               {/* 협찬 배너 — 대회 카드와 이어붙임 */}
               {sortedSponsors.length > 0 && (
-                <div className="rounded-b-2xl bg-gradient-to-r from-slate-50 to-blue-50 px-3 py-2 space-y-1.5">
+                <div className={`rounded-b-2xl px-3 py-2 space-y-1.5 ${hasTitleSponsor ? "bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50" : "bg-gradient-to-r from-slate-50 to-blue-50"}`}>
                   {sortedSponsors.map(s => {
-                    const gradeBadgeCls =
-                      s.type === "TITLE"
-                        ? "inline-flex items-center bg-blue-600 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide flex-shrink-0 leading-none"
-                        : "inline-flex items-center bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 leading-none";
+                    const isTitle = s.type === "TITLE";
+                    const gradeBadgeCls = isTitle
+                      ? "inline-flex items-center bg-amber-400 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide flex-shrink-0 leading-none"
+                      : "inline-flex items-center bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 leading-none";
 
                     const row = (
-                      <div className="flex items-center gap-2 w-full">
-                        <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wide w-9 flex-shrink-0">{TYPE_LABEL[s.type]}</span>
+                      <div className={`flex items-center gap-2 w-full ${isTitle ? "py-0.5" : ""}`}>
+                        {isTitle && <span className="text-base leading-none flex-shrink-0">👑</span>}
+                        <span className={`text-[8px] font-bold uppercase tracking-wide w-9 flex-shrink-0 ${isTitle ? "text-amber-500" : "text-gray-400"}`}>{TYPE_LABEL[s.type]}</span>
                         {s.logoUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={s.logoUrl} alt={s.name} className="h-5 w-auto max-w-[60px] object-contain flex-shrink-0" />
                         )}
-                        <span className={`font-bold flex-shrink-0 ${s.type === "TITLE" ? "text-sm text-gray-900" : "text-xs text-gray-800"}`}>{s.name}</span>
+                        <span className={`font-bold flex-shrink-0 ${isTitle ? "text-sm text-amber-800" : "text-xs text-gray-800"}`}>{s.name}</span>
                         {(s.grade || s.description) && (
                           <span className="text-gray-300 flex-shrink-0 text-xs">|</span>
                         )}
@@ -185,6 +191,61 @@ export default async function TournamentsPage() {
         </div>
 
       )}
+
+      {/* 방법 3+4: 하단 독립 협찬·후원 섹션 + 자동 스크롤 */}
+      {allSponsors.length > 0 && (
+        <section className="mt-16 pt-10 border-t border-gray-100">
+          <div className="text-center mb-6">
+            <p className="text-xs font-bold text-amber-500 tracking-widest uppercase mb-1">Our Sponsors &amp; Supporters</p>
+            <h2 className="text-lg sm:text-xl font-extrabold text-gray-800">함께해주신 협찬·후원사</h2>
+          </div>
+          <div className="overflow-hidden relative">
+            {/* 좌우 페이드 처리 */}
+            <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+            <div className="sponsor-marquee flex gap-4 w-max">
+              {[...allSponsors, ...allSponsors].map((s, i) => {
+                const isTitle = s.type === "TITLE";
+                const card = (
+                  <div
+                    className={`flex flex-col items-center justify-center gap-1.5 px-5 py-3 rounded-2xl border min-w-[96px] max-w-[140px] transition-shadow hover:shadow-md ${
+                      isTitle
+                        ? "bg-gradient-to-b from-amber-50 to-yellow-50 border-amber-200 shadow-sm"
+                        : "bg-white border-gray-100 shadow-sm"
+                    }`}
+                  >
+                    {isTitle && <span className="text-lg leading-none">👑</span>}
+                    {s.logoUrl && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={s.logoUrl} alt={s.name} className="h-10 w-auto max-w-[80px] object-contain" />
+                    )}
+                    <span className={`text-xs font-bold text-center leading-tight ${isTitle ? "text-amber-800" : "text-gray-800"}`}>{s.name}</span>
+                    <span className={`text-[9px] font-semibold ${isTitle ? "text-amber-400" : "text-gray-400"}`}>{TYPE_LABEL[s.type]}</span>
+                  </div>
+                );
+                return s.link ? (
+                  <a key={i} href={s.link} target="_blank" rel="noopener noreferrer">{card}</a>
+                ) : (
+                  <div key={i}>{card}</div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
     </div>
+
+    <style>{`
+      @keyframes sponsor-scroll {
+        from { transform: translateX(0); }
+        to { transform: translateX(-50%); }
+      }
+      .sponsor-marquee {
+        animation: sponsor-scroll 40s linear infinite;
+      }
+      .sponsor-marquee:hover {
+        animation-play-state: paused;
+      }
+    `}</style>
   );
 }
