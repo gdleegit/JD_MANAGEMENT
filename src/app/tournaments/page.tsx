@@ -55,9 +55,7 @@ export default async function TournamentsPage() {
   const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원" };
   const allSponsors = tournaments.flatMap(t => {
     const kisuMatch = t.name.match(/\d+회/);
-    const kisuText = kisuMatch
-      ? `${kisuMatch[0]} ${sportLabel[t.sport] ?? t.sport}`
-      : t.name;
+    const kisuText = kisuMatch ? kisuMatch[0] : t.name;
     return TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type))
       .map(s => ({ ...s, kisuText }));
   });
