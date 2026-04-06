@@ -206,7 +206,7 @@ export default async function TournamentsPage() {
             <SponsorMarquee>
               {allSponsors.map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ height: "148px", borderTop: "3px solid #176fc1" }}>
+                  <div className="flex flex-col items-center justify-between px-5 py-3 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ height: "136px", borderTop: "3px solid #176fc1" }}>
                     {/* 기수·성명 슬롯 — 없어도 공간 유지 */}
                     <div className="flex items-center h-6">
                       {(s.grade || s.personName) && (
@@ -218,7 +218,7 @@ export default async function TournamentsPage() {
                       )}
                     </div>
                     {/* 로고 */}
-                    <div className="flex items-center justify-center h-14 w-full">
+                    <div className="flex items-center justify-center h-14 w-full mt-2">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={s.logoUrl ?? "/cd_logo2.png"}
@@ -230,7 +230,7 @@ export default async function TournamentsPage() {
                     {/* 협찬사명 — 한 줄 유지 */}
                     <span className="text-sm font-extrabold text-gray-900 whitespace-nowrap tracking-tight">{s.name}</span>
                     {/* 설명 슬롯 — 없어도 공간 유지 */}
-                    <div className="flex items-center h-4">
+                    <div className="flex items-center h-3">
                       {s.description && <span className="text-[10px] text-gray-500 whitespace-nowrap">{s.description}</span>}
                     </div>
                   </div>
