@@ -203,7 +203,7 @@ export default async function TournamentsPage() {
             <SponsorMarquee>
               {[...allSponsors, ...allSponsors].map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-green-50 to-emerald-100 border-green-300 shadow-md hover:shadow-lg transition-shadow" style={{ height: "168px" }}>
+                  <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-green-50 to-emerald-100 border-green-300 shadow-md hover:shadow-lg transition-shadow" style={{ height: "148px" }}>
                     {/* 기수·성명 슬롯 — 없어도 공간 유지 */}
                     <div className="flex items-center h-6">
                       {(s.grade || s.personName) && (
