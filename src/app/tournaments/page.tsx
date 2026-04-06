@@ -53,12 +53,9 @@ export default async function TournamentsPage() {
 
   const TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
   const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원" };
-  const allSponsors = tournaments.flatMap(t => {
-    const kisuMatch = t.name.match(/\d+회/);
-    const kisuText = kisuMatch ? kisuMatch[0] : t.name;
-    return TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type))
-      .map(s => ({ ...s, kisuText }));
-  });
+  const allSponsors = tournaments.flatMap(t =>
+    TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type))
+  );
 
   return (
     <div>
@@ -207,8 +204,9 @@ export default async function TournamentsPage() {
                 const card = (
                   <div className="flex flex-col items-center justify-center gap-1 px-5 py-3 rounded-2xl border bg-gradient-to-b from-amber-50 to-yellow-50 border-amber-200 shadow-sm transition-shadow hover:shadow-md">
                     <div className="flex items-center gap-1 whitespace-nowrap">
-                      <span className="text-[9px] font-bold text-amber-500">{s.kisuText}</span>
-                      {s.personName && <><span className="text-amber-300 text-[9px]">·</span><span className="text-[9px] font-semibold text-amber-600">{s.personName}</span></>}
+                      {s.grade && <span className="text-[9px] font-bold text-amber-500">{s.grade}</span>}
+                      {s.grade && s.personName && <span className="text-amber-300 text-[9px]">·</span>}
+                      {s.personName && <span className="text-[9px] font-semibold text-amber-600">{s.personName}</span>}
                     </div>
                     {s.logoUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
