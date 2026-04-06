@@ -202,19 +202,20 @@ export default async function TournamentsPage() {
             <div className="sponsor-marquee flex gap-4 w-max">
               {[...allSponsors, ...allSponsors].map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center justify-center gap-1 px-5 py-3 rounded-2xl border bg-gradient-to-b from-amber-50 to-yellow-50 border-amber-200 shadow-sm transition-shadow hover:shadow-md">
-                    <div className="flex items-center gap-1 whitespace-nowrap">
-                      {s.grade && <span className="text-[9px] font-bold text-amber-500">{s.grade}</span>}
-                      {s.grade && s.personName && <span className="text-amber-300 text-[9px]">·</span>}
-                      {s.personName && <span className="text-[9px] font-semibold text-amber-600">{s.personName}</span>}
-                    </div>
+                  <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-2xl border bg-gradient-to-b from-white to-amber-50 border-amber-200 shadow-md hover:shadow-lg transition-shadow min-w-[110px]">
+                    {(s.grade || s.personName) && (
+                      <div className="flex items-center gap-1 whitespace-nowrap bg-amber-100 rounded-full px-2.5 py-0.5">
+                        {s.grade && <span className="text-[10px] font-extrabold text-amber-600">{s.grade}</span>}
+                        {s.grade && s.personName && <span className="text-amber-300 text-[10px]">·</span>}
+                        {s.personName && <span className="text-[10px] font-bold text-amber-700">{s.personName}</span>}
+                      </div>
+                    )}
                     {s.logoUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={s.logoUrl} alt={s.name} className="h-10 w-auto object-contain" />
                     )}
-                    <span className="text-xs font-bold text-amber-800 whitespace-nowrap">{s.name}</span>
-                    <span className="text-[9px] font-semibold text-amber-400 whitespace-nowrap">{TYPE_LABEL[s.type]}</span>
-                    {s.description && <span className="text-[9px] text-amber-400 whitespace-nowrap">{s.description}</span>}
+                    <span className="text-sm font-extrabold text-amber-900 whitespace-nowrap tracking-tight">{s.name}</span>
+                    {s.description && <span className="text-[10px] text-amber-500 whitespace-nowrap">{s.description}</span>}
                   </div>
                 );
                 return s.link ? (
