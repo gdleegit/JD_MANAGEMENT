@@ -17,10 +17,18 @@
       "Bash(git revert:*)",
       "Bash(npx tsx --no-deprecation -e ':*)",
       "Bash(grep -v \"^$\")",
-      "Bash(npx next:*)",
-      "Bash(node -e \"console.log\\(encodeURIComponent\\(''중동ArenA.png''\\)\\)\")",
-      "Bash(grep -o '#[0-9a-fA-F]\\\\{3,6\\\\}' \"C:/GD개발테스트/JD_management/public/jd2.svg\")",
-      "Bash(ls .env*)"
+      "Bash(curl -sL \"https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiJ-Ek-_EeA.woff2\" -o \"C:/GD_PROJECT/JD_MANAGEMENT/src/app/inter.woff2\")",
+      "Bash(curl -sL \"https://github.com/rsms/inter/raw/master/docs/font-files/Inter-Regular.woff2\" -o /tmp/test.woff2)",
+      "Bash(curl -sL \"https://github.com/google/fonts/raw/main/ofl/inter/Inter%5Bslnt%2Cwght%5D.ttf\" -o \"C:/GD_PROJECT/JD_MANAGEMENT/src/app/inter.ttf\")",
+      "Bash(git rm:*)",
+      "Bash(curl -sL \"https://fonts.gstatic.com/s/notoserifkr/v27/3JnmSDn90Gmq2mr3blnHaTZXTihE8O9bSk6_NXbpXQgv4_4x.ttf\" -o \"C:/GD_PROJECT/JD_MANAGEMENT/src/app/noto-serif-kr.ttf\")",
+      "Bash(curl -sL 'https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400' -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\)')",
+      "Bash(curl -sL \"https://fonts.gstatic.com/s/notoserifkr/v31/3JnoSDn90Gmq2mr3blnHaTZXbOtLJDvui3JOncjmeM52.ttf\" -o \"C:/GD_PROJECT/JD_MANAGEMENT/src/app/noto-serif-kr.ttf\")",
+      "Bash(pip show:*)",
+      "Bash(pip install:*)",
+      "Bash(python3 -c \"import fonttools\")",
+      "Bash(python3 -m pip install fonttools)",
+      "Bash(git stash:*)"
     ]
   }
 }

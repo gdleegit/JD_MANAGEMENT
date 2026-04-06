@@ -144,7 +144,7 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
   }, [mode]);
 
   return (
-    <div ref={containerRef}>
+    <div ref={containerRef} style={{ position: "relative", overflow: "hidden" }}>
       {/* 너비 측정용 숨김 div (단일 복사본) */}
       <div
         ref={measureRef}
