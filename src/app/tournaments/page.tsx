@@ -78,7 +78,6 @@ export default async function TournamentsPage() {
               : null;
             const sortedSponsors = TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type));
             const hasSponsor = sortedSponsors.length > 0;
-            const hasTitleSponsor = sortedSponsors.some(s => s.type === "TITLE");
             return (
               <div key={t.id} className="flex flex-col shadow-sm hover:shadow-lg transition-shadow duration-200" style={{ borderRadius: "1rem", border: "1.5px solid #e2e8f0", borderTop: `4px solid ${st.borderColor}` }}>
               <Link
@@ -150,28 +149,24 @@ export default async function TournamentsPage() {
 
               {/* 협찬 배너 — 대회 카드와 이어붙임 */}
               {sortedSponsors.length > 0 && (
-                <div className={`rounded-b-2xl px-3 py-2 space-y-1.5 ${hasTitleSponsor ? "bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50" : "bg-gradient-to-r from-slate-50 to-blue-50"}`}>
+                <div className="rounded-b-2xl bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 px-3 py-2 space-y-1.5">
                   {sortedSponsors.map(s => {
-                    const isTitle = s.type === "TITLE";
-                    const gradeBadgeCls = isTitle
-                      ? "inline-flex items-center bg-amber-400 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide flex-shrink-0 leading-none"
-                      : "inline-flex items-center bg-blue-100 text-blue-700 text-[9px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 leading-none";
-
+                    const gradeBadgeCls = "inline-flex items-center bg-amber-400 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide flex-shrink-0 leading-none";
                     const row = (
-                      <div className={`flex items-center gap-2 w-full ${isTitle ? "py-0.5" : ""}`}>
-                        {isTitle && <span className="text-base leading-none flex-shrink-0">👑</span>}
-                        <span className={`text-[8px] font-bold uppercase tracking-wide w-9 flex-shrink-0 ${isTitle ? "text-amber-500" : "text-gray-400"}`}>{TYPE_LABEL[s.type]}</span>
+                      <div className="flex items-center gap-2 w-full py-0.5">
+                        <span className="text-base leading-none flex-shrink-0">✨</span>
+                        <span className="text-[8px] font-bold uppercase tracking-wide w-9 flex-shrink-0 text-amber-500">{TYPE_LABEL[s.type]}</span>
                         {s.logoUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
                           <img src={s.logoUrl} alt={s.name} className="h-5 w-auto max-w-[60px] object-contain flex-shrink-0" />
                         )}
-                        <span className={`font-bold flex-shrink-0 ${isTitle ? "text-sm text-amber-800" : "text-xs text-gray-800"}`}>{s.name}</span>
+                        <span className="font-bold flex-shrink-0 text-sm text-amber-800">{s.name}</span>
                         {(s.grade || s.description) && (
-                          <span className="text-gray-300 flex-shrink-0 text-xs">|</span>
+                          <span className="text-amber-200 flex-shrink-0 text-xs">|</span>
                         )}
                         {s.grade && <span className={gradeBadgeCls}>{s.grade}</span>}
                         {s.description && (
-                          <span className="text-[11px] text-gray-600 truncate">{s.description}</span>
+                          <span className="text-[11px] text-amber-700 truncate">{s.description}</span>
                         )}
                       </div>
                     );
@@ -205,22 +200,15 @@ export default async function TournamentsPage() {
             <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
             <div className="sponsor-marquee flex gap-4 w-max">
               {[...allSponsors, ...allSponsors].map((s, i) => {
-                const isTitle = s.type === "TITLE";
                 const card = (
-                  <div
-                    className={`flex flex-col items-center justify-center gap-1.5 px-5 py-3 rounded-2xl border min-w-[96px] max-w-[140px] transition-shadow hover:shadow-md ${
-                      isTitle
-                        ? "bg-gradient-to-b from-amber-50 to-yellow-50 border-amber-200 shadow-sm"
-                        : "bg-white border-gray-100 shadow-sm"
-                    }`}
-                  >
-                    {isTitle && <span className="text-lg leading-none">👑</span>}
+                  <div className="flex flex-col items-center justify-center gap-1.5 px-5 py-3 rounded-2xl border bg-gradient-to-b from-amber-50 to-yellow-50 border-amber-200 shadow-sm min-w-[96px] max-w-[140px] transition-shadow hover:shadow-md">
+                    <span className="text-lg leading-none">✨</span>
                     {s.logoUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={s.logoUrl} alt={s.name} className="h-10 w-auto max-w-[80px] object-contain" />
                     )}
-                    <span className={`text-xs font-bold text-center leading-tight ${isTitle ? "text-amber-800" : "text-gray-800"}`}>{s.name}</span>
-                    <span className={`text-[9px] font-semibold ${isTitle ? "text-amber-400" : "text-gray-400"}`}>{TYPE_LABEL[s.type]}</span>
+                    <span className="text-xs font-bold text-center leading-tight text-amber-800">{s.name}</span>
+                    <span className="text-[9px] font-semibold text-amber-400">{TYPE_LABEL[s.type]}</span>
                   </div>
                 );
                 return s.link ? (
