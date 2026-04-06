@@ -201,14 +201,16 @@ export default async function TournamentsPage() {
             <div className="sponsor-marquee flex gap-4 w-max">
               {[...allSponsors, ...allSponsors].map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center justify-center gap-1.5 px-5 py-3 rounded-2xl border bg-gradient-to-b from-amber-50 to-yellow-50 border-amber-200 shadow-sm min-w-[96px] max-w-[140px] transition-shadow hover:shadow-md">
-                    <span className="text-lg leading-none">✨</span>
+                  <div className="flex flex-col items-center justify-center gap-1 px-5 py-3 rounded-2xl border bg-gradient-to-b from-amber-50 to-yellow-50 border-amber-200 shadow-sm transition-shadow hover:shadow-md">
+                    <span className="text-[9px] font-bold text-amber-500 whitespace-nowrap">{s.tournamentName}</span>
+                    {s.description && <span className="text-[9px] text-amber-400 whitespace-nowrap">{s.description}</span>}
+                    <span className="text-lg leading-none mt-0.5">✨</span>
                     {s.logoUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={s.logoUrl} alt={s.name} className="h-10 w-auto max-w-[80px] object-contain" />
+                      <img src={s.logoUrl} alt={s.name} className="h-10 w-auto object-contain" />
                     )}
-                    <span className="text-xs font-bold text-center leading-tight text-amber-800">{s.name}</span>
-                    <span className="text-[9px] font-semibold text-amber-400">{TYPE_LABEL[s.type]}</span>
+                    <span className="text-xs font-bold text-amber-800 whitespace-nowrap">{s.name}</span>
+                    <span className="text-[9px] font-semibold text-amber-400 whitespace-nowrap">{TYPE_LABEL[s.type]}</span>
                   </div>
                 );
                 return s.link ? (
