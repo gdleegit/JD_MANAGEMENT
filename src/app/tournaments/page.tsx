@@ -81,8 +81,7 @@ export default async function TournamentsPage() {
               <div key={t.id} className="flex flex-col shadow-sm hover:shadow-lg transition-shadow duration-200" style={{ borderRadius: "1rem", border: "1.5px solid #e2e8f0", borderTop: `4px solid ${st.borderColor}` }}>
               <Link
                 href={`/tournaments/${t.id}`}
-                className={`group flex flex-col bg-white overflow-hidden transition-all duration-200 ${hasSponsor ? "rounded-t-2xl" : "rounded-2xl"}`}
-                style={{ borderBottom: hasSponsor ? "1px solid #e2e8f0" : undefined }}
+                className="group flex flex-col bg-white overflow-hidden transition-all duration-200 rounded-2xl"
               >
                 <div className="p-4 sm:p-5 flex flex-col flex-1">
                   {/* 상단: 상태 + 대회 유형 */}
@@ -147,6 +146,7 @@ export default async function TournamentsPage() {
               </Link>
 
               {/* 협찬 배너 — 대회 카드와 이어붙임 */}
+              {/* 대회 카드 내 협찬·후원 배너 (임시 비활성화)
               {sortedSponsors.length > 0 && (
                 <div className="rounded-b-2xl bg-gradient-to-r from-amber-50 via-yellow-50 to-amber-50 px-3 py-2 space-y-1.5">
                   {sortedSponsors.map(s => {
@@ -156,7 +156,6 @@ export default async function TournamentsPage() {
                         <div className="flex items-center gap-2 w-full">
                           <span className="text-[8px] font-bold uppercase tracking-wide w-9 flex-shrink-0 text-amber-500">{TYPE_LABEL[s.type]}</span>
                           {s.logoUrl && (
-                            // eslint-disable-next-line @next/next/no-img-element
                             <img src={s.logoUrl} alt={s.name} className="h-5 w-auto max-w-[60px] object-contain flex-shrink-0" />
                           )}
                           <span className="font-bold flex-shrink-0 text-sm text-amber-800">{s.name}</span>
@@ -181,6 +180,7 @@ export default async function TournamentsPage() {
                   })}
                 </div>
               )}
+              */}
               </div>
             );
           })}
