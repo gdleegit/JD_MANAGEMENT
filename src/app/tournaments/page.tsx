@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
+import SponsorMarquee from "@/components/SponsorMarquee";
 
 export const revalidate = 300;
 
@@ -195,11 +196,12 @@ export default async function TournamentsPage() {
             <p className="text-xs font-bold text-amber-500 tracking-widest uppercase mb-1">Our Sponsors &amp; Supporters</p>
             <h2 className="text-lg sm:text-xl font-extrabold text-gray-800">중동과 함께해주신 협찬·후원</h2>
           </div>
-          <div className="overflow-hidden relative">
+          <div className="relative">
             {/* 좌우 페이드 처리 */}
             <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-            <div className="sponsor-marquee flex gap-4 w-max">
+            <SponsorMarquee>
+            <div className="flex gap-4 w-max px-12 sm:px-20">
               {[...allSponsors, ...allSponsors].map((s, i) => {
                 const card = (
                   <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-2xl border bg-gradient-to-b from-white to-amber-50 border-amber-200 shadow-md hover:shadow-lg transition-shadow min-w-[110px]">
@@ -225,22 +227,10 @@ export default async function TournamentsPage() {
                 );
               })}
             </div>
+            </SponsorMarquee>
           </div>
         </section>
       )}
-
-      <style>{`
-        @keyframes sponsor-scroll {
-          from { transform: translateX(0); }
-          to { transform: translateX(-50%); }
-        }
-        .sponsor-marquee {
-          animation: sponsor-scroll 40s linear infinite;
-        }
-        .sponsor-marquee:hover {
-          animation-play-state: paused;
-        }
-      `}</style>
     </div>
   );
 }
