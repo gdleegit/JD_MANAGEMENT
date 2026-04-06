@@ -218,7 +218,7 @@ export default async function TournamentsPage() {
                     <div className="flex items-center justify-center h-14 w-full">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
-                        src={s.logoUrl ?? "/chungdong_logo.png"}
+                        src={s.logoUrl ?? "/cd_logo2.png"}
                         alt={s.name}
                         className="max-h-12 w-auto object-contain"
                         style={{ padding: "2px 0" }}
