@@ -53,10 +53,14 @@ export default async function TournamentsPage() {
 
   const TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
   const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원" };
-  const allSponsors = tournaments.flatMap(t =>
-    TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type))
-      .map(s => ({ ...s, tournamentName: t.name }))
-  );
+  const allSponsors = tournaments.flatMap(t => {
+    const kisuMatch = t.name.match(/\d+회/);
+    const kisuText = kisuMatch
+      ? `${kisuMatch[0]} ${sportLabel[t.sport] ?? t.sport}`
+      : t.name;
+    return TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type))
+      .map(s => ({ ...s, kisuText }));
+  });
 
   return (
     <div>
@@ -154,7 +158,6 @@ export default async function TournamentsPage() {
                     const gradeBadgeCls = "inline-flex items-center bg-amber-400 text-white text-[9px] font-extrabold px-2 py-0.5 rounded-full tracking-wide flex-shrink-0 leading-none";
                     const row = (
                       <div className="flex items-center gap-2 w-full py-0.5">
-                        <span className="text-base leading-none flex-shrink-0">✨</span>
                         <span className="text-[8px] font-bold uppercase tracking-wide w-9 flex-shrink-0 text-amber-500">{TYPE_LABEL[s.type]}</span>
                         {s.logoUrl && (
                           // eslint-disable-next-line @next/next/no-img-element
@@ -202,9 +205,8 @@ export default async function TournamentsPage() {
               {[...allSponsors, ...allSponsors].map((s, i) => {
                 const card = (
                   <div className="flex flex-col items-center justify-center gap-1 px-5 py-3 rounded-2xl border bg-gradient-to-b from-amber-50 to-yellow-50 border-amber-200 shadow-sm transition-shadow hover:shadow-md">
-                    <span className="text-[9px] font-bold text-amber-500 whitespace-nowrap">{s.tournamentName}</span>
+                    <span className="text-[9px] font-bold text-amber-500 whitespace-nowrap">{s.kisuText}</span>
                     {s.description && <span className="text-[9px] text-amber-400 whitespace-nowrap">{s.description}</span>}
-                    <span className="text-lg leading-none mt-0.5">✨</span>
                     {s.logoUrl && (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={s.logoUrl} alt={s.name} className="h-10 w-auto object-contain" />
