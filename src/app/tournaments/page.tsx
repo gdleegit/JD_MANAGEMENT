@@ -193,7 +193,7 @@ export default async function TournamentsPage() {
         <section className="mt-16 pt-10 border-t border-gray-100">
           <div className="text-center mb-6">
             <p className="text-xs font-bold text-amber-500 tracking-widest uppercase mb-1">Our Sponsors &amp; Supporters</p>
-            <h2 className="text-lg sm:text-xl font-extrabold text-gray-800">함께해주신 협찬·후원사</h2>
+            <h2 className="text-lg sm:text-xl font-extrabold text-gray-800">중동과 함께해주신 협찬·후원</h2>
           </div>
           <div className="overflow-hidden relative">
             {/* 좌우 페이드 처리 */}
