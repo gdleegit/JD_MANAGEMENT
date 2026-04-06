@@ -191,8 +191,11 @@ export default async function TournamentsPage() {
 
       {/* 방법 3+4: 하단 독립 협찬·후원 섹션 + 자동 스크롤 */}
       {allSponsors.length > 0 && (
-        <section className="mt-16 -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 pt-10 pb-10 bg-gradient-to-b from-gray-900 to-gray-950">
-          <div className="text-center mb-6">
+        <section
+          className="mt-16 pt-10 pb-10 bg-gradient-to-b from-gray-900 to-gray-950"
+          style={{ width: "100vw", marginLeft: "calc(-50vw + 50%)" }}
+        >
+          <div className="text-center mb-6 px-4">
             <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: "#176fc1" }}>Our Sponsors &amp; Supporters</p>
             <h2 className="text-lg sm:text-xl font-extrabold text-white">중동과 함께해주신 협찬·후원</h2>
           </div>
@@ -203,7 +206,7 @@ export default async function TournamentsPage() {
             <SponsorMarquee>
               {[...allSponsors, ...allSponsors].map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 transition-shadow" style={{ height: "148px" }}>
+                  <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ height: "148px", borderTop: "3px solid #176fc1" }}>
                     {/* 기수·성명 슬롯 — 없어도 공간 유지 */}
                     <div className="flex items-center h-6">
                       {(s.grade || s.personName) && (

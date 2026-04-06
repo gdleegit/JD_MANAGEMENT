@@ -7,6 +7,7 @@
     -webkit-tap-highlight-color: transparent;
   }
   body {
+    overflow-x: hidden;
     background-color: #f9fafb;
     color: #111827;
     -webkit-text-size-adjust: 100%;
