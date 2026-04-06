@@ -191,9 +191,9 @@ export default async function TournamentsPage() {
 
       {/* 방법 3+4: 하단 독립 협찬·후원 섹션 + 자동 스크롤 */}
       {allSponsors.length > 0 && (
-        <section className="mt-16 pt-10 border-t border-gray-100">
+        <section className="mt-16 pt-10 border-t border-green-100">
           <div className="text-center mb-6">
-            <p className="text-xs font-bold text-amber-500 tracking-widest uppercase mb-1">Our Sponsors &amp; Supporters</p>
+            <p className="text-xs font-bold text-green-600 tracking-widest uppercase mb-1">Our Sponsors &amp; Supporters</p>
             <h2 className="text-lg sm:text-xl font-extrabold text-gray-800">중동과 함께해주신 협찬·후원</h2>
           </div>
           <div className="relative">
@@ -203,14 +203,14 @@ export default async function TournamentsPage() {
             <SponsorMarquee>
               {[...allSponsors, ...allSponsors].map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-white to-amber-50 border-amber-200 shadow-md hover:shadow-lg transition-shadow" style={{ height: "168px" }}>
+                  <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-green-50 to-emerald-100 border-green-300 shadow-md hover:shadow-lg transition-shadow" style={{ height: "168px" }}>
                     {/* 기수·성명 슬롯 — 없어도 공간 유지 */}
                     <div className="flex items-center h-6">
                       {(s.grade || s.personName) && (
-                        <div className="flex items-center gap-0.5 whitespace-nowrap bg-amber-200 rounded-full px-2.5 py-0.5">
-                          {s.grade && <span className="text-xs font-black text-amber-900">{s.grade}</span>}
-                          {s.grade && s.personName && <span className="text-amber-400 text-xs">·</span>}
-                          {s.personName && <span className="text-xs font-bold text-amber-900">{s.personName}</span>}
+                        <div className="flex items-center gap-0.5 whitespace-nowrap bg-green-700 rounded-full px-2.5 py-0.5">
+                          {s.grade && <span className="text-xs font-black text-white">{s.grade}</span>}
+                          {s.grade && s.personName && <span className="text-green-300 text-xs">·</span>}
+                          {s.personName && <span className="text-xs font-bold text-white">{s.personName}</span>}
                         </div>
                       )}
                     </div>
@@ -225,10 +225,10 @@ export default async function TournamentsPage() {
                       />
                     </div>
                     {/* 협찬사명 — 한 줄 유지 */}
-                    <span className="text-sm font-extrabold text-amber-900 whitespace-nowrap tracking-tight">{s.name}</span>
+                    <span className="text-sm font-extrabold text-green-900 whitespace-nowrap tracking-tight">{s.name}</span>
                     {/* 설명 슬롯 — 없어도 공간 유지 */}
                     <div className="flex items-center h-4">
-                      {s.description && <span className="text-[10px] text-amber-500 whitespace-nowrap">{s.description}</span>}
+                      {s.description && <span className="text-[10px] text-green-600 whitespace-nowrap">{s.description}</span>}
                     </div>
                   </div>
                 );
