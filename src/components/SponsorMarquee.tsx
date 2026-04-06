@@ -2,33 +2,48 @@
 import { useRef, useEffect } from "react";
 
 export default function SponsorMarquee({ children }: { children: React.ReactNode }) {
-  const ref = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    const container = containerRef.current;
+    const track = trackRef.current;
+    if (!container || !track) return;
 
     let raf: number;
     let resumeTimer: ReturnType<typeof setTimeout>;
     let dragging = false;
     let startX = 0;
-    let startScroll = 0;
+    let startOffset = 0;
     let velX = 0;
     let lastX = 0;
     let lastT = 0;
     let paused = false;
     let prevTime = 0;
+    let offset = 0;
 
     const SPEED = 50; // px/s
+
+    const halfWidth = () => track.scrollWidth / 2;
+
+    const clamp = (v: number) => {
+      const h = halfWidth();
+      if (h <= 0) return v;
+      while (v <= -h) v += h;
+      while (v > 0) v -= h;
+      return v;
+    };
+
+    const apply = () => {
+      track.style.transform = `translateX(${offset}px)`;
+    };
 
     const tick = (now: number) => {
       const dt = prevTime ? Math.min(now - prevTime, 50) : 0;
       prevTime = now;
-      if (!dragging && !paused && el.scrollWidth > el.clientWidth) {
-        el.scrollLeft += SPEED * dt / 1000;
-        if (el.scrollLeft >= el.scrollWidth / 2) {
-          el.scrollLeft -= el.scrollWidth / 2;
-        }
+      if (!dragging && !paused) {
+        offset = clamp(offset - SPEED * dt / 1000);
+        apply();
       }
       raf = requestAnimationFrame(tick);
     };
@@ -37,17 +52,18 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
       dragging = true;
       paused = true;
       startX = x;
-      startScroll = el.scrollLeft;
+      startOffset = offset;
       velX = 0;
       lastX = x;
       lastT = Date.now();
-      el.style.cursor = "grabbing";
+      container.style.cursor = "grabbing";
       clearTimeout(resumeTimer);
     };
 
     const moveDrag = (x: number) => {
       if (!dragging) return;
-      el.scrollLeft = startScroll - (x - startX);
+      offset = clamp(startOffset + (x - startX));
+      apply();
       const now = Date.now();
       if (now - lastT > 0) velX = (x - lastX) / (now - lastT);
       lastX = x;
@@ -57,14 +73,15 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
     const endDrag = () => {
       if (!dragging) return;
       dragging = false;
-      el.style.cursor = "grab";
-      let v = velX * 100;
+      container.style.cursor = "grab";
+      let v = velX * 80;
       const momentum = () => {
-        if (Math.abs(v) < 0.5) {
+        if (Math.abs(v) < 0.3) {
           resumeTimer = setTimeout(() => { paused = false; }, 800);
           return;
         }
-        el.scrollLeft -= v * 0.016;
+        offset = clamp(offset + v * 0.016);
+        apply();
         v *= 0.9;
         requestAnimationFrame(momentum);
       };
@@ -78,34 +95,36 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
     const onTouchMove = (e: TouchEvent) => { e.preventDefault(); moveDrag(e.touches[0].clientX); };
     const onTouchEnd = () => endDrag();
 
-    el.addEventListener("mousedown", onMouseDown);
+    container.addEventListener("mousedown", onMouseDown);
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
-    el.addEventListener("touchstart", onTouchStart, { passive: true });
-    el.addEventListener("touchmove", onTouchMove, { passive: false });
-    el.addEventListener("touchend", onTouchEnd);
+    container.addEventListener("touchstart", onTouchStart, { passive: true });
+    container.addEventListener("touchmove", onTouchMove, { passive: false });
+    container.addEventListener("touchend", onTouchEnd);
 
     raf = requestAnimationFrame(tick);
 
     return () => {
       cancelAnimationFrame(raf);
       clearTimeout(resumeTimer);
-      el.removeEventListener("mousedown", onMouseDown);
+      container.removeEventListener("mousedown", onMouseDown);
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
-      el.removeEventListener("touchstart", onTouchStart);
-      el.removeEventListener("touchmove", onTouchMove);
-      el.removeEventListener("touchend", onTouchEnd);
+      container.removeEventListener("touchstart", onTouchStart);
+      container.removeEventListener("touchmove", onTouchMove);
+      container.removeEventListener("touchend", onTouchEnd);
     };
   }, []);
 
   return (
-    <div
-      ref={ref}
-      className="overflow-x-scroll cursor-grab select-none pb-2"
-      style={{ scrollbarWidth: "none" }}
-    >
-      {children}
+    <div ref={containerRef} className="overflow-hidden cursor-grab select-none">
+      <div
+        ref={trackRef}
+        className="flex gap-4 pb-2"
+        style={{ width: "max-content", willChange: "transform" }}
+      >
+        {children}
+      </div>
     </div>
   );
 }

@@ -201,10 +201,9 @@ export default async function TournamentsPage() {
             <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
             <SponsorMarquee>
-            <div className="flex gap-4 w-max px-12 sm:px-20">
               {[...allSponsors, ...allSponsors].map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-2xl border bg-gradient-to-b from-white to-amber-50 border-amber-200 shadow-md hover:shadow-lg transition-shadow min-w-[110px]">
+                  <div className="flex flex-col items-center gap-2 px-6 py-4 rounded-2xl border bg-gradient-to-b from-white to-amber-50 border-amber-200 shadow-md hover:shadow-lg transition-shadow w-[140px]">
                     {(s.grade || s.personName) && (
                       <div className="flex items-center gap-1 whitespace-nowrap bg-amber-100 rounded-full px-2.5 py-0.5">
                         {s.grade && <span className="text-[10px] font-extrabold text-amber-600">{s.grade}</span>}
@@ -212,12 +211,14 @@ export default async function TournamentsPage() {
                         {s.personName && <span className="text-[10px] font-bold text-amber-700">{s.personName}</span>}
                       </div>
                     )}
-                    {s.logoUrl && (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={s.logoUrl} alt={s.name} className="h-10 w-auto object-contain" />
-                    )}
-                    <span className="text-sm font-extrabold text-amber-900 whitespace-nowrap tracking-tight">{s.name}</span>
-                    {s.description && <span className="text-[10px] text-amber-500 whitespace-nowrap">{s.description}</span>}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={s.logoUrl ?? "/chungdong_logo.png"}
+                      alt={s.name}
+                      className="h-10 w-auto object-contain"
+                    />
+                    <span className="text-xs font-extrabold text-amber-900 text-center leading-tight tracking-tight line-clamp-2">{s.name}</span>
+                    {s.description && <span className="text-[10px] text-amber-500 text-center whitespace-nowrap">{s.description}</span>}
                   </div>
                 );
                 return s.link ? (
@@ -226,7 +227,6 @@ export default async function TournamentsPage() {
                   <div key={i}>{card}</div>
                 );
               })}
-            </div>
             </SponsorMarquee>
           </div>
         </section>
