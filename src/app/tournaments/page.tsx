@@ -215,12 +215,15 @@ export default async function TournamentsPage() {
                       )}
                     </div>
                     {/* 로고 */}
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={s.logoUrl ?? "/chungdong_logo.png"}
-                      alt={s.name}
-                      className="h-12 w-auto object-contain flex-shrink-0"
-                    />
+                    <div className="flex items-center justify-center h-14 w-full">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={s.logoUrl ?? "/chungdong_logo.png"}
+                        alt={s.name}
+                        className="max-h-12 w-auto object-contain"
+                        style={{ padding: "2px 0" }}
+                      />
+                    </div>
                     {/* 협찬사명 — 한 줄 유지 */}
                     <span className="text-sm font-extrabold text-amber-900 whitespace-nowrap tracking-tight">{s.name}</span>
                     {/* 설명 슬롯 — 없어도 공간 유지 */}
