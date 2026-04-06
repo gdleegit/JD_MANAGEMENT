@@ -17,7 +17,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
 
   const { id: tournamentId } = await params;
-  const { name, grade, type, logoUrl, link, description, order } = await req.json();
+  const { name, grade, personName, type, logoUrl, link, description, order } = await req.json();
   if (!name) return NextResponse.json({ error: "이름 필요" }, { status: 400 });
 
   const sponsor = await prisma.sponsor.create({
@@ -25,6 +25,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       tournamentId,
       name,
       grade: grade || null,
+      personName: personName || null,
       type: type || "SPONSOR",
       logoUrl: logoUrl || null,
       link: link || null,

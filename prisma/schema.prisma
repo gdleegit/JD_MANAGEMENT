@@ -141,6 +141,7 @@ model Sponsor {
   tournament   Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   name         String
   grade        String?
+  personName   String?
   description  String?
   logoUrl      String?
   link         String?
