@@ -204,7 +204,7 @@ export default async function TournamentsPage() {
             <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-gray-950 to-transparent z-10 pointer-events-none" />
             <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-gray-950 to-transparent z-10 pointer-events-none" />
             <SponsorMarquee>
-              {[...allSponsors, ...allSponsors].map((s, i) => {
+              {allSponsors.map((s, i) => {
                 const card = (
                   <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ height: "148px", borderTop: "3px solid #176fc1" }}>
                     {/* 기수·성명 슬롯 — 없어도 공간 유지 */}

@@ -1,5 +1,7 @@
 "use client";
-import { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
+
+const COPIES = 8; // 충분히 많이 복사해 어떤 화면폭에서도 루프 끊김 없음
 
 export default function SponsorMarquee({ children }: { children: React.ReactNode }) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -26,10 +28,11 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
 
     const SPEED = 45; // px/s
 
-    const halfWidth = () => track.scrollWidth / 2;
+    // 단일 복사본 너비 = 전체 track / COPIES
+    const lapWidth = () => track.scrollWidth / COPIES;
 
-    const clamp = (v: number) => {
-      const h = halfWidth();
+    const normalize = (v: number) => {
+      const h = lapWidth();
       if (h <= 0) return v;
       while (v <= -h) v += h;
       while (v > 0) v -= h;
@@ -44,7 +47,7 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
       const dt = prevTime ? Math.min(now - prevTime, 50) : 0;
       prevTime = now;
       if (!dragging && !paused) {
-        offset = clamp(offset - SPEED * dt / 1000);
+        offset = normalize(offset - SPEED * dt / 1000);
         apply();
       }
       raf = requestAnimationFrame(tick);
@@ -64,27 +67,22 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
       clearTimeout(resumeTimer);
     };
 
-    const moveDrag = (x: number, y: number, canPrevent: boolean, e?: TouchEvent) => {
+    const moveDrag = (x: number, y: number, e?: TouchEvent) => {
       if (!dragging) return;
-
-      // 방향 결정 (첫 이동 시)
       if (!directionLocked) {
         const dx = Math.abs(x - startX);
         const dy = Math.abs(y - startY);
         if (dx < 3 && dy < 3) return;
         directionLocked = dx >= dy ? "h" : "v";
       }
-
-      // 세로 스크롤이면 드래그 취소
       if (directionLocked === "v") {
         dragging = false;
         paused = false;
         container.style.cursor = "grab";
         return;
       }
-
-      if (canPrevent && e) e.preventDefault();
-      offset = clamp(startOffset + (x - startX));
+      if (e) e.preventDefault();
+      offset = normalize(startOffset + (x - startX));
       apply();
       const now = Date.now();
       if (now - lastT > 0) velX = (x - lastX) / (now - lastT);
@@ -102,7 +100,7 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
           resumeTimer = setTimeout(() => { paused = false; }, 600);
           return;
         }
-        offset = clamp(offset + v * 0.016);
+        offset = normalize(offset + v * 0.016);
         apply();
         v *= 0.92;
         requestAnimationFrame(momentum);
@@ -111,10 +109,10 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
     };
 
     const onMouseDown = (e: MouseEvent) => { e.preventDefault(); startDrag(e.clientX, e.clientY); };
-    const onMouseMove = (e: MouseEvent) => moveDrag(e.clientX, e.clientY, false);
+    const onMouseMove = (e: MouseEvent) => moveDrag(e.clientX, e.clientY);
     const onMouseUp = () => endDrag();
     const onTouchStart = (e: TouchEvent) => startDrag(e.touches[0].clientX, e.touches[0].clientY);
-    const onTouchMove = (e: TouchEvent) => moveDrag(e.touches[0].clientX, e.touches[0].clientY, true, e);
+    const onTouchMove = (e: TouchEvent) => moveDrag(e.touches[0].clientX, e.touches[0].clientY, e);
     const onTouchEnd = () => endDrag();
 
     container.addEventListener("mousedown", onMouseDown);
@@ -138,6 +136,8 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
     };
   }, []);
 
+  const childArray = React.Children.toArray(children);
+
   return (
     <div ref={containerRef} className="overflow-hidden cursor-grab select-none">
       <div
@@ -145,7 +145,11 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
         className="flex gap-4 pb-2 px-4 sm:px-8"
         style={{ width: "max-content", willChange: "transform" }}
       >
-        {children}
+        {Array.from({ length: COPIES }, (_, copyIdx) =>
+          childArray.map((child, itemIdx) => (
+            <React.Fragment key={`${copyIdx}-${itemIdx}`}>{child}</React.Fragment>
+          ))
+        )}
       </div>
     </div>
   );
