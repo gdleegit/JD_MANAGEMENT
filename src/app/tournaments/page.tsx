@@ -191,19 +191,19 @@ export default async function TournamentsPage() {
 
       {/* 방법 3+4: 하단 독립 협찬·후원 섹션 + 자동 스크롤 */}
       {allSponsors.length > 0 && (
-        <section className="mt-16 pt-10 border-t border-gray-200">
+        <section className="mt-16 -mx-3 sm:-mx-6 lg:-mx-8 px-3 sm:px-6 lg:px-8 pt-10 pb-10 bg-gradient-to-b from-gray-900 to-gray-950">
           <div className="text-center mb-6">
             <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: "#176fc1" }}>Our Sponsors &amp; Supporters</p>
-            <h2 className="text-lg sm:text-xl font-extrabold text-gray-800">중동과 함께해주신 협찬·후원</h2>
+            <h2 className="text-lg sm:text-xl font-extrabold text-white">중동과 함께해주신 협찬·후원</h2>
           </div>
           <div className="relative">
-            {/* 좌우 페이드 처리 */}
-            <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+            {/* 좌우 페이드 처리 — 배경색 맞춤 */}
+            <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-gray-950 to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-gray-950 to-transparent z-10 pointer-events-none" />
             <SponsorMarquee>
               {[...allSponsors, ...allSponsors].map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-gray-800 to-gray-950 border-white/10 shadow-md shadow-black/30 hover:shadow-lg hover:shadow-black/40 transition-shadow" style={{ height: "148px" }}>
+                  <div className="flex flex-col items-center justify-between px-5 py-4 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 transition-shadow" style={{ height: "148px" }}>
                     {/* 기수·성명 슬롯 — 없어도 공간 유지 */}
                     <div className="flex items-center h-6">
                       {(s.grade || s.personName) && (
@@ -225,10 +225,10 @@ export default async function TournamentsPage() {
                       />
                     </div>
                     {/* 협찬사명 — 한 줄 유지 */}
-                    <span className="text-sm font-extrabold text-white whitespace-nowrap tracking-tight">{s.name}</span>
+                    <span className="text-sm font-extrabold text-gray-900 whitespace-nowrap tracking-tight">{s.name}</span>
                     {/* 설명 슬롯 — 없어도 공간 유지 */}
                     <div className="flex items-center h-4">
-                      {s.description && <span className="text-[10px] text-gray-400 whitespace-nowrap">{s.description}</span>}
+                      {s.description && <span className="text-[10px] text-gray-500 whitespace-nowrap">{s.description}</span>}
                     </div>
                   </div>
                 );
