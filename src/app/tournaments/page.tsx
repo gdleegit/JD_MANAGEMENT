@@ -192,17 +192,17 @@ export default async function TournamentsPage() {
       {/* 방법 3+4: 하단 독립 협찬·후원 섹션 + 자동 스크롤 */}
       {allSponsors.length > 0 && (
         <section
-          className="mt-16 pt-10 pb-10 bg-gradient-to-b from-gray-900 to-gray-950"
+          className="mt-16 pt-10 pb-10 bg-white border-t border-b border-gray-200"
           style={{ width: "100vw", marginLeft: "calc(-50vw + 50%)" }}
         >
           <div className="text-center mb-6 px-4">
             <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: "#176fc1" }}>Our Sponsors &amp; Supporters</p>
-            <h2 className="text-lg sm:text-xl font-extrabold text-white">중동과 함께해주신 협찬·후원</h2>
+            <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">중동과 함께해주신 협찬·후원</h2>
           </div>
           <div className="relative">
             {/* 좌우 페이드 처리 — 배경색 맞춤 */}
-            <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-gray-950 to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-gray-950 to-transparent z-10 pointer-events-none" />
+            <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+            <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
             <SponsorMarquee>
               {allSponsors.map((s, i) => {
                 const card = (
