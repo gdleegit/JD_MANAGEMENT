@@ -565,7 +565,7 @@ function ScheduleView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?
       )}
 
       {/* 경기 목록 */}
-      <div className="space-y-6">
+      <div className="space-y-8">
         {visibleEntries.map(([dateKey, dayMatches]) => {
           const hasGroups = dayMatches.some((m) => m.group);
           const byGroup = new Map<string, { label: string; color: string; matches: Match[] }>();
@@ -574,17 +574,21 @@ function ScheduleView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?
             if (!byGroup.has(gKey)) byGroup.set(gKey, { label: m.group?.label || m.group?.name || "미배정", color: m.group?.color || "#9ca3af", matches: [] });
             byGroup.get(gKey)!.matches.push(m);
           }
+          const isToday = dateKey === todayKST;
 
           return (
             <div key={dateKey}>
               {/* 날짜 헤더 — 전체 보기 시에만 표시 */}
               {selectedDate === null && (
-                <div className="flex items-center gap-2 sm:gap-3 mb-3">
-                  <h3 className="font-bold text-sm sm:text-base">
-                    {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
-                  </h3>
-                  <span className="text-xs text-gray-400">{dayMatches.length}경기</span>
-                  <div className="flex-1 h-px bg-gray-100" />
+                <div className="flex items-center gap-3 mb-3">
+                  <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${isToday ? "bg-blue-600 border-blue-600" : "bg-gray-900 border-gray-900"}`}>
+                    {isToday && <span className="w-1.5 h-1.5 rounded-full bg-white/70 flex-shrink-0" />}
+                    <h3 className="font-bold text-sm text-white whitespace-nowrap">
+                      {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" })}
+                    </h3>
+                    <span className="text-xs text-white/60 font-medium">{dayMatches.length}경기</span>
+                  </div>
+                  <div className="flex-1 h-px bg-gray-200" />
                 </div>
               )}
 
@@ -751,21 +755,28 @@ function DivisionView({ tournament, onTeamClick }: { tournament: Tournament; onT
             {activeGroup !== null && groupMatches.length > 0 && (
               <div className="card p-4 sm:p-5">
                 <h3 className="font-bold text-base sm:text-lg mb-4">{group.label || group.name} 경기 일정</h3>
-                <div className="space-y-5">
-                  {[...grouped.entries()].map(([dateKey, dayMatches]) => (
-                    <div key={dateKey}>
-                      <div className="flex items-center gap-3 mb-2">
-                        <span className="text-xs font-semibold text-gray-500">
-                          {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { year: "numeric", month: "long", day: "numeric", weekday: "short" })}
-                        </span>
-                        <span className="text-xs text-gray-400">({dayMatches.length}경기)</span>
-                        <div className="flex-1 h-px bg-gray-100" />
+                <div className="space-y-6">
+                  {[...grouped.entries()].map(([dateKey, dayMatches]) => {
+                    const todayKST = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date());
+                    const isToday = dateKey === todayKST;
+                    return (
+                      <div key={dateKey}>
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border ${isToday ? "bg-blue-600 border-blue-600" : "bg-gray-900 border-gray-900"}`}>
+                            {isToday && <span className="w-1.5 h-1.5 rounded-full bg-white/70 flex-shrink-0" />}
+                            <span className="text-sm font-bold text-white whitespace-nowrap">
+                              {dateKey === "__none__" ? "일정 미정" : new Date(dateKey + "T00:00:00").toLocaleDateString("ko-KR", { month: "long", day: "numeric", weekday: "short" })}
+                            </span>
+                            <span className="text-xs text-white/60 font-medium">{dayMatches.length}경기</span>
+                          </div>
+                          <div className="flex-1 h-px bg-gray-200" />
+                        </div>
+                        <div className="space-y-2">
+                          {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge onTeamClick={onTeamClick} />)}
+                        </div>
                       </div>
-                      <div className="space-y-2">
-                        {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge onTeamClick={onTeamClick} />)}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
