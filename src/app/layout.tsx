@@ -9,11 +9,25 @@ const notoSerifKR = Noto_Serif_KR({ weight: ["400", "700"], subsets: ["latin"], 
 
 export const metadata: Metadata = {
   title: "中東AA | Athletic Archive",
-  description: "중동고 체육대회 기록 보관소 | 중동인의 땀방울을 기록하다",
+  description: "중동고 · 중동중 체육대회 공식 기록 보관소. 대회 일정, 경기 결과, 득점 순위, 참가팀 명단을 한눈에 확인하세요.",
+  keywords: [
+    "중동고", "중동중", "중동 체육대회", "중동 축구", "중동AA", "중동 Athletic Archive",
+    "중동 체육위원회", "중동 경기 결과", "중동 대회 일정", "중동인", "중동고등학교 체육대회",
+  ],
   openGraph: {
     title: "中東AA | Athletic Archive",
     description: "중동중고 체육대회 기록 보관소 🏆",
     type: "website",
+    url: "https://joongdong-aa.vercel.app",
+    siteName: "中東 Athletic Archive",
+    locale: "ko_KR",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: "https://joongdong-aa.vercel.app/tournaments",
   },
 };
 
