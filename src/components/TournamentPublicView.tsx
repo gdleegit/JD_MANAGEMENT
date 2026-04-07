@@ -150,10 +150,10 @@ export default function TournamentPublicView({
 
   // Top scorers
   const allGoals = tournament.matches.flatMap((m) => m.goals.filter((g) => g.type !== "OWN_GOAL"));
-  const scorerMap: Record<string, { name: string; teamName: string; count: number }> = {};
+  const scorerMap: Record<string, { name: string; teamName: string; teamColor: string; count: number }> = {};
   for (const g of allGoals) {
     const key = g.player?.id || `unk-${g.teamId}`;
-    if (!scorerMap[key]) scorerMap[key] = { name: g.player?.name || "미상", teamName: g.team.name, count: 0 };
+    if (!scorerMap[key]) scorerMap[key] = { name: g.player?.name || "미상", teamName: g.team.name, teamColor: g.team.color || "#6b7280", count: 0 };
     scorerMap[key].count++;
   }
   const topScorers = Object.values(scorerMap).sort((a, b) => b.count - a.count).slice(0, 20);
@@ -287,10 +287,10 @@ export default function TournamentPublicView({
                 const groupGoals = tournament.matches
                   .filter((m) => groupMatchIds.has(m.id))
                   .flatMap((m) => m.goals.filter((g) => g.type !== "OWN_GOAL"));
-                const map: Record<string, { name: string; teamName: string; count: number }> = {};
+                const map: Record<string, { name: string; teamName: string; teamColor: string; count: number }> = {};
                 for (const g of groupGoals) {
                   const key = g.player?.id || `unk-${g.teamId}`;
-                  if (!map[key]) map[key] = { name: g.player?.name || "미상", teamName: g.team.name, count: 0 };
+                  if (!map[key]) map[key] = { name: g.player?.name || "미상", teamName: g.team.name, teamColor: g.team.color || "#6b7280", count: 0 };
                   map[key].count++;
                 }
                 const scorers = Object.values(map).sort((a, b) => b.count - a.count).slice(0, 20);
@@ -304,15 +304,30 @@ export default function TournamentPublicView({
                     {scorers.length === 0 ? (
                       <p className="text-gray-400 text-sm text-center py-4">득점 기록이 없습니다</p>
                     ) : (
-                      <div className="space-y-1">
-                        {scorers.map((s, i) => (
-                          <div key={i} className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">
-                            <span className={`w-7 text-center font-bold text-sm ${i === 0 ? "text-yellow-500" : i === 1 ? "text-gray-400" : i === 2 ? "text-amber-600" : "text-gray-400"}`}>{i + 1}</span>
-                            <span className="font-semibold flex-1">{s.name}</span>
-                            <span className="text-sm text-gray-500">{s.teamName}</span>
-                            <span className="font-bold text-blue-600 w-12 text-right">{s.count}골</span>
-                          </div>
-                        ))}
+                      <div className="space-y-1.5">
+                        {scorers.map((s, i) => {
+                          const rankBarColor = i === 0 ? "#eab308" : i === 1 ? "#9ca3af" : i === 2 ? "#f59e0b" : s.teamColor;
+                          const rankBadgeCls = i === 0 ? "bg-yellow-400 text-white" : i === 1 ? "bg-gray-300 text-gray-700" : i === 2 ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-500";
+                          const barWidth = Math.round((s.count / scorers[0].count) * 100);
+                          return (
+                            <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl ${i === 0 ? "bg-yellow-50 border border-yellow-100" : i < 3 ? "bg-gray-50" : ""}`}>
+                              <div className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-xs flex-shrink-0 ${rankBadgeCls}`}>{i + 1}</div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className={`font-bold truncate ${i === 0 ? "text-base text-gray-900" : "text-sm text-gray-800"}`}>{s.name}</span>
+                                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap" style={{ backgroundColor: s.teamColor + "22", color: s.teamColor, border: `1px solid ${s.teamColor}44` }}>{s.teamName}</span>
+                                </div>
+                                <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                  <div className="h-full rounded-full transition-all" style={{ width: `${barWidth}%`, backgroundColor: rankBarColor }} />
+                                </div>
+                              </div>
+                              <div className="flex flex-col items-end flex-shrink-0">
+                                <span className={`font-black leading-none ${i === 0 ? "text-xl text-yellow-500" : i < 3 ? "text-lg text-gray-700" : "text-base text-blue-600"}`}>{s.count}</span>
+                                <span className="text-[10px] text-gray-400">골</span>
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
                     )}
                   </div>
@@ -326,15 +341,30 @@ export default function TournamentPublicView({
             {topScorers.length === 0 ? (
               <p className="text-gray-400 text-center py-8">득점 기록이 없습니다</p>
             ) : (
-              <div className="space-y-1">
-                {topScorers.map((s, i) => (
-                  <div key={i} className="flex items-center gap-3 py-2.5 border-b border-gray-100 last:border-0">
-                    <span className={`w-7 text-center font-bold text-sm ${i === 0 ? "text-yellow-500" : i === 1 ? "text-gray-400" : i === 2 ? "text-amber-600" : "text-gray-400"}`}>{i + 1}</span>
-                    <span className="font-semibold flex-1">{s.name}</span>
-                    <span className="text-sm text-gray-500">{s.teamName}</span>
-                    <span className="font-bold text-blue-600 w-12 text-right">{s.count}골</span>
-                  </div>
-                ))}
+              <div className="space-y-1.5">
+                {topScorers.map((s, i) => {
+                  const rankBarColor = i === 0 ? "#eab308" : i === 1 ? "#9ca3af" : i === 2 ? "#f59e0b" : "#3b82f6";
+                  const rankBadgeCls = i === 0 ? "bg-yellow-400 text-white" : i === 1 ? "bg-gray-300 text-gray-700" : i === 2 ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-500";
+                  const barWidth = Math.round((s.count / topScorers[0].count) * 100);
+                  return (
+                    <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl ${i === 0 ? "bg-yellow-50 border border-yellow-100" : i < 3 ? "bg-gray-50" : ""}`}>
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-xs flex-shrink-0 ${rankBadgeCls}`}>{i + 1}</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className={`font-bold truncate ${i === 0 ? "text-base text-gray-900" : "text-sm text-gray-800"}`}>{s.name}</span>
+                          <span className="text-[11px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap">{s.teamName}</span>
+                        </div>
+                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                          <div className="h-full rounded-full transition-all" style={{ width: `${barWidth}%`, backgroundColor: rankBarColor }} />
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end flex-shrink-0">
+                        <span className={`font-black leading-none ${i === 0 ? "text-xl text-yellow-500" : i < 3 ? "text-lg text-gray-700" : "text-base text-blue-600"}`}>{s.count}</span>
+                        <span className="text-[10px] text-gray-400">골</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
