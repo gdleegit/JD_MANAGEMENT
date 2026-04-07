@@ -306,16 +306,17 @@ export default function TournamentPublicView({
                     ) : (
                       <div className="space-y-1.5">
                         {scorers.map((s, i) => {
-                          const rankBadgeCls = i === 0 ? "bg-yellow-400 text-white" : i === 1 ? "bg-gray-300 text-gray-700" : i === 2 ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-500";
+                          const rank = scorers.findIndex(x => x.count === s.count) + 1;
+                          const rankBadgeCls = rank === 1 ? "bg-yellow-400 text-white" : rank === 2 ? "bg-gray-300 text-gray-700" : rank === 3 ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-500";
                           return (
-                            <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl ${i === 0 ? "bg-yellow-50 border border-yellow-100" : i < 3 ? "bg-gray-50" : ""}`}>
-                              <div className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-xs flex-shrink-0 ${rankBadgeCls}`}>{i + 1}</div>
+                            <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl ${rank === 1 ? "bg-yellow-50 border border-yellow-100" : rank <= 3 ? "bg-gray-50" : ""}`}>
+                              <div className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-xs flex-shrink-0 ${rankBadgeCls}`}>{rank}</div>
                               <div className="flex-1 min-w-0 flex items-center gap-2">
-                                <span className={`font-bold truncate ${i === 0 ? "text-base text-gray-900" : "text-sm text-gray-800"}`}>{s.name}</span>
+                                <span className={`font-bold truncate ${rank === 1 ? "text-base text-gray-900" : "text-sm text-gray-800"}`}>{s.name}</span>
                                 <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap" style={{ backgroundColor: s.teamColor, color: getContrastColor(s.teamColor) }}>{s.teamName}</span>
                               </div>
                               <div className="flex flex-col items-end flex-shrink-0">
-                                <span className={`font-black leading-none ${i === 0 ? "text-xl text-yellow-500" : i < 3 ? "text-lg text-gray-700" : "text-base text-blue-600"}`}>{s.count}</span>
+                                <span className={`font-black leading-none ${rank === 1 ? "text-xl text-yellow-500" : rank <= 3 ? "text-lg text-gray-700" : "text-base text-blue-600"}`}>{s.count}</span>
                                 <span className="text-[10px] text-gray-400">골</span>
                               </div>
                             </div>
@@ -336,23 +337,17 @@ export default function TournamentPublicView({
             ) : (
               <div className="space-y-1.5">
                 {topScorers.map((s, i) => {
-                  const rankBarColor = i === 0 ? "#eab308" : i === 1 ? "#9ca3af" : i === 2 ? "#f59e0b" : "#3b82f6";
-                  const rankBadgeCls = i === 0 ? "bg-yellow-400 text-white" : i === 1 ? "bg-gray-300 text-gray-700" : i === 2 ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-500";
-                  const barWidth = Math.round((s.count / topScorers[0].count) * 100);
+                  const rank = topScorers.findIndex(x => x.count === s.count) + 1;
+                  const rankBadgeCls = rank === 1 ? "bg-yellow-400 text-white" : rank === 2 ? "bg-gray-300 text-gray-700" : rank === 3 ? "bg-amber-500 text-white" : "bg-gray-100 text-gray-500";
                   return (
-                    <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl ${i === 0 ? "bg-yellow-50 border border-yellow-100" : i < 3 ? "bg-gray-50" : ""}`}>
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-xs flex-shrink-0 ${rankBadgeCls}`}>{i + 1}</div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`font-bold truncate ${i === 0 ? "text-base text-gray-900" : "text-sm text-gray-800"}`}>{s.name}</span>
-                          <span className="text-[11px] text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap">{s.teamName}</span>
-                        </div>
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div className="h-full rounded-full transition-all" style={{ width: `${barWidth}%`, backgroundColor: rankBarColor }} />
-                        </div>
+                    <div key={i} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl ${rank === 1 ? "bg-yellow-50 border border-yellow-100" : rank <= 3 ? "bg-gray-50" : ""}`}>
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-xs flex-shrink-0 ${rankBadgeCls}`}>{rank}</div>
+                      <div className="flex-1 min-w-0 flex items-center gap-2">
+                        <span className={`font-bold truncate ${rank === 1 ? "text-base text-gray-900" : "text-sm text-gray-800"}`}>{s.name}</span>
+                        <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap" style={{ backgroundColor: s.teamColor, color: getContrastColor(s.teamColor) }}>{s.teamName}</span>
                       </div>
                       <div className="flex flex-col items-end flex-shrink-0">
-                        <span className={`font-black leading-none ${i === 0 ? "text-xl text-yellow-500" : i < 3 ? "text-lg text-gray-700" : "text-base text-blue-600"}`}>{s.count}</span>
+                        <span className={`font-black leading-none ${rank === 1 ? "text-xl text-yellow-500" : rank <= 3 ? "text-lg text-gray-700" : "text-base text-blue-600"}`}>{s.count}</span>
                         <span className="text-[10px] text-gray-400">골</span>
                       </div>
                     </div>
