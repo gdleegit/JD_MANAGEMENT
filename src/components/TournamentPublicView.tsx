@@ -105,7 +105,7 @@ export default function TournamentPublicView({
   const [teamPlayers, setTeamPlayers] = useState<Record<string, Player[]> | null>(null);
   const [loadingPlayers, setLoadingPlayers] = useState(true);
   const [teamsFetched, setTeamsFetched] = useState(false);
-  const [rosterTeam, setRosterTeam] = useState<{ id: string; name: string; color?: string | null } | null>(null);
+  const [rosterTeam, setRosterTeam] = useState<{ id: string; name: string; color?: string | null; emblemUrl?: string | null } | null>(null);
 
   const doFetchPlayers = (tournamentId: string) => {
     setTeamsFetched(true);
