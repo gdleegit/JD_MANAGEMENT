@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import BracketView from "./BracketView";
 
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
-type Team = { id: string; name: string; color?: string | null; players?: Player[] };
+type Team = { id: string; name: string; color?: string | null; emblemUrl?: string | null; players?: Player[] };
 type Goal = { id: string; type: string; teamId: string; minute?: number | null; half?: number | null; player?: { id: string; name: string } | null; team: { id: string; name: string; color?: string | null } };
 type Group = { id: string; name: string; label?: string | null; color?: string | null; teams: GroupTeam[] };
 type GroupTeam = { id: string; team: Team; played: number; won: number; drawn: number; lost: number; gf: number; ga: number; points: number };
@@ -400,8 +400,9 @@ export default function TournamentPublicView({
                   return (
                     <div key={team.id} className="card overflow-hidden">
                       <div className="px-4 py-3 flex items-center gap-3" style={{ backgroundColor: color + "22", borderBottom: `3px solid ${color}` }}>
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: color }}>
-                          {team.name.slice(0, 1)}
+                        <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden bg-white flex items-center justify-center" style={{ border: `2px solid ${color}` }}>
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={team.emblemUrl ?? "/jd2.svg"} alt={team.name} className="w-full h-full object-contain p-0.5" />
                         </div>
                         <div className="flex-1 min-w-0">
                           <h3 className="font-bold text-gray-900 truncate">{team.name}</h3>
@@ -456,8 +457,9 @@ export default function TournamentPublicView({
             <div className="bg-white rounded-xl w-full max-w-sm max-h-[80vh] flex flex-col overflow-hidden" onClick={(e) => e.stopPropagation()}>
               {/* 팀 헤더 — 참가팀 카드와 동일 스타일 */}
               <div className="px-4 py-3 flex items-center gap-3 flex-shrink-0" style={{ backgroundColor: color + "22", borderBottom: `3px solid ${color}` }}>
-                <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: color }}>
-                  {rosterTeam.name.slice(0, 1)}
+                <div className="w-8 h-8 rounded-full flex-shrink-0 overflow-hidden bg-white flex items-center justify-center" style={{ border: `2px solid ${color}` }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={rosterTeam.emblemUrl ?? "/jd2.svg"} alt={rosterTeam.name} className="w-full h-full object-contain p-0.5" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-gray-900 truncate">{rosterTeam.name}</h3>

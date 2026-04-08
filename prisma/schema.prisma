@@ -28,11 +28,12 @@ model Tournament {
 }
 
 model Team {
-  id        String   @id @default(cuid())
-  name      String
-  shortName String?
-  color     String?  @default("#3b82f6")
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  name       String
+  shortName  String?
+  color      String?  @default("#3b82f6")
+  emblemUrl  String?
+  createdAt  DateTime @default(now())
 
   players     Player[]
   tournaments TournamentTeam[]
