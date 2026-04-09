@@ -42,7 +42,7 @@ const SPORT_EMOJI: Record<string, string> = {
   BILLIARDS: "🎱", GOLF: "⛳",
 };
 
-type Sponsor = { id: string; name: string; grade?: string | null; description?: string | null; logoUrl?: string | null; link?: string | null; type: string; order: number };
+type Sponsor = { id: string; name: string; grade?: string | null; personName?: string | null; description?: string | null; logoUrl?: string | null; link?: string | null; type: string; order: number };
 
 type Tournament = {
   id: string;
@@ -371,7 +371,36 @@ export default function TournamentPublicView({
       {tab === "sponsors" && tournament.sponsors.length > 0 && (
         <div className="card p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-bold mb-5">협찬·후원</h2>
-          <SponsorSection sponsors={tournament.sponsors} />
+          <div className="flex flex-wrap gap-3 justify-center">
+            {["TITLE", "SPONSOR", "SUPPORT"].flatMap(type => tournament.sponsors.filter(s => s.type === type)).map((s, i) => {
+              const card = (
+                <div className="flex flex-col items-center justify-between px-5 py-3 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-md shadow-black/10 hover:shadow-lg hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ height: "136px", borderTop: "3px solid #176fc1" }}>
+                  <div className="flex items-center h-6">
+                    {(s.grade || s.personName) && (
+                      <div className="flex items-center gap-0.5 whitespace-nowrap rounded-full px-2.5 py-0.5" style={{ backgroundColor: "#176fc1" }}>
+                        {s.grade && <span className="text-xs font-black text-white">{s.grade}</span>}
+                        {s.grade && s.personName && <span className="text-blue-200 text-xs">·</span>}
+                        {s.personName && <span className="text-xs font-bold text-white">{s.personName}</span>}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center justify-center h-14 w-full mt-2">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={s.logoUrl ?? "/cd_logo2.png"} alt={s.name} className="max-h-12 w-auto object-contain" style={{ padding: "2px 0" }} />
+                  </div>
+                  <span className="text-sm font-extrabold text-gray-900 whitespace-nowrap tracking-tight">{s.name}</span>
+                  <div className="flex items-center h-3">
+                    {s.description && <span className="text-[10px] text-gray-500 whitespace-nowrap">{s.description}</span>}
+                  </div>
+                </div>
+              );
+              return s.link ? (
+                <a key={i} href={s.link} target="_blank" rel="noopener noreferrer">{card}</a>
+              ) : (
+                <div key={i}>{card}</div>
+              );
+            })}
+          </div>
         </div>
       )}
 
