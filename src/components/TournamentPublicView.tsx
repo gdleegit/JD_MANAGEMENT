@@ -121,10 +121,10 @@ export default function TournamentPublicView({
       .finally(() => setLoadingPlayers(false));
   };
 
+  // 마운트 즉시 백그라운드 선행 fetch — 참가팀 탭 진입 시 이미 준비됨
   useEffect(() => {
-    if (tab !== "teams" || teamsFetched) return;
     doFetchPlayers(tournament.id);
-  }, [tab, tournament.id, teamsFetched]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [tournament.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTeamClick = (team: { id: string; name: string; color?: string | null }) => {
     setRosterTeam(team);
