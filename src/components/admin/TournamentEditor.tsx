@@ -969,8 +969,8 @@ function SponsorsTab({
                             </select>
                           </div>
                           <div className="sm:col-span-3">
-                            <label className="label">부제 (선택)</label>
-                            <input className="input" placeholder="예: 활성화 지원금" value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} />
+                            <label className="label">협찬 내용 (선택)</label>
+                            <input className="input" placeholder="예: 20만원, 요거트 100개" value={editForm.description} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))} />
                           </div>
                           <div>
                             <label className="label">로고 URL</label>
@@ -1036,8 +1036,8 @@ function SponsorsTab({
             </select>
           </div>
           <div className="sm:col-span-3">
-            <label className="label">부제 (선택)</label>
-            <input className="input" placeholder="예: 영리그 활성화 지원금" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+            <label className="label">협찬 내용 (선택)</label>
+            <input className="input" placeholder="예: 20만원, 요거트 100개" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
           </div>
           <div>
             <label className="label">로고 URL (선택)</label>
