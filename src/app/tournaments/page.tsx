@@ -206,33 +206,33 @@ export default async function TournamentsPage() {
             <SponsorMarquee>
               {allSponsors.map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center px-5 py-3 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ width: "140px", borderTop: "3px solid #176fc1" }}>
+                  <div className="flex flex-col items-center px-4 py-2.5 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ width: "118px", borderTop: "3px solid #176fc1" }}>
                     {/* 기수·성명 슬롯 */}
-                    <div className="flex items-center h-6 mb-1.5">
+                    <div className="flex items-center h-5 mb-1">
                       {(s.grade || s.personName) && (
-                        <div className="flex items-center gap-0.5 whitespace-nowrap rounded-full px-2.5 py-0.5" style={{ backgroundColor: "#176fc1" }}>
-                          {s.grade && <span className="text-xs font-black text-white">{s.grade}</span>}
-                          {s.grade && s.personName && <span className="text-blue-200 text-xs">·</span>}
-                          {s.personName && <span className="text-xs font-bold text-white">{s.personName}</span>}
+                        <div className="flex items-center gap-0.5 whitespace-nowrap rounded-full px-2 py-0.5" style={{ backgroundColor: "#176fc1" }}>
+                          {s.grade && <span className="text-[10px] font-black text-white">{s.grade}</span>}
+                          {s.grade && s.personName && <span className="text-blue-200 text-[10px]">·</span>}
+                          {s.personName && <span className="text-[10px] font-bold text-white">{s.personName}</span>}
                         </div>
                       )}
                     </div>
                     {/* 로고 */}
-                    <div className="flex items-center justify-center h-12 w-full">
+                    <div className="flex items-center justify-center h-10 w-full">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={s.logoUrl ?? "/cd_logo2.png"}
                         alt={s.name}
-                        className="max-h-11 w-auto object-contain"
+                        className="max-h-9 w-auto object-contain"
                       />
                     </div>
                     {/* 협찬사명 */}
-                    <span className="text-sm font-extrabold text-gray-900 whitespace-nowrap tracking-tight mt-2">{s.name}</span>
+                    <span className="text-xs font-extrabold text-gray-900 whitespace-nowrap tracking-tight mt-1.5">{s.name}</span>
                     {/* 협찬 내용 뱃지 */}
-                    <div className="mt-2 min-h-[22px] flex items-center">
+                    <div className="mt-1.5 min-h-[20px] flex items-center">
                       {s.description ? (
                         <span
-                          className="flex items-center gap-1 whitespace-nowrap text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+                          className="whitespace-nowrap text-[10px] font-bold px-2 py-0.5 rounded-full"
                           style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a)", color: "#92400e", border: "1px solid #fbbf24" }}
                         >
                           {s.description}

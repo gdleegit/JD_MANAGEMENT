@@ -148,7 +148,7 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
       {/* 너비 측정용 숨김 div (단일 복사본) */}
       <div
         ref={measureRef}
-        className="flex gap-4 px-4 sm:px-8"
+        className="flex gap-2.5 px-4 sm:px-8"
         style={{ width: "max-content", position: "absolute", visibility: "hidden", pointerEvents: "none" }}
         aria-hidden
       >
@@ -157,7 +157,7 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
 
       {/* 정적 중앙 배치 */}
       {mode === "static" && (
-        <div className="flex justify-center flex-wrap gap-4 px-4 sm:px-8 pb-2">
+        <div className="flex justify-center flex-wrap gap-2.5 px-4 sm:px-8 pb-2">
           {childArray}
         </div>
       )}
@@ -170,7 +170,7 @@ export default function SponsorMarquee({ children }: { children: React.ReactNode
         >
           <div
             ref={trackRef}
-            className="flex gap-4 pb-2 px-4 sm:px-8"
+            className="flex gap-2.5 pb-2 px-4 sm:px-8"
             style={{ width: "max-content", willChange: "transform" }}
           >
             {Array.from({ length: COPIES }, (_, ci) =>
