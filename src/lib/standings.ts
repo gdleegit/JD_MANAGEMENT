@@ -19,17 +19,20 @@ export async function recalcGroupStandings(groupId: string) {
     const a = m.awayTeamId;
     if (!stats[h] || !stats[a]) continue;
 
+    const hScore = m.homeScore + (m.homeHandicap ?? 0);
+    const aScore = m.awayScore + (m.awayHandicap ?? 0);
+
     stats[h].played++;
     stats[a].played++;
-    stats[h].gf += m.homeScore;
-    stats[h].ga += m.awayScore;
-    stats[a].gf += m.awayScore;
-    stats[a].ga += m.homeScore;
+    stats[h].gf += hScore;
+    stats[h].ga += aScore;
+    stats[a].gf += aScore;
+    stats[a].ga += hScore;
 
-    if (m.homeScore > m.awayScore) {
+    if (hScore > aScore) {
       stats[h].won++; stats[h].points += 3;
       stats[a].lost++;
-    } else if (m.homeScore < m.awayScore) {
+    } else if (hScore < aScore) {
       stats[a].won++; stats[a].points += 3;
       stats[h].lost++;
     } else {
@@ -60,11 +63,13 @@ export async function recalcLeagueStandings(tournamentId: string) {
     if (m.homeScore === null || m.awayScore === null) continue;
     const h = m.homeTeamId; const a = m.awayTeamId;
     if (!stats[h] || !stats[a]) continue;
+    const hScore = m.homeScore + (m.homeHandicap ?? 0);
+    const aScore = m.awayScore + (m.awayHandicap ?? 0);
     stats[h].played++; stats[a].played++;
-    stats[h].gf += m.homeScore; stats[h].ga += m.awayScore;
-    stats[a].gf += m.awayScore; stats[a].ga += m.homeScore;
-    if (m.homeScore > m.awayScore) { stats[h].won++; stats[h].points += 3; stats[a].lost++; }
-    else if (m.homeScore < m.awayScore) { stats[a].won++; stats[a].points += 3; stats[h].lost++; }
+    stats[h].gf += hScore; stats[h].ga += aScore;
+    stats[a].gf += aScore; stats[a].ga += hScore;
+    if (hScore > aScore) { stats[h].won++; stats[h].points += 3; stats[a].lost++; }
+    else if (hScore < aScore) { stats[a].won++; stats[a].points += 3; stats[h].lost++; }
     else { stats[h].drawn++; stats[h].points++; stats[a].drawn++; stats[a].points++; }
   }
 

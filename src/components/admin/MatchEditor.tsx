@@ -13,6 +13,8 @@ type Match = {
   awayTeam: Team;
   homeScore?: number | null;
   awayScore?: number | null;
+  homeHandicap?: number | null;
+  awayHandicap?: number | null;
   date?: string | null;
   venue?: string | null;
   court?: string | null;
@@ -44,6 +46,8 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const [status, setStatus]             = useState(match.status);
   const [homeScore, setHomeScore]       = useState(match.homeScore?.toString() ?? "");
   const [awayScore, setAwayScore]       = useState(match.awayScore?.toString() ?? "");
+  const [homeHandicap, setHomeHandicap] = useState((match.homeHandicap ?? 0).toString());
+  const [awayHandicap, setAwayHandicap] = useState((match.awayHandicap ?? 0).toString());
   const [date, setDate] = useState(() => {
     if (!match.date) return "";
     return new Intl.DateTimeFormat("sv-SE", {
@@ -97,6 +101,8 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
       assistantReferee1: assistantReferee1 || null,
       assistantReferee2: assistantReferee2 || null,
       videoUrl: videoUrl || null,
+      homeHandicap: homeHandicap !== "" ? parseInt(homeHandicap) : 0,
+      awayHandicap: awayHandicap !== "" ? parseInt(awayHandicap) : 0,
     };
     if (pendingGoals.length === 0) {
       matchPatchBody.homeScore = parsedHome;
@@ -246,6 +252,45 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
               onChange={(e) => setAwayScore(e.target.value)}
             />
           </div>
+        </div>
+
+        {/* 핸디캡 골 */}
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">핸디캡 골</span>
+            <span className="text-xs text-gray-300">(기수 차이 보정 — 최종 스코어에 합산)</span>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex-1">
+              <label className="label text-right block">
+                <span className="text-xs text-gray-500">{match.homeTeam.name}</span>
+              </label>
+              <input
+                type="number" min="0"
+                className="input text-center font-bold"
+                value={homeHandicap}
+                onChange={(e) => setHomeHandicap(e.target.value)}
+              />
+            </div>
+            <div className="text-sm font-bold text-gray-300 pt-6 flex-shrink-0">vs</div>
+            <div className="flex-1">
+              <label className="label">
+                <span className="text-xs text-gray-500">{match.awayTeam.name}</span>
+              </label>
+              <input
+                type="number" min="0"
+                className="input text-center font-bold"
+                value={awayHandicap}
+                onChange={(e) => setAwayHandicap(e.target.value)}
+              />
+            </div>
+          </div>
+          {(parseInt(homeHandicap) > 0 || parseInt(awayHandicap) > 0) && (
+            <p className="text-xs text-purple-500 mt-2 text-center">
+              최종 스코어: {(parseInt(homeScore || "0") + parseInt(homeHandicap || "0"))} — {(parseInt(awayScore || "0") + parseInt(awayHandicap || "0"))}
+              <span className="text-gray-400 ml-1">(실제골 + 핸디캡)</span>
+            </p>
+          )}
         </div>
       </div>
 

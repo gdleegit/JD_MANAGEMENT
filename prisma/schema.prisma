@@ -76,6 +76,8 @@ model Match {
   awayTeamId   String
   homeScore    Int?
   awayScore    Int?
+  homeHandicap Int    @default(0)
+  awayHandicap Int    @default(0)
   date         DateTime?
   venue        String?
   court        String?

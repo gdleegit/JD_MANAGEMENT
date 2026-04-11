@@ -14,6 +14,8 @@ type Match = {
   awayTeam: Team;
   homeScore?: number | null;
   awayScore?: number | null;
+  homeHandicap?: number | null;
+  awayHandicap?: number | null;
   date?: string | null;
   venue?: string | null;
   court?: string | null;
@@ -857,8 +859,12 @@ function getYouTubeId(url: string): string | null {
 
 function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: { match: Match; showDate: boolean; showOrder?: boolean; hideGroupBadge?: boolean; onTeamClick?: OnTeamClick }) {
   const finished = match.status === "FINISHED";
-  const homeWin = finished && match.homeScore != null && match.awayScore != null && match.homeScore > match.awayScore;
-  const awayWin = finished && match.homeScore != null && match.awayScore != null && match.awayScore > match.homeScore;
+  const hTotal = (match.homeScore ?? 0) + (match.homeHandicap ?? 0);
+  const aTotal = (match.awayScore ?? 0) + (match.awayHandicap ?? 0);
+  const hasScore = match.homeScore != null && match.awayScore != null;
+  const homeWin = finished && hasScore && hTotal > aTotal;
+  const awayWin = finished && hasScore && aTotal > hTotal;
+  const hasHandicap = (match.homeHandicap ?? 0) > 0 || (match.awayHandicap ?? 0) > 0;
   const cfg = STATUS_CFG[match.status] ?? STATUS_CFG.SCHEDULED;
   const referees = [match.referee, match.assistantReferee1, match.assistantReferee2].filter(Boolean);
   const [showVideo, setShowVideo] = useState(false);
@@ -912,12 +918,19 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
           <span className="w-4 h-4 rounded flex-shrink-0 shadow-sm" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
         </div>
         <div className="flex items-center gap-1 min-w-[76px] sm:min-w-[88px] justify-center flex-shrink-0">
-          {finished ? (
-            <>
-              <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-10 text-right tabular-nums ${homeWin ? "text-blue-700" : "text-gray-900"}`}>{match.homeScore}</span>
-              <span className="text-gray-300 font-black text-xl">:</span>
-              <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-10 text-left tabular-nums ${awayWin ? "text-blue-700" : "text-gray-900"}`}>{match.awayScore}</span>
-            </>
+          {finished && hasScore ? (
+            <div className="flex flex-col items-center gap-0.5">
+              <div className="flex items-center">
+                <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-10 text-right tabular-nums ${homeWin ? "text-blue-700" : "text-gray-900"}`}>{hTotal}</span>
+                <span className="text-gray-300 font-black text-xl">:</span>
+                <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-10 text-left tabular-nums ${awayWin ? "text-blue-700" : "text-gray-900"}`}>{aTotal}</span>
+              </div>
+              {hasHandicap && (
+                <span className="text-[10px] text-purple-500 font-semibold whitespace-nowrap">
+                  핸디 +{match.homeHandicap ?? 0} / +{match.awayHandicap ?? 0}
+                </span>
+              )}
+            </div>
           ) : (
             <span className="text-gray-300 font-bold text-sm tracking-widest">VS</span>
           )}
