@@ -919,19 +919,19 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
         </div>
         <div className="flex items-center gap-1 min-w-[88px] sm:min-w-[104px] justify-center flex-shrink-0">
           {finished && hasScore ? (
-            <div className="flex items-center gap-2">
+            <div className="flex items-start gap-2">
               <div className="flex flex-col items-end">
                 <span className={`text-2xl sm:text-3xl font-black tabular-nums leading-none ${homeWin ? "text-blue-700" : "text-gray-900"}`}>{hTotal}</span>
-                {(match.homeHandicap ?? 0) > 0 && (
-                  <span className="text-[10px] text-purple-500 font-semibold leading-none mt-0.5">+{match.homeHandicap}골 핸디</span>
-                )}
+                <span className="text-[10px] font-semibold leading-none mt-0.5 h-3" style={{ color: (match.homeHandicap ?? 0) > 0 ? "#a855f7" : "transparent" }}>
+                  +{match.homeHandicap ?? 0}골 핸디
+                </span>
               </div>
-              <span className="text-gray-300 font-black text-xl flex-shrink-0">:</span>
+              <span className="text-gray-300 font-black text-xl flex-shrink-0 leading-none">:</span>
               <div className="flex flex-col items-start">
                 <span className={`text-2xl sm:text-3xl font-black tabular-nums leading-none ${awayWin ? "text-blue-700" : "text-gray-900"}`}>{aTotal}</span>
-                {(match.awayHandicap ?? 0) > 0 && (
-                  <span className="text-[10px] text-purple-500 font-semibold leading-none mt-0.5">+{match.awayHandicap}골 핸디</span>
-                )}
+                <span className="text-[10px] font-semibold leading-none mt-0.5 h-3" style={{ color: (match.awayHandicap ?? 0) > 0 ? "#a855f7" : "transparent" }}>
+                  +{match.awayHandicap ?? 0}골 핸디
+                </span>
               </div>
             </div>
           ) : (
