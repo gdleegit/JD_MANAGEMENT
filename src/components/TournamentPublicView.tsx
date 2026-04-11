@@ -917,19 +917,22 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
           <button onClick={() => onTeamClick?.(match.homeTeam)} className="font-bold text-right text-sm sm:text-base truncate leading-tight hover:underline hover:text-blue-600 transition-colors text-inherit bg-transparent border-0 p-0 cursor-pointer max-w-full">{match.homeTeam.name}</button>
           <span className="w-4 h-4 rounded flex-shrink-0 shadow-sm" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
         </div>
-        <div className="flex items-center gap-1 min-w-[76px] sm:min-w-[88px] justify-center flex-shrink-0">
+        <div className="flex items-center gap-1 min-w-[88px] sm:min-w-[104px] justify-center flex-shrink-0">
           {finished && hasScore ? (
-            <div className="flex flex-col items-center gap-0.5">
-              <div className="flex items-center">
-                <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-10 text-right tabular-nums ${homeWin ? "text-blue-700" : "text-gray-900"}`}>{hTotal}</span>
-                <span className="text-gray-300 font-black text-xl">:</span>
-                <span className={`text-2xl sm:text-3xl font-black w-8 sm:w-10 text-left tabular-nums ${awayWin ? "text-blue-700" : "text-gray-900"}`}>{aTotal}</span>
+            <div className="flex items-center gap-2">
+              <div className="flex flex-col items-end">
+                <span className={`text-2xl sm:text-3xl font-black tabular-nums leading-none ${homeWin ? "text-blue-700" : "text-gray-900"}`}>{hTotal}</span>
+                {(match.homeHandicap ?? 0) > 0 && (
+                  <span className="text-[10px] text-purple-500 font-semibold leading-none mt-0.5">+{match.homeHandicap}골 핸디</span>
+                )}
               </div>
-              {hasHandicap && (
-                <span className="text-[10px] text-purple-500 font-semibold whitespace-nowrap">
-                  핸디 +{match.homeHandicap ?? 0} / +{match.awayHandicap ?? 0}
-                </span>
-              )}
+              <span className="text-gray-300 font-black text-xl flex-shrink-0">:</span>
+              <div className="flex flex-col items-start">
+                <span className={`text-2xl sm:text-3xl font-black tabular-nums leading-none ${awayWin ? "text-blue-700" : "text-gray-900"}`}>{aTotal}</span>
+                {(match.awayHandicap ?? 0) > 0 && (
+                  <span className="text-[10px] text-purple-500 font-semibold leading-none mt-0.5">+{match.awayHandicap}골 핸디</span>
+                )}
+              </div>
             </div>
           ) : (
             <span className="text-gray-300 font-bold text-sm tracking-widest">VS</span>
