@@ -24,6 +24,7 @@ type Match = {
   matchOrder?: number | null;
   status: string;
   goals: Goal[];
+  cards: { id: string; type: string; teamId: string; minute?: number | null; half?: number | null; player?: { id: string; name: string } | null; team: Team }[];
   group?: { id: string; name: string; label?: string | null; color?: string | null } | null;
   referee?: string | null;
   assistantReferee1?: string | null;
@@ -258,7 +259,7 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
                 body: JSON.stringify(data),
               });
               const newMatch = await res.json();
-              setTournament(t => t ? { ...t, matches: [...t.matches, { ...newMatch, goals: [] }] } : t);
+              setTournament(t => t ? { ...t, matches: [...t.matches, { ...newMatch, goals: [], cards: [] }] } : t);
             }}
             onEditMatch={async (match) => {
               setLoadingMatchId(match.id);

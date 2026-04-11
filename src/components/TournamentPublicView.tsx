@@ -6,6 +6,7 @@ import BracketView from "./BracketView";
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
 type Team = { id: string; name: string; color?: string | null; emblemUrl?: string | null; players?: Player[] };
 type Goal = { id: string; type: string; teamId: string; minute?: number | null; half?: number | null; player?: { id: string; name: string } | null; team: { id: string; name: string; color?: string | null } };
+type Card = { id: string; type: string; teamId: string; minute?: number | null; half?: number | null; player?: { id: string; name: string } | null };
 type Group = { id: string; name: string; label?: string | null; color?: string | null; teams: GroupTeam[] };
 type GroupTeam = { id: string; team: Team; played: number; won: number; drawn: number; lost: number; gf: number; ga: number; points: number };
 type Match = {
@@ -23,6 +24,7 @@ type Match = {
   stage?: string | null;
   status: string;
   goals: Goal[];
+  cards: Card[];
   group?: { id: string; name: string; label?: string | null; color?: string | null } | null;
   matchOrder?: number | null;
   referee?: string | null;
@@ -1018,6 +1020,28 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
                 </div>
               );
             })()}
+          </div>
+        );
+      })()}
+
+      {/* Cards */}
+      {match.cards.length > 0 && (() => {
+        const homeCards = match.cards.filter(c => c.teamId === match.homeTeam.id);
+        const awayCards = match.cards.filter(c => c.teamId === match.awayTeam.id);
+        const CardRow = ({ c, align }: { c: Card; align: "left" | "right" }) => (
+          <div className={`text-gray-500 leading-5 flex items-center gap-1 ${align === "right" ? "justify-end" : "justify-start"}`}>
+            {align === "right" && <span className="text-xs">{c.player?.name || "미상"}{c.minute ? ` ${c.minute}'` : ""} ({c.type === "YELLOW" ? "경고" : "퇴장"})</span>}
+            <span>{c.type === "YELLOW" ? "🟨" : "🟥"}</span>
+            {align === "left" && <span className="text-xs">{c.player?.name || "미상"}{c.minute ? ` ${c.minute}'` : ""} ({c.type === "YELLOW" ? "경고" : "퇴장"})</span>}
+          </div>
+        );
+        return (
+          <div className="mt-2 pt-2 border-t border-gray-100">
+            <div className="grid grid-cols-[1fr_1px_1fr] text-xs">
+              <div className="pr-2 space-y-0.5">{homeCards.map((c, i) => <CardRow key={i} c={c} align="right" />)}</div>
+              <div className="bg-gray-100" />
+              <div className="pl-2 space-y-0.5">{awayCards.map((c, i) => <CardRow key={i} c={c} align="left" />)}</div>
+            </div>
           </div>
         );
       })()}

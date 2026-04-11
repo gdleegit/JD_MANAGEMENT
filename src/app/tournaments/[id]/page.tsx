@@ -23,6 +23,7 @@ export default async function TournamentDetailPage({ params }: { params: Promise
           homeTeam: true,
           awayTeam: true,
           goals: { include: { player: true, team: true }, orderBy: { minute: "asc" } },
+          cards: { include: { player: true, team: true }, orderBy: { minute: "asc" } },
           group: true,
         },
         orderBy: [{ date: "asc" }, { matchOrder: "asc" }],
