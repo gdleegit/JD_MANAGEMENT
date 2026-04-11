@@ -31,13 +31,11 @@ type Match = {
 };
 type Tournament = { id: string; name: string; type: string };
 
-const GOAL_TYPES = [
-  { value: "GOAL",     label: "일반골" },
-  { value: "OWN_GOAL", label: "자책골" },
-];
-const CARD_TYPES = [
-  { value: "YELLOW", label: "경고", emoji: "🟨" },
-  { value: "RED",    label: "퇴장", emoji: "🟥" },
+const RECORD_TYPES = [
+  { value: "GOAL",     label: "일반골", emoji: "⚽" },
+  { value: "OWN_GOAL", label: "자책골", emoji: "⚽" },
+  { value: "YELLOW",  label: "경고",   emoji: "🟨" },
+  { value: "RED",     label: "퇴장",   emoji: "🟥" },
 ];
 
 const STATUS_OPTS = [
@@ -69,16 +67,34 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const [assistantReferee1, setAssistantReferee1] = useState(match.assistantReferee1 ?? "");
   const [assistantReferee2, setAssistantReferee2] = useState(match.assistantReferee2 ?? "");
   const [videoUrl, setVideoUrl] = useState(match.videoUrl ?? "");
-  const [cardForm, setCardForm] = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "YELLOW" });
-  const [goalForm, setGoalForm] = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
+  const [recordForm, setRecordForm] = useState({ teamId: match.homeTeam.id, playerId: "", minute: "", half: "1", type: "GOAL" });
   const [pendingGoals, setPendingGoals] = useState<PendingGoal[]>([]);
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [editGoalForm, setEditGoalForm] = useState({ half: "1", minute: "" });
 
-  // 로컬에만 추가 (API 호출 없음)
-  const stagePendingGoal = () => {
-    setPendingGoals(prev => [...prev, { ...goalForm, tempId: `${Date.now()}-${Math.random()}` }]);
-    setGoalForm(f => ({ ...f, playerId: "", minute: "" }));
+  const isCardType = (type: string) => type === "YELLOW" || type === "RED";
+
+  // 골 → 로컬 스테이징, 카드 → API 즉시 호출
+  const addRecord = async () => {
+    if (isCardType(recordForm.type)) {
+      const res = await fetch(`/api/matches/${match.id}/cards`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          teamId: recordForm.teamId,
+          playerId: recordForm.playerId || null,
+          minute: recordForm.minute ? parseInt(recordForm.minute) : null,
+          half: parseInt(recordForm.half),
+          type: recordForm.type,
+        }),
+      });
+      const { card } = await res.json();
+      setCurrentMatch(m => ({ ...m, cards: [...m.cards, card].sort((a, b) => (a.minute ?? 999) - (b.minute ?? 999)) }));
+      setRecordForm(f => ({ ...f, playerId: "", minute: "" }));
+    } else {
+      setPendingGoals(prev => [...prev, { ...recordForm, tempId: `${Date.now()}-${Math.random()}` }]);
+      setRecordForm(f => ({ ...f, playerId: "", minute: "" }));
+    }
   };
 
   const removePendingGoal = (tempId: string) => {
@@ -164,23 +180,6 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
     setEditingGoalId(null);
   };
 
-  const addCard = async () => {
-    const res = await fetch(`/api/matches/${match.id}/cards`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        teamId: cardForm.teamId,
-        playerId: cardForm.playerId || null,
-        minute: cardForm.minute ? parseInt(cardForm.minute) : null,
-        half: parseInt(cardForm.half),
-        type: cardForm.type,
-      }),
-    });
-    const { card } = await res.json();
-    setCurrentMatch(m => ({ ...m, cards: [...m.cards, card].sort((a, b) => (a.minute ?? 999) - (b.minute ?? 999)) }));
-    setCardForm(f => ({ ...f, playerId: "", minute: "" }));
-  };
-
   const deleteCard = async (cardId: string) => {
     await fetch(`/api/matches/${match.id}/cards`, {
       method: "DELETE",
@@ -202,7 +201,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
     setAwayScore(as_?.toString() ?? "");
   };
 
-  const selectedTeam = goalForm.teamId === match.homeTeam.id ? match.homeTeam : match.awayTeam;
+  const selectedTeam = recordForm.teamId === match.homeTeam.id ? match.homeTeam : match.awayTeam;
   const homeGoals = currentMatch.goals.filter((g) => g.teamId === match.homeTeam.id).sort((a, b) => (a.minute ?? 999) - (b.minute ?? 999));
   const awayGoals = currentMatch.goals.filter((g) => g.teamId === match.awayTeam.id).sort((a, b) => (a.minute ?? 999) - (b.minute ?? 999));
   const homePending = pendingGoals.filter(g => g.teamId === match.homeTeam.id);
@@ -215,6 +214,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   };
 
   const totalGoals = currentMatch.goals.length + pendingGoals.length;
+  const hasAnyRecord = totalGoals > 0 || currentMatch.cards.length > 0;
 
   return (
     <div className="space-y-4">
@@ -326,24 +326,24 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         </div>
       </div>
 
-      {/* ── 득점 기록 추가 ── */}
+      {/* ── 기록 추가 ── */}
       <div className="card p-5">
-        <h4 className="font-bold mb-4">득점 기록 추가</h4>
+        <h4 className="font-bold mb-4">기록 추가</h4>
 
         {/* 팀 선택 pill */}
         <div className="flex gap-2 mb-3">
           {[match.homeTeam, match.awayTeam].map((t) => (
             <button
               key={t.id}
-              onClick={() => setGoalForm({ ...goalForm, teamId: t.id, playerId: "" })}
+              onClick={() => setRecordForm({ ...recordForm, teamId: t.id, playerId: "" })}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border transition-all flex-1 justify-center ${
-                goalForm.teamId === t.id
+                recordForm.teamId === t.id
                   ? "text-white border-transparent shadow-sm"
                   : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
               }`}
-              style={goalForm.teamId === t.id ? { backgroundColor: t.color || "#3b82f6", borderColor: t.color || "#3b82f6" } : {}}
+              style={recordForm.teamId === t.id ? { backgroundColor: t.color || "#3b82f6", borderColor: t.color || "#3b82f6" } : {}}
             >
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: goalForm.teamId === t.id ? "white" : (t.color || "#3b82f6"), opacity: goalForm.teamId === t.id ? 0.7 : 1 }} />
+              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: recordForm.teamId === t.id ? "white" : (t.color || "#3b82f6"), opacity: recordForm.teamId === t.id ? 0.7 : 1 }} />
               {t.name}
             </button>
           ))}
@@ -353,7 +353,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
           {/* 선수 */}
           <div className="col-span-2 sm:col-span-1">
             <label className="label">선수</label>
-            <select className="input" value={goalForm.playerId} onChange={(e) => setGoalForm({ ...goalForm, playerId: e.target.value })}>
+            <select className="input" value={recordForm.playerId} onChange={(e) => setRecordForm({ ...recordForm, playerId: e.target.value })}>
               <option value="">미상</option>
               {[...(selectedTeam.players ?? [])]
                 .sort((a, b) => {
@@ -375,9 +375,9 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
               {[{ value: "1", label: "전반" }, { value: "2", label: "후반" }].map((h) => (
                 <button
                   key={h.value}
-                  onClick={() => setGoalForm({ ...goalForm, half: h.value })}
+                  onClick={() => setRecordForm({ ...recordForm, half: h.value })}
                   className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all ${
-                    goalForm.half === h.value
+                    recordForm.half === h.value
                       ? "bg-blue-600 text-white border-blue-600"
                       : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
                   }`}
@@ -395,136 +395,45 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
               type="number" min="1" max="120"
               className="input"
               placeholder="예: 45"
-              value={goalForm.minute}
-              onChange={(e) => setGoalForm({ ...goalForm, minute: e.target.value })}
+              value={recordForm.minute}
+              onChange={(e) => setRecordForm({ ...recordForm, minute: e.target.value })}
             />
           </div>
 
           {/* 유형 */}
           <div>
             <label className="label">유형</label>
-            <div className="flex gap-1.5">
-              {GOAL_TYPES.map((t) => (
+            <div className="grid grid-cols-2 gap-1">
+              {RECORD_TYPES.map((t) => (
                 <button
                   key={t.value}
-                  onClick={() => setGoalForm({ ...goalForm, type: t.value })}
-                  className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all ${
-                    goalForm.type === t.value
+                  onClick={() => setRecordForm({ ...recordForm, type: t.value })}
+                  className={`py-2 rounded-lg text-xs font-medium border transition-all ${
+                    recordForm.type === t.value
                       ? "bg-blue-600 text-white border-blue-600"
                       : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  {t.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <button onClick={stagePendingGoal} className="btn btn-secondary w-full mt-3">
-          + 목록에 추가
-        </button>
-      </div>
-
-      {/* ── 경고·퇴장 기록 ── */}
-      <div className="card p-5">
-        <h4 className="font-bold mb-4">경고·퇴장 기록</h4>
-        {/* 팀 선택 */}
-        <div className="flex gap-2 mb-3">
-          {[match.homeTeam, match.awayTeam].map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setCardForm({ ...cardForm, teamId: t.id, playerId: "" })}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-sm font-medium border transition-all flex-1 justify-center ${
-                cardForm.teamId === t.id ? "text-white border-transparent shadow-sm" : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"
-              }`}
-              style={cardForm.teamId === t.id ? { backgroundColor: t.color || "#3b82f6" } : {}}
-            >
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: cardForm.teamId === t.id ? "white" : (t.color || "#3b82f6"), opacity: cardForm.teamId === t.id ? 0.7 : 1 }} />
-              {t.name}
-            </button>
-          ))}
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {/* 선수 */}
-          <div className="col-span-2 sm:col-span-1">
-            <label className="label">선수</label>
-            <select className="input" value={cardForm.playerId} onChange={(e) => setCardForm({ ...cardForm, playerId: e.target.value })}>
-              <option value="">미상</option>
-              {[...((cardForm.teamId === match.homeTeam.id ? match.homeTeam : match.awayTeam).players ?? [])]
-                .sort((a, b) => { if (a.number && b.number) return a.number - b.number; if (a.number) return -1; if (b.number) return 1; return a.name.localeCompare(b.name, "ko"); })
-                .map((p) => <option key={p.id} value={p.id}>{p.number ? `${p.number}. ` : ""}{p.name}</option>)}
-            </select>
-          </div>
-          {/* 전반/후반 */}
-          <div>
-            <label className="label">전/후반</label>
-            <div className="flex gap-1.5">
-              {[{ value: "1", label: "전반" }, { value: "2", label: "후반" }].map((h) => (
-                <button key={h.value} onClick={() => setCardForm({ ...cardForm, half: h.value })}
-                  className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all ${cardForm.half === h.value ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"}`}>
-                  {h.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          {/* 분 */}
-          <div>
-            <label className="label">분</label>
-            <input type="number" min="1" max="120" className="input" placeholder="예: 45"
-              value={cardForm.minute} onChange={(e) => setCardForm({ ...cardForm, minute: e.target.value })} />
-          </div>
-          {/* 유형 */}
-          <div>
-            <label className="label">유형</label>
-            <div className="flex gap-1.5">
-              {CARD_TYPES.map((t) => (
-                <button key={t.value} onClick={() => setCardForm({ ...cardForm, type: t.value })}
-                  className={`flex-1 py-2 rounded-lg text-xs font-medium border transition-all ${cardForm.type === t.value ? "bg-blue-600 text-white border-blue-600" : "bg-white text-gray-500 border-gray-200 hover:border-gray-300"}`}>
                   {t.emoji} {t.label}
                 </button>
               ))}
             </div>
           </div>
         </div>
-        <button onClick={addCard} className="btn btn-secondary w-full mt-3">+ 카드 기록 추가</button>
 
-        {/* 카드 목록 */}
-        {currentMatch.cards.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-2 gap-4">
-            {[match.homeTeam, match.awayTeam].map((team) => {
-              const teamCards = currentMatch.cards.filter(c => c.teamId === team.id);
-              return (
-                <div key={team.id}>
-                  <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-gray-100">
-                    <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: team.color || "#3b82f6" }} />
-                    <span className="text-xs font-semibold text-gray-600">{team.name}</span>
-                  </div>
-                  <div className="space-y-1.5">
-                    {teamCards.length === 0 ? <p className="text-xs text-gray-300 text-center py-2">-</p> : teamCards.map((c) => (
-                      <div key={c.id} className="flex items-center gap-1.5">
-                        <span className="text-sm">{c.type === "YELLOW" ? "🟨" : "🟥"}</span>
-                        <span className="text-sm font-medium flex-1 truncate">{c.player?.name || "미상"}</span>
-                        {c.half && <span className="text-xs text-blue-500">{c.half === 1 ? "전반" : "후반"}</span>}
-                        {c.minute && <span className="text-xs text-gray-400">{c.minute}&apos;</span>}
-                        <button onClick={() => deleteCard(c.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
+        <button onClick={addRecord} className="btn btn-secondary w-full mt-3">
+          {isCardType(recordForm.type) ? "+ 카드 기록" : "+ 목록에 추가"}
+        </button>
       </div>
 
       {/* ── 득점 기록 목록 ── */}
-      {totalGoals > 0 && (
+      {hasAnyRecord && (
         <div className="card p-5">
           <div className="flex items-center justify-between mb-4">
             <h4 className="font-bold">
-              득점 기록 ({currentMatch.goals.length}골
-              {pendingGoals.length > 0 && <span className="text-amber-600"> + {pendingGoals.length} 미저장</span>})
+              경기 기록 ({currentMatch.goals.length}골
+              {pendingGoals.length > 0 && <span className="text-amber-600"> + {pendingGoals.length} 미저장</span>}
+              {currentMatch.cards.length > 0 && <span className="text-yellow-600"> · 카드 {currentMatch.cards.length}</span>})
             </h4>
           </div>
           <div className="grid grid-cols-2 gap-4">
@@ -650,6 +559,39 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
               </div>
             </div>
           </div>
+
+          {/* 카드 목록 */}
+          {currentMatch.cards.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-gray-100">
+              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">경고·퇴장</p>
+              <div className="grid grid-cols-2 gap-4">
+                {[match.homeTeam, match.awayTeam].map((team) => {
+                  const teamCards = currentMatch.cards.filter(c => c.teamId === team.id);
+                  return (
+                    <div key={team.id}>
+                      <div className="flex items-center gap-2 mb-2 pb-1.5 border-b border-gray-100">
+                        <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: team.color || "#3b82f6" }} />
+                        <span className="text-xs font-semibold text-gray-600">{team.name}</span>
+                      </div>
+                      <div className="space-y-1.5">
+                        {teamCards.length === 0
+                          ? <p className="text-xs text-gray-300 text-center py-1">-</p>
+                          : teamCards.map((c) => (
+                            <div key={c.id} className="flex items-center gap-1.5">
+                              <span className="text-sm">{c.type === "YELLOW" ? "🟨" : "🟥"}</span>
+                              <span className="text-sm font-medium flex-1 truncate">{c.player?.name || "미상"}</span>
+                              {c.half && <span className="text-xs text-blue-500">{c.half === 1 ? "전반" : "후반"}</span>}
+                              {c.minute && <span className="text-xs text-gray-400">{c.minute}&apos;</span>}
+                              <button onClick={() => deleteCard(c.id)} className="w-6 h-6 flex items-center justify-center rounded text-red-400 hover:bg-red-50 hover:text-red-600 transition-colors flex-shrink-0 text-xs">✕</button>
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

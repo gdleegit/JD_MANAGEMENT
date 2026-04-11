@@ -950,31 +950,60 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
         </div>
       </div>
 
-      {/* Goals */}
-      {match.goals.length > 0 && (() => {
-        const hasHalf = match.goals.some(g => g.half);
+      {/* Goals + Cards */}
+      {(match.goals.length > 0 || match.cards.length > 0) && (() => {
+        const hasHalf = match.goals.some(g => g.half) || match.cards.some(c => c.half);
         const goalTypeLabel = (type: string) => type === "OWN_GOAL" ? " OG" : type === "PENALTY" ? " PK" : "";
 
-        const GoalRow = ({ g, align }: { g: typeof match.goals[0]; align: "left" | "right" }) =>
-          align === "right" ? (
-            <div className="text-right text-gray-500 leading-5">
-              {g.player?.name || "미상"}{g.minute ? ` ${g.minute}'` : ""}{goalTypeLabel(g.type)} ⚽
-            </div>
-          ) : (
-            <div className="text-left text-gray-500 leading-5">
-              ⚽ {g.player?.name || "미상"}{g.minute ? ` ${g.minute}'` : ""}{goalTypeLabel(g.type)}
+        type EvGoal = { kind: "goal"; item: Goal };
+        type EvCard = { kind: "card"; item: Card };
+        type Ev = EvGoal | EvCard;
+
+        const mergeSort = (goals: Goal[], cards: Card[]): Ev[] =>
+          [...goals.map(g => ({ kind: "goal" as const, item: g })),
+           ...cards.map(c => ({ kind: "card" as const, item: c }))]
+          .sort((a, b) => (a.item.minute ?? 999) - (b.item.minute ?? 999));
+
+        const EvRow = ({ ev, align }: { ev: Ev; align: "left" | "right" }) => {
+          if (ev.kind === "goal") {
+            const g = ev.item;
+            return align === "right" ? (
+              <div className="text-right text-gray-500 leading-5">
+                {g.player?.name || "미상"}{g.minute ? ` ${g.minute}'` : ""}{goalTypeLabel(g.type)} ⚽
+              </div>
+            ) : (
+              <div className="text-left text-gray-500 leading-5">
+                ⚽ {g.player?.name || "미상"}{g.minute ? ` ${g.minute}'` : ""}{goalTypeLabel(g.type)}
+              </div>
+            );
+          }
+          const c = ev.item;
+          const icon = c.type === "YELLOW" ? "🟨" : "🟥";
+          const label = `${c.player?.name || "미상"}${c.minute ? ` ${c.minute}'` : ""}`;
+          return (
+            <div className={`text-gray-500 leading-5 flex items-center gap-1 ${align === "right" ? "justify-end" : "justify-start"}`}>
+              {align === "right" && <span>{label}</span>}
+              <span>{icon}</span>
+              {align === "left" && <span>{label}</span>}
             </div>
           );
+        };
 
         if (!hasHalf) {
-          const homeGoals = match.goals.filter(g => g.teamId === match.homeTeam.id);
-          const awayGoals = match.goals.filter(g => g.teamId === match.awayTeam.id);
+          const homeEvs = mergeSort(
+            match.goals.filter(g => g.teamId === match.homeTeam.id),
+            match.cards.filter(c => c.teamId === match.homeTeam.id),
+          );
+          const awayEvs = mergeSort(
+            match.goals.filter(g => g.teamId === match.awayTeam.id),
+            match.cards.filter(c => c.teamId === match.awayTeam.id),
+          );
           return (
             <div className="mt-3 pt-2.5 border-t border-gray-100">
               <div className="grid grid-cols-[1fr_1px_1fr] text-xs">
-                <div className="pr-2 space-y-0.5">{homeGoals.map((g, i) => <GoalRow key={i} g={g} align="right" />)}</div>
+                <div className="pr-2 space-y-0.5">{homeEvs.map((ev, i) => <EvRow key={i} ev={ev} align="right" />)}</div>
                 <div className="bg-gray-100" />
-                <div className="pl-2 space-y-0.5">{awayGoals.map((g, i) => <GoalRow key={i} g={g} align="left" />)}</div>
+                <div className="pl-2 space-y-0.5">{awayEvs.map((ev, i) => <EvRow key={i} ev={ev} align="left" />)}</div>
               </div>
             </div>
           );
@@ -984,9 +1013,16 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
           <div className="mt-3 pt-2.5 border-t border-gray-100 space-y-2 text-xs">
             {([1, 2] as const).map(half => {
               const halfGoals = match.goals.filter(g => g.half === half);
-              if (halfGoals.length === 0) return null;
-              const homeHalfGoals = halfGoals.filter(g => g.teamId === match.homeTeam.id);
-              const awayHalfGoals = halfGoals.filter(g => g.teamId === match.awayTeam.id);
+              const halfCards = match.cards.filter(c => c.half === half);
+              if (halfGoals.length === 0 && halfCards.length === 0) return null;
+              const homeEvs = mergeSort(
+                halfGoals.filter(g => g.teamId === match.homeTeam.id),
+                halfCards.filter(c => c.teamId === match.homeTeam.id),
+              );
+              const awayEvs = mergeSort(
+                halfGoals.filter(g => g.teamId === match.awayTeam.id),
+                halfCards.filter(c => c.teamId === match.awayTeam.id),
+              );
               return (
                 <div key={half}>
                   <div className="flex items-center gap-1.5 mb-1">
@@ -994,18 +1030,25 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
                     <div className="flex-1 h-px bg-gray-100" />
                   </div>
                   <div className="grid grid-cols-[1fr_1px_1fr]">
-                    <div className="pr-2 space-y-0.5">{homeHalfGoals.map((g, i) => <GoalRow key={i} g={g} align="right" />)}</div>
+                    <div className="pr-2 space-y-0.5">{homeEvs.map((ev, i) => <EvRow key={i} ev={ev} align="right" />)}</div>
                     <div className="bg-gray-100" />
-                    <div className="pl-2 space-y-0.5">{awayHalfGoals.map((g, i) => <GoalRow key={i} g={g} align="left" />)}</div>
+                    <div className="pl-2 space-y-0.5">{awayEvs.map((ev, i) => <EvRow key={i} ev={ev} align="left" />)}</div>
                   </div>
                 </div>
               );
             })}
             {(() => {
-              const noHalf = match.goals.filter(g => !g.half);
-              if (!noHalf.length) return null;
-              const homeNoHalf = noHalf.filter(g => g.teamId === match.homeTeam.id);
-              const awayNoHalf = noHalf.filter(g => g.teamId === match.awayTeam.id);
+              const noHalfGoals = match.goals.filter(g => !g.half);
+              const noHalfCards = match.cards.filter(c => !c.half);
+              if (!noHalfGoals.length && !noHalfCards.length) return null;
+              const homeEvs = mergeSort(
+                noHalfGoals.filter(g => g.teamId === match.homeTeam.id),
+                noHalfCards.filter(c => c.teamId === match.homeTeam.id),
+              );
+              const awayEvs = mergeSort(
+                noHalfGoals.filter(g => g.teamId === match.awayTeam.id),
+                noHalfCards.filter(c => c.teamId === match.awayTeam.id),
+              );
               return (
                 <div>
                   <div className="flex items-center gap-1.5 mb-1">
@@ -1013,35 +1056,13 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
                     <div className="flex-1 h-px bg-gray-100" />
                   </div>
                   <div className="grid grid-cols-[1fr_1px_1fr]">
-                    <div className="pr-2 space-y-0.5">{homeNoHalf.map((g, i) => <GoalRow key={i} g={g} align="right" />)}</div>
+                    <div className="pr-2 space-y-0.5">{homeEvs.map((ev, i) => <EvRow key={i} ev={ev} align="right" />)}</div>
                     <div className="bg-gray-100" />
-                    <div className="pl-2 space-y-0.5">{awayNoHalf.map((g, i) => <GoalRow key={i} g={g} align="left" />)}</div>
+                    <div className="pl-2 space-y-0.5">{awayEvs.map((ev, i) => <EvRow key={i} ev={ev} align="left" />)}</div>
                   </div>
                 </div>
               );
             })()}
-          </div>
-        );
-      })()}
-
-      {/* Cards */}
-      {match.cards.length > 0 && (() => {
-        const homeCards = match.cards.filter(c => c.teamId === match.homeTeam.id);
-        const awayCards = match.cards.filter(c => c.teamId === match.awayTeam.id);
-        const CardRow = ({ c, align }: { c: Card; align: "left" | "right" }) => (
-          <div className={`text-gray-500 leading-5 flex items-center gap-1 ${align === "right" ? "justify-end" : "justify-start"}`}>
-            {align === "right" && <span className="text-xs">{c.player?.name || "미상"}{c.minute ? ` ${c.minute}'` : ""} ({c.type === "YELLOW" ? "경고" : "퇴장"})</span>}
-            <span>{c.type === "YELLOW" ? "🟨" : "🟥"}</span>
-            {align === "left" && <span className="text-xs">{c.player?.name || "미상"}{c.minute ? ` ${c.minute}'` : ""} ({c.type === "YELLOW" ? "경고" : "퇴장"})</span>}
-          </div>
-        );
-        return (
-          <div className="mt-2 pt-2 border-t border-gray-100">
-            <div className="grid grid-cols-[1fr_1px_1fr] text-xs">
-              <div className="pr-2 space-y-0.5">{homeCards.map((c, i) => <CardRow key={i} c={c} align="right" />)}</div>
-              <div className="bg-gray-100" />
-              <div className="pl-2 space-y-0.5">{awayCards.map((c, i) => <CardRow key={i} c={c} align="left" />)}</div>
-            </div>
           </div>
         );
       })()}
