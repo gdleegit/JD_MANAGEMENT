@@ -206,9 +206,9 @@ export default async function TournamentsPage() {
             <SponsorMarquee>
               {allSponsors.map((s, i) => {
                 const card = (
-                  <div className="flex flex-col items-center justify-between px-5 py-3 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ height: "136px", borderTop: "3px solid #176fc1" }}>
-                    {/* 기수·성명 슬롯 — 없어도 공간 유지 */}
-                    <div className="flex items-center h-6">
+                  <div className="flex flex-col items-center px-5 py-3 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ width: "140px", borderTop: "3px solid #176fc1" }}>
+                    {/* 기수·성명 슬롯 */}
+                    <div className="flex items-center h-6 mb-1.5">
                       {(s.grade || s.personName) && (
                         <div className="flex items-center gap-0.5 whitespace-nowrap rounded-full px-2.5 py-0.5" style={{ backgroundColor: "#176fc1" }}>
                           {s.grade && <span className="text-xs font-black text-white">{s.grade}</span>}
@@ -218,20 +218,29 @@ export default async function TournamentsPage() {
                       )}
                     </div>
                     {/* 로고 */}
-                    <div className="flex items-center justify-center h-14 w-full mt-2">
+                    <div className="flex items-center justify-center h-12 w-full">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={s.logoUrl ?? "/cd_logo2.png"}
                         alt={s.name}
-                        className="max-h-12 w-auto object-contain"
-                        style={{ padding: "2px 0" }}
+                        className="max-h-11 w-auto object-contain"
                       />
                     </div>
-                    {/* 협찬사명 — 한 줄 유지 */}
-                    <span className="text-sm font-extrabold text-gray-900 whitespace-nowrap tracking-tight">{s.name}</span>
-                    {/* 설명 슬롯 — 없어도 공간 유지 */}
-                    <div className="flex items-center h-3">
-                      {s.description && <span className="text-[10px] text-gray-500 whitespace-nowrap">{s.description}</span>}
+                    {/* 협찬사명 */}
+                    <span className="text-sm font-extrabold text-gray-900 whitespace-nowrap tracking-tight mt-2">{s.name}</span>
+                    {/* 협찬 내용 뱃지 */}
+                    <div className="mt-2 min-h-[22px] flex items-center">
+                      {s.description ? (
+                        <span
+                          className="flex items-center gap-1 whitespace-nowrap text-[11px] font-bold px-2.5 py-0.5 rounded-full"
+                          style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a)", color: "#92400e", border: "1px solid #fbbf24" }}
+                        >
+                          <svg className="w-2.5 h-2.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" />
+                          </svg>
+                          {s.description}
+                        </span>
+                      ) : null}
                     </div>
                   </div>
                 );
