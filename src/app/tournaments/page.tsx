@@ -235,9 +235,6 @@ export default async function TournamentsPage() {
                           className="flex items-center gap-1 whitespace-nowrap text-[11px] font-bold px-2.5 py-0.5 rounded-full"
                           style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a)", color: "#92400e", border: "1px solid #fbbf24" }}
                         >
-                          <svg className="w-2.5 h-2.5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M20 12v10H4V12M22 7H2v5h20V7zM12 22V7M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z" />
-                          </svg>
                           {s.description}
                         </span>
                       ) : null}
