@@ -1366,17 +1366,16 @@ function TimetableView({ matches }: { matches: Match[] }) {
       {/* 경기 상세 모달 */}
       {selectedMatch && (
         <div
-          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
           onClick={() => setSelectedMatch(null)}
         >
           <div
-            className="w-full sm:max-w-sm bg-white rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl"
+            className="w-full max-w-sm bg-white rounded-2xl overflow-hidden shadow-2xl"
             onClick={e => e.stopPropagation()}
           >
             {/* 모달 헤더 */}
             <div className="relative flex items-center justify-center px-4 py-3 border-b border-gray-100">
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-gray-200 sm:hidden" />
-              <span className="text-sm font-bold text-gray-700 mt-1 sm:mt-0">경기 상세</span>
+              <span className="text-sm font-bold text-gray-700">경기 상세</span>
               <button
                 onClick={() => setSelectedMatch(null)}
                 className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
