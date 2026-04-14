@@ -689,7 +689,7 @@ function getContrastColor(hex: string): string {
 
 // ── 기수/조별 순위 뷰 ──────────────────────────────────
 function DivisionView({ tournament, onTeamClick }: { tournament: Tournament; onTeamClick?: OnTeamClick }) {
-  const [activeGroup, setActiveGroup] = useState<string | null>(tournament.groups[0]?.id || null);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
 
   if (tournament.groups.length === 0) {
     return (
