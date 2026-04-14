@@ -1147,10 +1147,6 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onT
 
 // ── 대진일정표 ───────────────────────────────────────────
 function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnTeamClick }) {
-  const finished = match.status === "FINISHED";
-  const hTotal = (match.homeScore ?? 0) + (match.homeHandicap ?? 0);
-  const aTotal = (match.awayScore ?? 0) + (match.awayHandicap ?? 0);
-  const hasScore = match.homeScore != null && match.awayScore != null;
   const accentColor = match.group?.color || "#e2e8f0";
   const cfg = STATUS_CFG[match.status] ?? STATUS_CFG.SCHEDULED;
 
@@ -1188,9 +1184,6 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
           >
             {match.homeTeam.name}
           </button>
-          {finished && hasScore && (
-            <span className="font-black tabular-nums flex-shrink-0 text-gray-800 leading-none">{hTotal}</span>
-          )}
         </div>
 
         {/* 구분선 */}
@@ -1205,9 +1198,6 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
           >
             {match.awayTeam.name}
           </button>
-          {finished && hasScore && (
-            <span className="font-black tabular-nums flex-shrink-0 text-gray-800 leading-none">{aTotal}</span>
-          )}
         </div>
       </div>
     </div>
@@ -1215,10 +1205,10 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
 }
 
 function TimetableView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?: OnTeamClick }) {
-  const ROW_H = 88;  // px per hour
-  const COL_W = 100; // px per date column (narrow: ~3 dates visible on mobile)
+  const ROW_H = 84;  // px per hour
+  const COL_W = 82;  // px per date column (4 dates visible on 375px mobile)
   const TIME_W = 44; // px for time column
-  const CARD_H = 72; // estimated card height
+  const CARD_H = 62; // estimated card height (no score)
 
   const toKSTDate = (iso: string) =>
     new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
