@@ -1171,7 +1171,10 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
             <span className="text-blue-500 font-medium">{match.round ?? match.matchOrder}</span>
           )}
           {match.group && (
-            <span className="font-medium" style={{ color: groupColor || "#6366f1" }}>
+            <span
+              className="px-1.5 py-0.5 rounded-full font-bold"
+              style={{ backgroundColor: groupColor || "#6366f1", color: getContrastColor(groupColor || "#6366f1") }}
+            >
               {match.group.label || match.group.name}
             </span>
           )}
