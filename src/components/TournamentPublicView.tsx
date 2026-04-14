@@ -282,7 +282,7 @@ export default function TournamentPublicView({
 
       {/* Timetable Tab */}
       {tab === "timetable" && (
-        <TimetableView matches={tournament.matches} onTeamClick={handleTeamClick} />
+        <TimetableView matches={tournament.matches} />
       )}
 
       {/* Scorers Tab */}
@@ -1146,20 +1146,19 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onT
 }
 
 // ── 대진일정표 ───────────────────────────────────────────
-function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnTeamClick }) {
+function TimetableCell({ match, onMatchClick }: { match: Match; onMatchClick?: (m: Match) => void }) {
   const groupColor = match.group?.color ?? null;
-  const cfg = STATUS_CFG[match.status] ?? STATUS_CFG.SCHEDULED;
-
-  const bgColor   = groupColor ? groupColor + "18" : "#f8fafc";
-  const bdrColor  = groupColor ? groupColor + "55" : "#e2e8f0";
-  const shadow    = groupColor
+  const bgColor  = groupColor ? groupColor + "18" : "#f8fafc";
+  const bdrColor = groupColor ? groupColor + "55" : "#e2e8f0";
+  const shadow   = groupColor
     ? `0 2px 6px ${groupColor}35, 0 1px 2px rgba(0,0,0,0.07)`
     : "0 1px 4px rgba(0,0,0,0.07)";
 
   return (
     <div
-      className="rounded-xl overflow-hidden text-xs"
+      className="rounded-xl overflow-hidden text-xs cursor-pointer active:scale-[0.98] transition-transform"
       style={{ backgroundColor: bgColor, border: `1.5px solid ${bdrColor}`, boxShadow: shadow }}
+      onClick={() => onMatchClick?.(match)}
     >
       {/* 코트 (있을 때만) */}
       {match.court && (
@@ -1170,15 +1169,14 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
 
       <div className="py-1">
         {/* 홈팀 — 좌정렬, 왼쪽 팀색 border */}
-        <button
-          onClick={() => onTeamClick?.(match.homeTeam)}
-          className="w-full text-left truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 py-0.5 hover:text-blue-700 transition-colors"
+        <div
+          className="truncate text-[11px] font-bold text-gray-800 py-0.5"
           style={{ borderLeft: `3px solid ${match.homeTeam.color || "#3b82f6"}`, paddingLeft: "6px", paddingRight: "6px" }}
         >
           {match.homeTeam.name}
-        </button>
+        </div>
 
-        {/* 중간: 라운드 + 상태 */}
+        {/* 중간: 라운드 */}
         <div className="flex items-center gap-1 px-1.5 py-0.5">
           <div className="flex-1 h-px" style={{ backgroundColor: "rgba(0,0,0,0.08)" }} />
           {(match.round || match.matchOrder != null) && (
@@ -1186,30 +1184,28 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
               {match.round ?? `${match.matchOrder}R`}
             </span>
           )}
-          <span className={`text-[9px] font-semibold px-1 py-0.5 rounded-full flex-shrink-0 ${cfg.cls}`}>
-            {cfg.label}
-          </span>
           <div className="flex-1 h-px" style={{ backgroundColor: "rgba(0,0,0,0.08)" }} />
         </div>
 
         {/* 원정팀 — 우정렬, 오른쪽 팀색 border */}
-        <button
-          onClick={() => onTeamClick?.(match.awayTeam)}
-          className="w-full text-right truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 py-0.5 hover:text-blue-700 transition-colors"
+        <div
+          className="truncate text-[11px] font-bold text-gray-800 py-0.5 text-right"
           style={{ borderRight: `3px solid ${match.awayTeam.color || "#ef4444"}`, paddingRight: "6px", paddingLeft: "6px" }}
         >
           {match.awayTeam.name}
-        </button>
+        </div>
       </div>
     </div>
   );
 }
 
-function TimetableView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?: OnTeamClick }) {
-  const ROW_H = 84;  // px per hour
+function TimetableView({ matches }: { matches: Match[] }) {
+  const ROW_H = 62;  // :00 카드가 다음 시간선에 닿도록 설정
   const COL_W = 82;  // px per date column (4 dates visible on 375px mobile)
   const TIME_W = 44; // px for time column
-  const CARD_H = 62; // estimated card height (no score)
+  const CARD_H = 58; // estimated card height (no score, no status)
+
+  const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
 
   const toKSTDate = (iso: string) =>
     new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
@@ -1309,7 +1305,7 @@ function TimetableView({ matches, onTeamClick }: { matches: Match[]; onTeamClick
                 zIndex: 10,
               }}
             >
-              <TimetableCell match={m} onTeamClick={onTeamClick} />
+              <TimetableCell match={m} onMatchClick={setSelectedMatch} />
             </div>
           ));
         });
@@ -1362,7 +1358,38 @@ function TimetableView({ matches, onTeamClick }: { matches: Match[]; onTeamClick
         <div className="card p-4">
           <h3 className="font-semibold text-sm text-gray-400 mb-3">일정 미정 ({noDate.length}경기)</h3>
           <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-            {noDate.map(m => <TimetableCell key={m.id} match={m} onTeamClick={onTeamClick} />)}
+            {noDate.map(m => <TimetableCell key={m.id} match={m} onMatchClick={setSelectedMatch} />)}
+          </div>
+        </div>
+      )}
+
+      {/* 경기 상세 모달 */}
+      {selectedMatch && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm"
+          onClick={() => setSelectedMatch(null)}
+        >
+          <div
+            className="w-full sm:max-w-sm bg-white rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* 모달 헤더 */}
+            <div className="relative flex items-center justify-center px-4 py-3 border-b border-gray-100">
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-10 h-1 rounded-full bg-gray-200 sm:hidden" />
+              <span className="text-sm font-bold text-gray-700 mt-1 sm:mt-0">경기 상세</span>
+              <button
+                onClick={() => setSelectedMatch(null)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-400 transition-colors"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            {/* MatchCard 재사용 */}
+            <div className="overflow-y-auto max-h-[80vh] p-3">
+              <MatchCard match={selectedMatch} showDate showOrder />
+            </div>
           </div>
         </div>
       )}
