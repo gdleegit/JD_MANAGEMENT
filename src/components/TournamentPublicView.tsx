@@ -1218,103 +1218,207 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
 }
 
 function TimetableView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?: OnTeamClick }) {
+  const ROW_H = 96;  // px per hour
+  const COL_W = 152; // px per date column
+  const CARD_H = 82; // estimated card height
+
   const toKSTDate = (iso: string) =>
     new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
-  const toKSTTime = (iso: string) =>
-    new Date(iso).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Seoul" });
-  const getSlot = (iso: string) => {
-    const t = toKSTTime(iso);
-    return t === "00:00" ? "__notime__" : t;
+  const getKSTParts = (iso: string) => {
+    const d = new Date(new Date(iso).getTime() + 9 * 60 * 60 * 1000);
+    return { h: d.getUTCHours(), m: d.getUTCMinutes() };
   };
 
+  const todayKST = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date());
   const withDate = matches.filter(m => m.date);
   const noDate = matches.filter(m => !m.date);
-
   const dates = [...new Set(withDate.map(m => toKSTDate(m.date!)))].sort();
-  const allSlots = [...new Set(withDate.map(m => getSlot(m.date!)))];
-  const timeSlots = allSlots.filter(s => s !== "__notime__").sort();
-  if (allSlots.includes("__notime__")) timeSlots.push("__notime__");
 
-  // grid[slot][date] = Match[]
-  const grid: Record<string, Record<string, Match[]>> = {};
+  const todayIdx = dates.indexOf(todayKST);
+  const [mobileDateIdx, setMobileDateIdx] = useState(Math.max(0, todayIdx));
+
+  if (matches.length === 0)
+    return <div className="card p-12 text-center text-gray-400">등록된 경기가 없습니다</div>;
+
+  // 시간 범위 계산
+  let minH = 23, maxH = 0;
+  for (const m of withDate) {
+    const { h } = getKSTParts(m.date!);
+    if (h < minH) minH = h;
+    if (h > maxH) maxH = h;
+  }
+  if (withDate.length === 0) { minH = 9; maxH = 17; }
+  const hours = Array.from({ length: maxH - minH + 1 }, (_, i) => minH + i);
+  const totalHeight = (hours.length + 1) * ROW_H + CARD_H;
+
+  // 날짜별 경기 그룹
+  const matchesByDate: Record<string, Match[]> = {};
   for (const m of withDate) {
     const d = toKSTDate(m.date!);
-    const s = getSlot(m.date!);
-    if (!grid[s]) grid[s] = {};
-    if (!grid[s][d]) grid[s][d] = [];
-    grid[s][d].push(m);
+    if (!matchesByDate[d]) matchesByDate[d] = [];
+    matchesByDate[d].push(m);
   }
 
-  const todayKST = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date());
+  const renderGrid = (visibleDates: string[]) => (
+    <div style={{ position: "relative", height: `${totalHeight}px` }}>
+      {/* 시간선 + 레이블 */}
+      {hours.map((h, i) => (
+        <div key={h} className="absolute left-0 right-0 flex" style={{ top: `${i * ROW_H}px` }}>
+          <div className="w-16 flex-shrink-0 flex justify-center pt-1.5">
+            <span className="text-[11px] font-bold text-gray-400">{String(h).padStart(2, "0")}:00</span>
+          </div>
+          <div className="flex-1 border-t border-gray-100 mt-2" />
+        </div>
+      ))}
+      {/* 마지막 시간선 */}
+      <div className="absolute left-0 right-0 flex" style={{ top: `${hours.length * ROW_H}px` }}>
+        <div className="w-16 flex-shrink-0" />
+        <div className="flex-1 border-t border-gray-100" />
+      </div>
+      {/* :30 점선 */}
+      {hours.map((h, i) => (
+        <div
+          key={`${h}-half`}
+          className="absolute border-t border-dashed border-gray-100"
+          style={{ top: `${i * ROW_H + ROW_H / 2}px`, left: "64px", right: 0 }}
+        />
+      ))}
+      {/* 열 구분선 */}
+      {visibleDates.map((_, dIdx) => dIdx > 0 && (
+        <div
+          key={dIdx}
+          className="absolute top-0 border-l border-gray-100"
+          style={{ left: `${64 + dIdx * COL_W}px`, height: `${totalHeight}px` }}
+        />
+      ))}
+      {/* 오늘 열 배경 */}
+      {visibleDates.map((d, dIdx) => d === todayKST && (
+        <div
+          key={`today-${dIdx}`}
+          className="absolute top-0"
+          style={{ left: `${64 + dIdx * COL_W}px`, width: `${COL_W}px`, height: `${totalHeight}px`, backgroundColor: "rgba(219,234,254,0.15)" }}
+        />
+      ))}
 
-  if (matches.length === 0) {
-    return <div className="card p-12 text-center text-gray-400">등록된 경기가 없습니다</div>;
-  }
+      {/* 경기 카드 — 절대좌표 배치 */}
+      {visibleDates.flatMap((d, dIdx) => {
+        const ms = matchesByDate[d] || [];
+        // 같은 슬롯끼리 묶기
+        const slotGroups: Record<string, Match[]> = {};
+        for (const m of ms) {
+          const parts = getKSTParts(m.date!);
+          const sk = `${parts.h}:${parts.m < 30 ? "0" : "30"}`;
+          if (!slotGroups[sk]) slotGroups[sk] = [];
+          slotGroups[sk].push(m);
+        }
+        return Object.entries(slotGroups).flatMap(([sk, slotMs]) => {
+          const [sh, sm] = sk.split(":").map(Number);
+          // :00 → 시간선 바로 아래 8px, :30 → 시간선 중간(걸침)
+          const baseY = (sh - minH) * ROW_H + (sm === 0 ? 8 : ROW_H / 2);
+          return slotMs.map((m, idx) => (
+            <div
+              key={m.id}
+              className="absolute"
+              style={{
+                top: `${baseY + idx * (CARD_H + 4)}px`,
+                left: `${64 + dIdx * COL_W + 4}px`,
+                width: `${COL_W - 8}px`,
+                zIndex: 10,
+              }}
+            >
+              <TimetableCell match={m} onTeamClick={onTeamClick} />
+            </div>
+          ));
+        });
+      })}
+    </div>
+  );
+
+  const safeIdx = Math.min(mobileDateIdx, Math.max(0, dates.length - 1));
 
   return (
     <div className="space-y-3">
       {dates.length > 0 && (
         <div className="card overflow-hidden">
-          <div className="overflow-x-auto">
-            <table
-              className="border-collapse"
-              style={{ minWidth: `${Math.max(dates.length * 156 + 64, 300)}px`, width: "100%" }}
-            >
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="sticky left-0 z-10 bg-gray-50 w-16 px-2 py-3 text-xs font-semibold text-gray-400 text-center border-r border-gray-200">
-                    시간
-                  </th>
-                  {dates.map(d => {
-                    const isToday = d === todayKST;
-                    const label = new Date(d + "T00:00:00").toLocaleDateString("ko-KR", {
-                      month: "numeric", day: "numeric", weekday: "short",
-                    });
-                    return (
-                      <th
-                        key={d}
-                        className={`px-2 py-3 text-xs font-semibold text-center border-r border-gray-100 last:border-r-0 ${
-                          isToday ? "text-blue-600 bg-blue-50" : "text-gray-700"
-                        }`}
-                        style={{ minWidth: "148px" }}
-                      >
-                        {label}
-                        {isToday && <span className="ml-1 text-[10px] bg-blue-600 text-white px-1 py-0.5 rounded-full">오늘</span>}
-                      </th>
-                    );
+
+          {/* 모바일: 날짜 네비게이터 */}
+          <div className="sm:hidden">
+            <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
+              <button
+                onClick={() => setMobileDateIdx(i => Math.max(0, i - 1))}
+                disabled={safeIdx === 0}
+                className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 disabled:opacity-25 flex-shrink-0"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <div className="flex-1 text-center">
+                <div className="text-sm font-bold text-gray-800">
+                  {new Date(dates[safeIdx] + "T00:00:00").toLocaleDateString("ko-KR", {
+                    month: "long", day: "numeric", weekday: "short",
                   })}
-                </tr>
-              </thead>
-              <tbody>
-                {timeSlots.map((slot, rowIdx) => (
-                  <tr key={slot} className={`border-b border-gray-100 last:border-b-0 ${rowIdx % 2 === 0 ? "" : "bg-gray-50/40"}`}>
-                    <td className="sticky left-0 z-10 bg-inherit w-16 px-2 py-3 text-center border-r border-gray-200">
-                      <span className={`text-xs font-bold ${slot === "__notime__" ? "text-gray-300" : "text-gray-500"}`}>
-                        {slot === "__notime__" ? "미정" : slot}
-                      </span>
-                    </td>
-                    {dates.map(d => {
-                      const cell = grid[slot]?.[d] ?? [];
-                      const isToday = d === todayKST;
-                      return (
-                        <td
-                          key={d}
-                          className={`px-2 py-2 align-top border-r border-gray-100 last:border-r-0 ${isToday ? "bg-blue-50/20" : ""}`}
-                        >
-                          {cell.length > 0 ? (
-                            <div className="space-y-1.5">
-                              {cell.map(m => <TimetableCell key={m.id} match={m} onTeamClick={onTeamClick} />)}
-                            </div>
-                          ) : (
-                            <div className="min-h-[40px]" />
-                          )}
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                  {dates[safeIdx] === todayKST && (
+                    <span className="ml-1.5 text-[11px] bg-blue-600 text-white px-1.5 py-0.5 rounded-full">오늘</span>
+                  )}
+                </div>
+                {dates.length > 1 && (
+                  <div className="flex items-center justify-center gap-1.5 mt-1.5">
+                    {dates.map((_, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setMobileDateIdx(i)}
+                        className={`rounded-full transition-all duration-200 ${
+                          i === safeIdx ? "w-4 h-2 bg-blue-600" : "w-2 h-2 bg-gray-200 hover:bg-gray-300"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+              <button
+                onClick={() => setMobileDateIdx(i => Math.min(dates.length - 1, i + 1))}
+                disabled={safeIdx === dates.length - 1}
+                className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 disabled:opacity-25 flex-shrink-0"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+            <div style={{ minWidth: `${64 + COL_W + 8}px` }}>
+              {renderGrid([dates[safeIdx]])}
+            </div>
+          </div>
+
+          {/* 데스크톱: 전체 그리드 */}
+          <div className="hidden sm:block overflow-x-auto">
+            <div style={{ minWidth: `${64 + dates.length * COL_W}px` }}>
+              {/* 날짜 헤더 */}
+              <div className="flex border-b border-gray-200 bg-gray-50">
+                <div className="w-16 flex-shrink-0 px-2 py-3 text-xs font-semibold text-gray-400 text-center border-r border-gray-200">
+                  시간
+                </div>
+                {dates.map(d => {
+                  const isToday = d === todayKST;
+                  return (
+                    <div
+                      key={d}
+                      className={`py-3 text-xs font-semibold text-center ${isToday ? "text-blue-600 bg-blue-50" : "text-gray-700"}`}
+                      style={{ width: `${COL_W}px` }}
+                    >
+                      {new Date(d + "T00:00:00").toLocaleDateString("ko-KR", {
+                        month: "numeric", day: "numeric", weekday: "short",
+                      })}
+                      {isToday && (
+                        <span className="ml-1 text-[10px] bg-blue-600 text-white px-1 py-0.5 rounded-full">오늘</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              {renderGrid(dates)}
+            </div>
           </div>
         </div>
       )}
