@@ -140,11 +140,11 @@ export default function TournamentPublicView({
   };
 
   const tabs = [
-    tournament.type === "KNOCKOUT" && { key: "bracket", label: "대진표" },
+    tournament.type === "KNOCKOUT" && { key: "bracket", label: "브래킷" },
     tournament.type === "LEAGUE" && { key: "standings", label: "순위표" },
     tournament.type === "GROUP" && { key: "division", label: "리그별 순위" },
     { key: "schedule", label: "날짜별 일정" },
-    { key: "timetable", label: "대진일정표" },
+    { key: "timetable", label: "대진표" },
     { key: "scorers", label: "득점 순위" },
     { key: "teams", label: "참가팀" },
     tournament.rules && { key: "rules", label: "운영규칙" },
@@ -1174,31 +1174,27 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
         </div>
       )}
 
-      <div className="px-1.5 py-1.5 space-y-1">
+      <div className="py-1.5 space-y-px">
         {/* 홈팀 */}
-        <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-sm flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
-          <button
-            onClick={() => onTeamClick?.(match.homeTeam)}
-            className="flex-1 truncate text-left font-medium text-gray-800 cursor-pointer bg-transparent border-0 p-0 hover:text-blue-600 transition-colors"
-          >
-            {match.homeTeam.name}
-          </button>
-        </div>
+        <button
+          onClick={() => onTeamClick?.(match.homeTeam)}
+          className="w-full text-left truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 px-1.5 py-0.5 hover:text-blue-600 transition-colors"
+          style={{ borderLeft: `3px solid ${match.homeTeam.color || "#3b82f6"}`, paddingLeft: "6px" }}
+        >
+          {match.homeTeam.name}
+        </button>
 
         {/* 구분선 */}
-        <div className="h-px bg-gray-100" />
+        <div className="h-px bg-gray-100 mx-1.5" />
 
         {/* 원정팀 */}
-        <div className="flex items-center gap-1">
-          <span className="w-2 h-2 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
-          <button
-            onClick={() => onTeamClick?.(match.awayTeam)}
-            className="flex-1 truncate text-left font-medium text-gray-800 cursor-pointer bg-transparent border-0 p-0 hover:text-blue-600 transition-colors"
-          >
-            {match.awayTeam.name}
-          </button>
-        </div>
+        <button
+          onClick={() => onTeamClick?.(match.awayTeam)}
+          className="w-full text-left truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 px-1.5 py-0.5 hover:text-blue-600 transition-colors"
+          style={{ borderLeft: `3px solid ${match.awayTeam.color || "#ef4444"}`, paddingLeft: "6px" }}
+        >
+          {match.awayTeam.name}
+        </button>
       </div>
     </div>
   );
