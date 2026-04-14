@@ -1147,50 +1147,55 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onT
 
 // ── 대진일정표 ───────────────────────────────────────────
 function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnTeamClick }) {
-  const accentColor = match.group?.color || "#e2e8f0";
+  const groupColor = match.group?.color ?? null;
   const cfg = STATUS_CFG[match.status] ?? STATUS_CFG.SCHEDULED;
+
+  const bgColor   = groupColor ? groupColor + "18" : "#f8fafc";
+  const bdrColor  = groupColor ? groupColor + "55" : "#e2e8f0";
+  const shadow    = groupColor
+    ? `0 2px 6px ${groupColor}35, 0 1px 2px rgba(0,0,0,0.07)`
+    : "0 1px 4px rgba(0,0,0,0.07)";
 
   return (
     <div
-      className="rounded-xl overflow-hidden bg-white text-xs"
-      style={{
-        border: "1.5px solid #e2e8f0",
-        borderTop: `3px solid ${accentColor}`,
-        boxShadow: "0 1px 4px rgba(0,0,0,0.06)",
-      }}
+      className="rounded-xl overflow-hidden text-xs"
+      style={{ backgroundColor: bgColor, border: `1.5px solid ${bdrColor}`, boxShadow: shadow }}
     >
-      {/* 메타: 코트/라운드 + 상태 */}
-      {(match.court || match.round || match.matchOrder != null || match.status !== "SCHEDULED") && (
-        <div className="flex items-center justify-between gap-1 px-1.5 pt-1 pb-0 min-w-0">
-          <div className="truncate">
-            {match.court && <span className="text-[9px] font-semibold text-purple-500">{match.court}</span>}
-            {!match.court && (match.round || match.matchOrder != null) && (
-              <span className="text-[9px] font-semibold text-blue-500">{match.round ?? `#${match.matchOrder}`}</span>
-            )}
-          </div>
-          {match.status !== "SCHEDULED" && (
-            <span className={`text-[9px] font-semibold px-1 py-0.5 rounded-full flex-shrink-0 ${cfg.cls}`}>{cfg.label}</span>
-          )}
+      {/* 코트 (있을 때만) */}
+      {match.court && (
+        <div className="px-1.5 pt-1 pb-0">
+          <span className="text-[9px] font-semibold text-purple-500 bg-white/70 px-1.5 py-0.5 rounded-full">{match.court}</span>
         </div>
       )}
 
-      <div className="py-1.5 space-y-px">
+      <div className="py-1">
         {/* 홈팀 — 좌정렬, 왼쪽 팀색 border */}
         <button
           onClick={() => onTeamClick?.(match.homeTeam)}
-          className="w-full text-left truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 py-0.5 hover:text-blue-600 transition-colors"
+          className="w-full text-left truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 py-0.5 hover:text-blue-700 transition-colors"
           style={{ borderLeft: `3px solid ${match.homeTeam.color || "#3b82f6"}`, paddingLeft: "6px", paddingRight: "6px" }}
         >
           {match.homeTeam.name}
         </button>
 
-        {/* 구분선 */}
-        <div className="h-px bg-gray-100 mx-1.5" />
+        {/* 중간: 라운드 + 상태 */}
+        <div className="flex items-center gap-1 px-1.5 py-0.5">
+          <div className="flex-1 h-px" style={{ backgroundColor: "rgba(0,0,0,0.08)" }} />
+          {(match.round || match.matchOrder != null) && (
+            <span className="text-[9px] font-extrabold text-gray-500 flex-shrink-0 leading-none">
+              {match.round ?? `${match.matchOrder}R`}
+            </span>
+          )}
+          <span className={`text-[9px] font-semibold px-1 py-0.5 rounded-full flex-shrink-0 ${cfg.cls}`}>
+            {cfg.label}
+          </span>
+          <div className="flex-1 h-px" style={{ backgroundColor: "rgba(0,0,0,0.08)" }} />
+        </div>
 
         {/* 원정팀 — 우정렬, 오른쪽 팀색 border */}
         <button
           onClick={() => onTeamClick?.(match.awayTeam)}
-          className="w-full text-right truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 py-0.5 hover:text-blue-600 transition-colors"
+          className="w-full text-right truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 py-0.5 hover:text-blue-700 transition-colors"
           style={{ borderRight: `3px solid ${match.awayTeam.color || "#ef4444"}`, paddingRight: "6px", paddingLeft: "6px" }}
         >
           {match.awayTeam.name}
