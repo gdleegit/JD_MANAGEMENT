@@ -103,7 +103,7 @@ export default function TournamentPublicView({
     : tournament.type === "GROUP" ? "division"
     : "standings";
 
-  const [tab, setTab] = useState<"bracket" | "standings" | "division" | "schedule" | "teams" | "scorers" | "rules" | "sponsors">(defaultTab as "bracket");
+  const [tab, setTab] = useState<"bracket" | "standings" | "division" | "schedule" | "timetable" | "teams" | "scorers" | "rules" | "sponsors">(defaultTab as "bracket");
 
   // 참가팀 선수 — 페이지 로드 직후 백그라운드에서 미리 fetch
   const [teamPlayers, setTeamPlayers] = useState<Record<string, Player[]> | null>(null);
@@ -144,6 +144,7 @@ export default function TournamentPublicView({
     tournament.type === "LEAGUE" && { key: "standings", label: "순위표" },
     tournament.type === "GROUP" && { key: "division", label: "리그별 순위" },
     { key: "schedule", label: "날짜별 일정" },
+    { key: "timetable", label: "대진일정표" },
     { key: "scorers", label: "득점 순위" },
     { key: "teams", label: "참가팀" },
     tournament.rules && { key: "rules", label: "운영규칙" },
@@ -277,6 +278,11 @@ export default function TournamentPublicView({
       {/* Schedule Tab */}
       {tab === "schedule" && (
         <ScheduleView matches={tournament.matches} onTeamClick={handleTeamClick} />
+      )}
+
+      {/* Timetable Tab */}
+      {tab === "timetable" && (
+        <TimetableView matches={tournament.matches} onTeamClick={handleTeamClick} />
       )}
 
       {/* Scorers Tab */}
@@ -1135,6 +1141,193 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onT
         </div>
       )}
       </div>
+    </div>
+  );
+}
+
+// ── 대진일정표 ───────────────────────────────────────────
+function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnTeamClick }) {
+  const finished = match.status === "FINISHED";
+  const hTotal = (match.homeScore ?? 0) + (match.homeHandicap ?? 0);
+  const aTotal = (match.awayScore ?? 0) + (match.awayHandicap ?? 0);
+  const hasScore = match.homeScore != null && match.awayScore != null;
+  const homeWin = finished && hasScore && hTotal > aTotal;
+  const awayWin = finished && hasScore && aTotal > hTotal;
+  const groupColor = match.group?.color || null;
+
+  return (
+    <div
+      className="rounded-lg p-2 text-xs bg-white"
+      style={{
+        border: "1px solid #e5e7eb",
+        borderLeft: groupColor ? `3px solid ${groupColor}` : "1px solid #e5e7eb",
+      }}
+    >
+      {/* 코트 / 라운드 / 그룹 */}
+      {(match.court || match.round || match.matchOrder != null || match.group) && (
+        <div className="flex items-center gap-1 mb-1 text-[10px]">
+          {match.court && <span className="text-purple-500 font-medium">{match.court}</span>}
+          {!match.court && (match.round || match.matchOrder != null) && (
+            <span className="text-blue-500 font-medium">{match.round ?? match.matchOrder}</span>
+          )}
+          {match.group && (
+            <span className="font-medium" style={{ color: groupColor || "#6366f1" }}>
+              {match.group.label || match.group.name}
+            </span>
+          )}
+        </div>
+      )}
+      {/* 홈팀 */}
+      <div className="flex items-center gap-1.5">
+        <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
+        <button
+          onClick={() => onTeamClick?.(match.homeTeam)}
+          className={`flex-1 truncate text-left hover:underline hover:text-blue-600 cursor-pointer bg-transparent border-0 p-0 ${homeWin ? "font-bold text-blue-700" : "text-gray-700"}`}
+        >
+          {match.homeTeam.name}
+        </button>
+        {finished && hasScore && (
+          <span className={`font-black tabular-nums flex-shrink-0 ${homeWin ? "text-blue-700" : "text-gray-700"}`}>{hTotal}</span>
+        )}
+      </div>
+      {/* 구분 */}
+      {finished && hasScore ? (
+        <div className="flex items-center gap-1 my-0.5">
+          <div className="flex-1 h-px bg-gray-100" />
+          <span className="text-[10px] text-gray-300 font-bold">:</span>
+          <div className="flex-1 h-px bg-gray-100" />
+        </div>
+      ) : (
+        <div className="text-center text-[10px] text-gray-300 font-bold my-0.5">VS</div>
+      )}
+      {/* 원정팀 */}
+      <div className="flex items-center gap-1.5">
+        <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
+        <button
+          onClick={() => onTeamClick?.(match.awayTeam)}
+          className={`flex-1 truncate text-left hover:underline hover:text-blue-600 cursor-pointer bg-transparent border-0 p-0 ${awayWin ? "font-bold text-blue-700" : "text-gray-700"}`}
+        >
+          {match.awayTeam.name}
+        </button>
+        {finished && hasScore && (
+          <span className={`font-black tabular-nums flex-shrink-0 ${awayWin ? "text-blue-700" : "text-gray-700"}`}>{aTotal}</span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function TimetableView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?: OnTeamClick }) {
+  const toKSTDate = (iso: string) =>
+    new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
+  const toKSTTime = (iso: string) =>
+    new Date(iso).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "Asia/Seoul" });
+  const getSlot = (iso: string) => {
+    const t = toKSTTime(iso);
+    return t === "00:00" ? "__notime__" : t;
+  };
+
+  const withDate = matches.filter(m => m.date);
+  const noDate = matches.filter(m => !m.date);
+
+  const dates = [...new Set(withDate.map(m => toKSTDate(m.date!)))].sort();
+  const allSlots = [...new Set(withDate.map(m => getSlot(m.date!)))];
+  const timeSlots = allSlots.filter(s => s !== "__notime__").sort();
+  if (allSlots.includes("__notime__")) timeSlots.push("__notime__");
+
+  // grid[slot][date] = Match[]
+  const grid: Record<string, Record<string, Match[]>> = {};
+  for (const m of withDate) {
+    const d = toKSTDate(m.date!);
+    const s = getSlot(m.date!);
+    if (!grid[s]) grid[s] = {};
+    if (!grid[s][d]) grid[s][d] = [];
+    grid[s][d].push(m);
+  }
+
+  const todayKST = new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date());
+
+  if (matches.length === 0) {
+    return <div className="card p-12 text-center text-gray-400">등록된 경기가 없습니다</div>;
+  }
+
+  return (
+    <div className="space-y-3">
+      {dates.length > 0 && (
+        <div className="card overflow-hidden">
+          <div className="overflow-x-auto">
+            <table
+              className="border-collapse"
+              style={{ minWidth: `${Math.max(dates.length * 156 + 64, 300)}px`, width: "100%" }}
+            >
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="sticky left-0 z-10 bg-gray-50 w-16 px-2 py-3 text-xs font-semibold text-gray-400 text-center border-r border-gray-200">
+                    시간
+                  </th>
+                  {dates.map(d => {
+                    const isToday = d === todayKST;
+                    const label = new Date(d + "T00:00:00").toLocaleDateString("ko-KR", {
+                      month: "numeric", day: "numeric", weekday: "short",
+                    });
+                    return (
+                      <th
+                        key={d}
+                        className={`px-2 py-3 text-xs font-semibold text-center border-r border-gray-100 last:border-r-0 ${
+                          isToday ? "text-blue-600 bg-blue-50" : "text-gray-700"
+                        }`}
+                        style={{ minWidth: "148px" }}
+                      >
+                        {label}
+                        {isToday && <span className="ml-1 text-[10px] bg-blue-600 text-white px-1 py-0.5 rounded-full">오늘</span>}
+                      </th>
+                    );
+                  })}
+                </tr>
+              </thead>
+              <tbody>
+                {timeSlots.map((slot, rowIdx) => (
+                  <tr key={slot} className={`border-b border-gray-100 last:border-b-0 ${rowIdx % 2 === 0 ? "" : "bg-gray-50/40"}`}>
+                    <td className="sticky left-0 z-10 bg-inherit w-16 px-2 py-3 text-center border-r border-gray-200">
+                      <span className={`text-xs font-bold ${slot === "__notime__" ? "text-gray-300" : "text-gray-500"}`}>
+                        {slot === "__notime__" ? "미정" : slot}
+                      </span>
+                    </td>
+                    {dates.map(d => {
+                      const cell = grid[slot]?.[d] ?? [];
+                      const isToday = d === todayKST;
+                      return (
+                        <td
+                          key={d}
+                          className={`px-2 py-2 align-top border-r border-gray-100 last:border-r-0 ${isToday ? "bg-blue-50/20" : ""}`}
+                        >
+                          {cell.length > 0 ? (
+                            <div className="space-y-1.5">
+                              {cell.map(m => <TimetableCell key={m.id} match={m} onTeamClick={onTeamClick} />)}
+                            </div>
+                          ) : (
+                            <div className="min-h-[40px]" />
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* 날짜 미정 경기 */}
+      {noDate.length > 0 && (
+        <div className="card p-4">
+          <h3 className="font-semibold text-sm text-gray-400 mb-3">일정 미정 ({noDate.length}경기)</h3>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            {noDate.map(m => <TimetableCell key={m.id} match={m} onTeamClick={onTeamClick} />)}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
