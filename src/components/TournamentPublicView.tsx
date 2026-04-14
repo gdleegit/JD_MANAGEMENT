@@ -762,7 +762,7 @@ function DivisionView({ tournament, onTeamClick }: { tournament: Tournament; onT
         return (
           <div key={group.id} className="space-y-3">
             {/* 순위표 */}
-            <div className="card p-4 sm:p-5">
+            <div className="card p-4 sm:p-5" style={{ borderLeft: `4px solid ${group.color || "#6366f1"}` }}>
               <h3 className="font-bold text-base sm:text-lg mb-4 flex items-center gap-2">
                 <span className="w-3 h-3 rounded-full" style={{ backgroundColor: group.color || "#6366f1" }} />
                 <span>{group.label || group.name}</span>
@@ -813,7 +813,7 @@ function DivisionView({ tournament, onTeamClick }: { tournament: Tournament; onT
 
             {/* 경기 일정 — 개별 리그 선택 시에만 표시 */}
             {activeGroup !== null && groupMatches.length > 0 && (
-              <div className="card p-4 sm:p-5">
+              <div className="card p-4 sm:p-5" style={{ borderLeft: `4px solid ${group.color || "#6366f1"}` }}>
                 <h3 className="font-bold text-base sm:text-lg mb-4">{group.label || group.name} 경기 일정</h3>
                 <div className="space-y-6">
                   {[...grouped.entries()].map(([dateKey, dayMatches]) => {
