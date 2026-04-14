@@ -1154,68 +1154,83 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
   const homeWin = finished && hasScore && hTotal > aTotal;
   const awayWin = finished && hasScore && aTotal > hTotal;
   const groupColor = match.group?.color || null;
+  const accentColor = groupColor || "#e2e8f0";
+  const cfg = STATUS_CFG[match.status] ?? STATUS_CFG.SCHEDULED;
 
   return (
     <div
-      className="rounded-lg p-2 text-xs bg-white"
+      className="rounded-xl overflow-hidden bg-white text-xs"
       style={{
-        border: "1px solid #e5e7eb",
-        borderLeft: groupColor ? `3px solid ${groupColor}` : "1px solid #e5e7eb",
+        border: "1.5px solid #e2e8f0",
+        borderTop: `3px solid ${accentColor}`,
+        boxShadow: "0 1px 4px rgba(0,0,0,0.07)",
       }}
     >
-      {/* 코트 / 라운드 / 그룹 */}
-      {(match.court || match.round || match.matchOrder != null || match.group) && (
-        <div className="flex items-center gap-1 mb-1 text-[10px]">
-          {match.court && <span className="text-purple-500 font-medium">{match.court}</span>}
-          {!match.court && (match.round || match.matchOrder != null) && (
-            <span className="text-blue-500 font-medium">{match.round ?? match.matchOrder}</span>
-          )}
-          {match.group && (
-            <span
-              className="px-1.5 py-0.5 rounded-full font-bold"
-              style={{ backgroundColor: groupColor || "#6366f1", color: getContrastColor(groupColor || "#6366f1") }}
-            >
-              {match.group.label || match.group.name}
-            </span>
+      {/* 메타 행: 코트 / 라운드 / 상태 */}
+      {(match.court || match.round || match.matchOrder != null || match.status !== "SCHEDULED") && (
+        <div className="flex items-center justify-between gap-1 px-2 pt-1.5 pb-0">
+          <div className="flex items-center gap-1 min-w-0">
+            {match.court && (
+              <span className="text-[10px] font-semibold text-purple-500 bg-purple-50 px-1.5 py-0.5 rounded-full truncate">{match.court}</span>
+            )}
+            {!match.court && (match.round || match.matchOrder != null) && (
+              <span className="text-[10px] font-semibold text-blue-500 bg-blue-50 px-1.5 py-0.5 rounded-full truncate">{match.round ?? `#${match.matchOrder}`}</span>
+            )}
+          </div>
+          {match.status !== "SCHEDULED" && (
+            <span className={`text-[10px] font-semibold px-1.5 py-0.5 rounded-full flex-shrink-0 ${cfg.cls}`}>{cfg.label}</span>
           )}
         </div>
       )}
-      {/* 홈팀 */}
-      <div className="flex items-center gap-1.5">
-        <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
-        <button
-          onClick={() => onTeamClick?.(match.homeTeam)}
-          className={`flex-1 truncate text-left hover:underline hover:text-blue-600 cursor-pointer bg-transparent border-0 p-0 ${homeWin ? "font-bold text-blue-700" : "text-gray-700"}`}
-        >
-          {match.homeTeam.name}
-        </button>
-        {finished && hasScore && (
-          <span className={`font-black tabular-nums flex-shrink-0 ${homeWin ? "text-blue-700" : "text-gray-700"}`}>{hTotal}</span>
-        )}
-      </div>
-      {/* 구분 */}
-      {finished && hasScore ? (
-        <div className="flex items-center gap-1 my-0.5">
+
+      <div className="px-2 py-2 space-y-1">
+        {/* 홈팀 */}
+        <div className={`flex items-center gap-1.5 transition-opacity ${awayWin ? "opacity-40" : ""}`}>
+          <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0 shadow-sm" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
+          <button
+            onClick={() => onTeamClick?.(match.homeTeam)}
+            className={`flex-1 truncate text-left cursor-pointer bg-transparent border-0 p-0 hover:text-blue-600 transition-colors ${homeWin ? "font-bold text-blue-700" : "font-medium text-gray-800"}`}
+          >
+            {match.homeTeam.name}
+          </button>
+          {finished && hasScore && (
+            <span className={`font-black tabular-nums flex-shrink-0 text-sm leading-none ${homeWin ? "text-blue-700" : "text-gray-500"}`}>{hTotal}</span>
+          )}
+        </div>
+
+        {/* 구분선 */}
+        <div className="flex items-center gap-1.5">
           <div className="flex-1 h-px bg-gray-100" />
-          <span className="text-[10px] text-gray-300 font-bold">:</span>
+          {!finished && <span className="text-[9px] text-gray-300 font-bold flex-shrink-0 tracking-widest">VS</span>}
           <div className="flex-1 h-px bg-gray-100" />
         </div>
-      ) : (
-        <div className="text-center text-[10px] text-gray-300 font-bold my-0.5">VS</div>
-      )}
-      {/* 원정팀 */}
-      <div className="flex items-center gap-1.5">
-        <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
-        <button
-          onClick={() => onTeamClick?.(match.awayTeam)}
-          className={`flex-1 truncate text-left hover:underline hover:text-blue-600 cursor-pointer bg-transparent border-0 p-0 ${awayWin ? "font-bold text-blue-700" : "text-gray-700"}`}
-        >
-          {match.awayTeam.name}
-        </button>
-        {finished && hasScore && (
-          <span className={`font-black tabular-nums flex-shrink-0 ${awayWin ? "text-blue-700" : "text-gray-700"}`}>{aTotal}</span>
-        )}
+
+        {/* 원정팀 */}
+        <div className={`flex items-center gap-1.5 transition-opacity ${homeWin ? "opacity-40" : ""}`}>
+          <span className="w-2.5 h-2.5 rounded-sm flex-shrink-0 shadow-sm" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
+          <button
+            onClick={() => onTeamClick?.(match.awayTeam)}
+            className={`flex-1 truncate text-left cursor-pointer bg-transparent border-0 p-0 hover:text-blue-600 transition-colors ${awayWin ? "font-bold text-blue-700" : "font-medium text-gray-800"}`}
+          >
+            {match.awayTeam.name}
+          </button>
+          {finished && hasScore && (
+            <span className={`font-black tabular-nums flex-shrink-0 text-sm leading-none ${awayWin ? "text-blue-700" : "text-gray-500"}`}>{aTotal}</span>
+          )}
+        </div>
       </div>
+
+      {/* 그룹 뱃지 */}
+      {match.group && (
+        <div className="px-2 pb-1.5 flex">
+          <span
+            className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+            style={{ backgroundColor: accentColor, color: getContrastColor(accentColor) }}
+          >
+            {match.group.label || match.group.name}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -1344,50 +1359,45 @@ function TimetableView({ matches, onTeamClick }: { matches: Match[]; onTeamClick
       {dates.length > 0 && (
         <div className="card overflow-hidden">
 
-          {/* 모바일: 날짜 네비게이터 */}
+          {/* 모바일: 날짜 칩 선택기 */}
           <div className="sm:hidden">
-            <div className="flex items-center gap-2 px-4 py-3 border-b border-gray-100">
-              <button
-                onClick={() => setMobileDateIdx(i => Math.max(0, i - 1))}
-                disabled={safeIdx === 0}
-                className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 disabled:opacity-25 flex-shrink-0"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <div className="flex-1 text-center">
-                <div className="text-sm font-bold text-gray-800">
-                  {new Date(dates[safeIdx] + "T00:00:00").toLocaleDateString("ko-KR", {
-                    month: "long", day: "numeric", weekday: "short",
-                  })}
-                  {dates[safeIdx] === todayKST && (
-                    <span className="ml-1.5 text-[11px] bg-blue-600 text-white px-1.5 py-0.5 rounded-full">오늘</span>
-                  )}
-                </div>
-                {dates.length > 1 && (
-                  <div className="flex items-center justify-center gap-1.5 mt-1.5">
-                    {dates.map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => setMobileDateIdx(i)}
-                        className={`rounded-full transition-all duration-200 ${
-                          i === safeIdx ? "w-4 h-2 bg-blue-600" : "w-2 h-2 bg-gray-200 hover:bg-gray-300"
-                        }`}
-                      />
-                    ))}
-                  </div>
-                )}
+            <div className="overflow-x-auto border-b border-gray-100">
+              <div className="flex gap-2 px-3 py-3" style={{ width: "max-content" }}>
+                {dates.map((d, i) => {
+                  const isToday = d === todayKST;
+                  const isSelected = i === safeIdx;
+                  const dt = new Date(d + "T00:00:00");
+                  const monthDay = dt.toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" });
+                  const weekday = dt.toLocaleDateString("ko-KR", { weekday: "short" });
+                  const cnt = (matchesByDate[d] || []).length;
+                  return (
+                    <button
+                      key={d}
+                      onClick={() => setMobileDateIdx(i)}
+                      className={`flex flex-col items-center px-3 py-2 rounded-2xl border transition-all duration-200 flex-shrink-0 min-w-[56px] ${
+                        isSelected
+                          ? "bg-blue-600 border-blue-600 shadow-md"
+                          : isToday
+                          ? "bg-blue-50 border-blue-200"
+                          : "bg-white border-gray-200"
+                      }`}
+                    >
+                      <span className={`text-[11px] font-bold leading-tight ${isSelected ? "text-white" : isToday ? "text-blue-700" : "text-gray-700"}`}>
+                        {weekday}
+                      </span>
+                      <span className={`text-xs font-black leading-tight mt-0.5 ${isSelected ? "text-white" : isToday ? "text-blue-700" : "text-gray-800"}`}>
+                        {monthDay}
+                      </span>
+                      <span className={`text-[10px] mt-1 font-semibold ${isSelected ? "text-blue-200" : "text-gray-400"}`}>
+                        {cnt}경기
+                      </span>
+                      {isToday && !isSelected && (
+                        <span className="w-1 h-1 rounded-full bg-blue-500 mt-1" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
-              <button
-                onClick={() => setMobileDateIdx(i => Math.min(dates.length - 1, i + 1))}
-                disabled={safeIdx === dates.length - 1}
-                className="w-8 h-8 flex items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 disabled:opacity-25 flex-shrink-0"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
             </div>
             <div style={{ minWidth: `${64 + COL_W + 8}px` }}>
               {renderGrid([dates[safeIdx]])}
