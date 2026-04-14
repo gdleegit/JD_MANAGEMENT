@@ -832,7 +832,7 @@ function DivisionView({ tournament, onTeamClick }: { tournament: Tournament; onT
                           <div className="flex-1 h-px bg-gray-200" />
                         </div>
                         <div className="space-y-2">
-                          {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge onTeamClick={onTeamClick} />)}
+                          {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge expandable onTeamClick={onTeamClick} />)}
                         </div>
                       </div>
                     );
@@ -859,7 +859,7 @@ function getYouTubeId(url: string): string | null {
   return m ? m[1] : null;
 }
 
-function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: { match: Match; showDate: boolean; showOrder?: boolean; hideGroupBadge?: boolean; onTeamClick?: OnTeamClick }) {
+function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onTeamClick }: { match: Match; showDate: boolean; showOrder?: boolean; hideGroupBadge?: boolean; expandable?: boolean; onTeamClick?: OnTeamClick }) {
   const finished = match.status === "FINISHED";
   const hTotal = (match.homeScore ?? 0) + (match.homeHandicap ?? 0);
   const aTotal = (match.awayScore ?? 0) + (match.awayHandicap ?? 0);
@@ -870,6 +870,9 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
   const cfg = STATUS_CFG[match.status] ?? STATUS_CFG.SCHEDULED;
   const referees = [match.referee, match.assistantReferee1, match.assistantReferee2].filter(Boolean);
   const [showVideo, setShowVideo] = useState(false);
+  const [expanded, setExpanded] = useState(false);
+  const hasDetails = match.goals.length > 0 || match.cards.length > 0 || referees.length > 0 || !!match.videoUrl;
+  const showDetails = !expandable || expanded;
 
   const groupColor = match.group?.color || "#6366f1";
   const youtubeId = match.videoUrl ? getYouTubeId(match.videoUrl) : null;
@@ -950,8 +953,21 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
         </div>
       </div>
 
+      {/* 접기/펼치기 버튼 */}
+      {expandable && hasDetails && (
+        <button
+          onClick={() => setExpanded(v => !v)}
+          className="w-full flex items-center justify-center gap-1 mt-2.5 text-xs text-gray-400 hover:text-blue-500 transition-colors py-0.5 cursor-pointer"
+        >
+          <span>{expanded ? "접기" : "상세기록"}</span>
+          <svg className={`w-3 h-3 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      )}
+
       {/* Goals + Cards */}
-      {(match.goals.length > 0 || match.cards.length > 0) && (() => {
+      {showDetails && (match.goals.length > 0 || match.cards.length > 0) && (() => {
         const hasHalf = match.goals.some(g => g.half) || match.cards.some(c => c.half);
         const goalTypeLabel = (type: string) => type === "OWN_GOAL" ? " OG" : type === "PENALTY" ? " PK" : "";
 
@@ -1068,7 +1084,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
       })()}
 
       {/* Referees */}
-      {referees.length > 0 && (
+      {showDetails && referees.length > 0 && (
         <div className="mt-3 pt-2 border-t border-gray-100 text-xs text-gray-400">
           {match.referee && <span>주심 {match.referee}</span>}
           {(match.assistantReferee1 || match.assistantReferee2) && (
@@ -1078,7 +1094,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, onTeamClick }: 
       )}
 
       {/* Video */}
-      {match.videoUrl && (
+      {showDetails && match.videoUrl && (
         <div className="mt-3 pt-2 border-t border-gray-100">
           {youtubeId ? (
             <>
