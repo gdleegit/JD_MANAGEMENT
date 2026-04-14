@@ -661,14 +661,14 @@ function ScheduleView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?
                         <span className="text-xs text-gray-400">{grp.matches.length}경기</span>
                       </div>
                       <div className="space-y-2">
-                        {grp.matches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge onTeamClick={onTeamClick} />)}
+                        {grp.matches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge expandable onTeamClick={onTeamClick} />)}
                       </div>
                     </div>
                   ))}
                 </div>
               ) : (
                 <div className="space-y-2">
-                  {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder onTeamClick={onTeamClick} />)}
+                  {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder expandable onTeamClick={onTeamClick} />)}
                 </div>
               )}
             </div>
