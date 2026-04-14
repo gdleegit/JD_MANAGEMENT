@@ -1175,11 +1175,11 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
       )}
 
       <div className="py-1.5 space-y-px">
-        {/* 홈팀 */}
+        {/* 홈팀 — 좌정렬, 왼쪽 팀색 border */}
         <button
           onClick={() => onTeamClick?.(match.homeTeam)}
-          className="w-full text-left truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 px-1.5 py-0.5 hover:text-blue-600 transition-colors"
-          style={{ borderLeft: `3px solid ${match.homeTeam.color || "#3b82f6"}`, paddingLeft: "6px" }}
+          className="w-full text-left truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 py-0.5 hover:text-blue-600 transition-colors"
+          style={{ borderLeft: `3px solid ${match.homeTeam.color || "#3b82f6"}`, paddingLeft: "6px", paddingRight: "6px" }}
         >
           {match.homeTeam.name}
         </button>
@@ -1187,11 +1187,11 @@ function TimetableCell({ match, onTeamClick }: { match: Match; onTeamClick?: OnT
         {/* 구분선 */}
         <div className="h-px bg-gray-100 mx-1.5" />
 
-        {/* 원정팀 */}
+        {/* 원정팀 — 우정렬, 오른쪽 팀색 border */}
         <button
           onClick={() => onTeamClick?.(match.awayTeam)}
-          className="w-full text-left truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 px-1.5 py-0.5 hover:text-blue-600 transition-colors"
-          style={{ borderLeft: `3px solid ${match.awayTeam.color || "#ef4444"}`, paddingLeft: "6px" }}
+          className="w-full text-right truncate text-[11px] font-bold text-gray-800 cursor-pointer bg-transparent border-0 py-0.5 hover:text-blue-600 transition-colors"
+          style={{ borderRight: `3px solid ${match.awayTeam.color || "#ef4444"}`, paddingRight: "6px", paddingLeft: "6px" }}
         >
           {match.awayTeam.name}
         </button>
