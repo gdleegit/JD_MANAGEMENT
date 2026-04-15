@@ -1148,11 +1148,11 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onT
 // ── 대진일정표 ───────────────────────────────────────────
 function TimetableCell({ match, onMatchClick }: { match: Match; onMatchClick?: (m: Match) => void }) {
   const groupColor = match.group?.color ?? null;
-  const bgColor  = groupColor ? groupColor + "45" : "#e8edf2";
-  const bdrColor = groupColor ? groupColor + "cc" : "#94a3b8";
+  const bgColor  = groupColor ? groupColor + "70" : "#d1d5db";
+  const bdrColor = groupColor ? groupColor + "ff" : "#6b7280";
   const shadow   = groupColor
-    ? `0 2px 8px ${groupColor}60, 0 1px 3px rgba(0,0,0,0.12)`
-    : "0 1px 4px rgba(0,0,0,0.12)";
+    ? `0 2px 8px ${groupColor}70, 0 1px 3px rgba(0,0,0,0.15)`
+    : "0 1px 4px rgba(0,0,0,0.15)";
 
   return (
     <div
@@ -1293,7 +1293,7 @@ function TimetableView({ matches }: { matches: Match[] }) {
         }
         return Object.entries(slotGroups).flatMap(([sk, slotMs]) => {
           const [sh, sm] = sk.split(":").map(Number);
-          const baseY = (sh - minH) * ROW_H + (sm === 0 ? 8 : ROW_H / 2 + 8);
+          const baseY = (sh - minH) * ROW_H + (sm === 0 ? 12 : ROW_H / 2 + 12);
           return slotMs.map((m, idx) => (
             <div
               key={m.id}
