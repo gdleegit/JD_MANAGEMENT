@@ -1262,7 +1262,7 @@ function TimetableView({ matches }: { matches: Match[] }) {
         <div
           key={i}
           className="absolute border-t border-dashed border-gray-200"
-          style={{ top: `${i * ROW_H + ROW_H / 2}px`, left: TIME_W, right: 0 }}
+          style={{ top: `${i * ROW_H + ROW_H / 2 + 8}px`, left: TIME_W, right: 0 }}
         />
       ))}
       {/* 열 구분선 */}
@@ -1293,7 +1293,7 @@ function TimetableView({ matches }: { matches: Match[] }) {
         }
         return Object.entries(slotGroups).flatMap(([sk, slotMs]) => {
           const [sh, sm] = sk.split(":").map(Number);
-          const baseY = (sh - minH) * ROW_H + (sm === 0 ? 8 : ROW_H / 2);
+          const baseY = (sh - minH) * ROW_H + (sm === 0 ? 8 : ROW_H / 2 + 8);
           return slotMs.map((m, idx) => (
             <div
               key={m.id}
