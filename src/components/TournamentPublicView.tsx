@@ -1246,23 +1246,25 @@ function TimetableView({ matches }: { matches: Match[] }) {
       {/* 시간선 + 레이블 */}
       {hours.map((h, i) => (
         <div key={h} className="absolute left-0 right-0 flex" style={{ top: `${i * ROW_H}px` }}>
-          <div className="flex-shrink-0 flex justify-center pt-1" style={{ width: TIME_W }}>
-            <span className="text-[10px] font-bold text-gray-400">{String(h).padStart(2, "0")}:00</span>
+          <div className="flex-shrink-0 flex justify-center pt-0.5" style={{ width: TIME_W }}>
+            <span className="text-[11px] font-extrabold text-gray-700 leading-none bg-white/95 px-1 py-0.5 rounded-sm border border-gray-200 shadow-sm">
+              {String(h).padStart(2, "0")}:00
+            </span>
           </div>
-          <div className="flex-1 border-t border-gray-200 mt-2" />
+          <div className="flex-1 border-t-2 border-gray-400" />
         </div>
       ))}
       {/* 마지막 시간선 */}
       <div className="absolute left-0 right-0 flex" style={{ top: `${hours.length * ROW_H}px` }}>
         <div className="flex-shrink-0" style={{ width: TIME_W }} />
-        <div className="flex-1 border-t border-gray-100" />
+        <div className="flex-1 border-t-2 border-gray-400" />
       </div>
       {/* :30 점선 */}
       {hours.map((_, i) => (
         <div
           key={i}
-          className="absolute border-t border-dashed border-gray-200"
-          style={{ top: `${i * ROW_H + ROW_H / 2 + 8}px`, left: TIME_W, right: 0 }}
+          className="absolute border-t border-dashed border-gray-300"
+          style={{ top: `${i * ROW_H + ROW_H / 2}px`, left: TIME_W, right: 0 }}
         />
       ))}
       {/* 열 구분선 */}
@@ -1293,7 +1295,7 @@ function TimetableView({ matches }: { matches: Match[] }) {
         }
         return Object.entries(slotGroups).flatMap(([sk, slotMs]) => {
           const [sh, sm] = sk.split(":").map(Number);
-          const baseY = (sh - minH) * ROW_H + (sm === 0 ? 12 : ROW_H / 2 + 12);
+          const baseY = (sh - minH) * ROW_H + (sm === 0 ? 2 : ROW_H / 2 + 2);
           return slotMs.map((m, idx) => (
             <div
               key={m.id}
