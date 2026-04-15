@@ -1148,11 +1148,11 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onT
 // ── 대진일정표 ───────────────────────────────────────────
 function TimetableCell({ match, onMatchClick }: { match: Match; onMatchClick?: (m: Match) => void }) {
   const groupColor = match.group?.color ?? null;
-  const bgColor  = groupColor ? groupColor + "18" : "#f8fafc";
-  const bdrColor = groupColor ? groupColor + "55" : "#e2e8f0";
+  const bgColor  = groupColor ? groupColor + "45" : "#e8edf2";
+  const bdrColor = groupColor ? groupColor + "cc" : "#94a3b8";
   const shadow   = groupColor
-    ? `0 2px 6px ${groupColor}35, 0 1px 2px rgba(0,0,0,0.07)`
-    : "0 1px 4px rgba(0,0,0,0.07)";
+    ? `0 2px 8px ${groupColor}60, 0 1px 3px rgba(0,0,0,0.12)`
+    : "0 1px 4px rgba(0,0,0,0.12)";
 
   return (
     <div
@@ -1249,7 +1249,7 @@ function TimetableView({ matches }: { matches: Match[] }) {
           <div className="flex-shrink-0 flex justify-center pt-1" style={{ width: TIME_W }}>
             <span className="text-[10px] font-bold text-gray-400">{String(h).padStart(2, "0")}:00</span>
           </div>
-          <div className="flex-1 border-t border-gray-100 mt-2" />
+          <div className="flex-1 border-t border-gray-200 mt-2" />
         </div>
       ))}
       {/* 마지막 시간선 */}
@@ -1261,7 +1261,7 @@ function TimetableView({ matches }: { matches: Match[] }) {
       {hours.map((_, i) => (
         <div
           key={i}
-          className="absolute border-t border-dashed border-gray-100"
+          className="absolute border-t border-dashed border-gray-200"
           style={{ top: `${i * ROW_H + ROW_H / 2}px`, left: TIME_W, right: 0 }}
         />
       ))}
@@ -1293,7 +1293,7 @@ function TimetableView({ matches }: { matches: Match[] }) {
         }
         return Object.entries(slotGroups).flatMap(([sk, slotMs]) => {
           const [sh, sm] = sk.split(":").map(Number);
-          const baseY = (sh - minH) * ROW_H + (sm === 0 ? 6 : ROW_H / 2);
+          const baseY = (sh - minH) * ROW_H + (sm === 0 ? 8 : ROW_H / 2);
           return slotMs.map((m, idx) => (
             <div
               key={m.id}
