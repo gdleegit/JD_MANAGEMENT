@@ -1167,12 +1167,12 @@ function TimetableCell({ match, onMatchClick }: { match: Match; onMatchClick?: (
       )}
 
       <div className="py-1">
-        {/* 홈팀 — 이름 우측에 팀색 원 */}
-        <div className="flex items-center gap-1 py-0.5" style={{ paddingLeft: "6px", paddingRight: "6px" }}>
-          <span className="truncate text-[11px] font-bold flex-1" style={{ color: textColor }}>
-            {match.homeTeam.name}
-          </span>
-          <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
+        {/* 홈팀 */}
+        <div
+          className="truncate text-[11px] font-bold py-0.5"
+          style={{ color: textColor, borderLeft: `3px solid ${dimColor}`, paddingLeft: "6px", paddingRight: "6px" }}
+        >
+          {match.homeTeam.name}
         </div>
 
         {/* 중간: 라운드 */}
@@ -1186,12 +1186,12 @@ function TimetableCell({ match, onMatchClick }: { match: Match; onMatchClick?: (
           <div className="flex-1 h-px" style={{ backgroundColor: dimColor }} />
         </div>
 
-        {/* 원정팀 — 이름 좌측에 팀색 원 */}
-        <div className="flex items-center gap-1 py-0.5" style={{ paddingLeft: "6px", paddingRight: "6px" }}>
-          <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: match.awayTeam.color || "#ef4444" }} />
-          <span className="truncate text-[11px] font-bold flex-1 text-right" style={{ color: textColor }}>
-            {match.awayTeam.name}
-          </span>
+        {/* 원정팀 */}
+        <div
+          className="truncate text-[11px] font-bold py-0.5 text-right"
+          style={{ color: textColor, borderRight: `3px solid ${dimColor}`, paddingRight: "6px", paddingLeft: "6px" }}
+        >
+          {match.awayTeam.name}
         </div>
       </div>
     </div>
