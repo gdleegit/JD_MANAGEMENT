@@ -1176,7 +1176,8 @@ function TimetableCell({ match, onMatchClick }: { match: Match; onMatchClick?: (
 
 function TimetableView({ matches }: { matches: Match[] }) {
   const ROW_H = 62;
-  const MIN_COL_W = 82; // 모바일: 4날짜가 375px에 들어오는 최소 너비
+  const MIN_COL_W = 82;  // 모바일: 4날짜가 375px에 들어오는 최소 너비
+  const MAX_COL_W = 140; // PC: 이 이상 벌어지지 않도록 캡
   const TIME_W = 44;
   const CARD_H = 58;
 
@@ -1201,7 +1202,7 @@ function TimetableView({ matches }: { matches: Match[] }) {
     const update = () => {
       if (!containerRef.current || dates.length === 0) return;
       const available = containerRef.current.clientWidth - TIME_W;
-      const w = Math.max(MIN_COL_W, Math.floor(available / dates.length));
+      const w = Math.min(MAX_COL_W, Math.max(MIN_COL_W, Math.floor(available / dates.length)));
       setCOL_W(w);
     };
     update();
