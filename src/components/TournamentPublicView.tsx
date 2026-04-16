@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import BracketView from "./BracketView";
 
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
@@ -1175,12 +1175,14 @@ function TimetableCell({ match, onMatchClick }: { match: Match; onMatchClick?: (
 }
 
 function TimetableView({ matches }: { matches: Match[] }) {
-  const ROW_H = 62;  // :00 카드가 다음 시간선에 닿도록 설정
-  const COL_W = 82;  // px per date column (4 dates visible on 375px mobile)
-  const TIME_W = 44; // px for time column
-  const CARD_H = 58; // estimated card height (no score, no status)
+  const ROW_H = 62;
+  const MIN_COL_W = 82; // 모바일: 4날짜가 375px에 들어오는 최소 너비
+  const TIME_W = 44;
+  const CARD_H = 58;
 
   const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
+  const [COL_W, setCOL_W] = useState(MIN_COL_W);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const toKSTDate = (iso: string) =>
     new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
@@ -1193,6 +1195,19 @@ function TimetableView({ matches }: { matches: Match[] }) {
   const withDate = matches.filter(m => m.date);
   const noDate = matches.filter(m => !m.date);
   const dates = [...new Set(withDate.map(m => toKSTDate(m.date!)))].sort();
+
+  // PC에서 컨테이너 너비에 맞게 열 너비 확장
+  useEffect(() => {
+    const update = () => {
+      if (!containerRef.current || dates.length === 0) return;
+      const available = containerRef.current.clientWidth - TIME_W;
+      const w = Math.max(MIN_COL_W, Math.floor(available / dates.length));
+      setCOL_W(w);
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, [dates.length]);
 
   if (matches.length === 0)
     return <div className="card p-12 text-center text-gray-400">등록된 경기가 없습니다</div>;
@@ -1294,8 +1309,8 @@ function TimetableView({ matches }: { matches: Match[] }) {
     <div className="space-y-3">
       {dates.length > 0 && (
         <div className="card overflow-hidden">
-          <div className="overflow-x-auto">
-            <div style={{ minWidth: `${TIME_W + dates.length * COL_W}px` }}>
+          <div className="overflow-x-auto" ref={containerRef}>
+            <div style={{ minWidth: `${TIME_W + dates.length * COL_W}px`, width: "100%" }}>
               {/* 날짜 헤더 */}
               <div className="flex border-b border-gray-200 bg-gray-50 sticky top-0 z-20">
                 <div
