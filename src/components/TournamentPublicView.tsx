@@ -633,13 +633,6 @@ function ScheduleView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?
       {/* 경기 목록 */}
       <div className="space-y-8">
         {visibleEntries.map(([dateKey, dayMatches]) => {
-          const hasGroups = dayMatches.some((m) => m.group);
-          const byGroup = new Map<string, { label: string; color: string; matches: Match[] }>();
-          for (const m of dayMatches) {
-            const gKey = m.group?.id ?? "__none__";
-            if (!byGroup.has(gKey)) byGroup.set(gKey, { label: m.group?.label || m.group?.name || "미배정", color: m.group?.color || "#9ca3af", matches: [] });
-            byGroup.get(gKey)!.matches.push(m);
-          }
           const isToday = dateKey === todayKST;
 
           return (
@@ -658,25 +651,9 @@ function ScheduleView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?
                 </div>
               )}
 
-              {hasGroups ? (
-                <div className="space-y-4">
-                  {[...byGroup.entries()].map(([gKey, grp]) => (
-                    <div key={gKey}>
-                      <div className="flex items-center gap-2 mb-2 pl-2 border-l-[3px]" style={{ borderLeftColor: grp.color }}>
-                        <span className="text-xs font-bold text-gray-700">{grp.label}</span>
-                        <span className="text-xs text-gray-400">{grp.matches.length}경기</span>
-                      </div>
-                      <div className="space-y-2">
-                        {grp.matches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder hideGroupBadge expandable onTeamClick={onTeamClick} />)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder expandable onTeamClick={onTeamClick} />)}
-                </div>
-              )}
+              <div className="space-y-2">
+                {dayMatches.map((m) => <MatchCard key={m.id} match={m} showDate={false} showOrder expandable onTeamClick={onTeamClick} />)}
+              </div>
             </div>
           );
         })}
