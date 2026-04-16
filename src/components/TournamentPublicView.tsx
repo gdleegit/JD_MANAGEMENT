@@ -555,10 +555,9 @@ function ScheduleView({ matches, onTeamClick }: { matches: Match[]; onTeamClick?
   const toKSTDate = (iso: string) => new Intl.DateTimeFormat("sv-SE", { timeZone: "Asia/Seoul" }).format(new Date(iso));
   const byDate = new Map<string, Match[]>();
   const sorted = [...matches].sort((a, b) => {
-    const da = a.date ? toKSTDate(a.date) : "9999-99-99";
-    const db = b.date ? toKSTDate(b.date) : "9999-99-99";
-    if (da !== db) return da.localeCompare(db);
-    return (a.matchOrder ?? 999) - (b.matchOrder ?? 999);
+    const da = a.date ? new Date(a.date).getTime() : Infinity;
+    const db = b.date ? new Date(b.date).getTime() : Infinity;
+    return da - db;
   });
   for (const m of sorted) {
     const key = m.date ? toKSTDate(m.date) : "__none__";
