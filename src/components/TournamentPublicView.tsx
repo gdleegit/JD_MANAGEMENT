@@ -1317,7 +1317,7 @@ function TimetableView({ matches }: { matches: Match[] }) {
                         {dt.toLocaleDateString("ko-KR", { month: "long", day: "numeric" })}
                       </span>
                       <span className={`text-[10px] font-semibold leading-tight ${isToday ? "text-blue-500" : "text-gray-400"}`}>
-                        {dt.toLocaleDateString("ko-KR", { weekday: "short" })}
+                        ({dt.toLocaleDateString("ko-KR", { weekday: "short" })})
                       </span>
                       {isToday && <span className="w-1 h-1 rounded-full bg-blue-500 mt-0.5" />}
                     </div>
