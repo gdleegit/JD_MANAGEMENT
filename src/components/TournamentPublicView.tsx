@@ -1223,7 +1223,7 @@ function TimetableView({ matches }: { matches: Match[] }) {
         <div key={h} className="absolute left-0 right-0 flex" style={{ top: `${i * ROW_H}px` }}>
           <div className="flex-shrink-0 flex justify-center pt-0.5" style={{ width: TIME_W }}>
             <span className="text-[11px] font-extrabold text-gray-700 leading-none bg-white/95 px-1 py-0.5 rounded-sm border border-gray-200 shadow-sm">
-              {String(h).padStart(2, "0")}:00
+              {h}시
             </span>
           </div>
           <div className="flex-1 border-t-2 border-gray-400" />
@@ -1313,11 +1313,11 @@ function TimetableView({ matches }: { matches: Match[] }) {
                       className={`flex flex-col items-center justify-center py-2 border-r border-gray-100 last:border-r-0 ${isToday ? "bg-blue-50" : ""}`}
                       style={{ width: COL_W }}
                     >
+                      <span className={`text-xs font-black leading-tight ${isToday ? "text-blue-700" : "text-gray-700"}`}>
+                        {dt.toLocaleDateString("ko-KR", { month: "long", day: "numeric" })}
+                      </span>
                       <span className={`text-[10px] font-semibold leading-tight ${isToday ? "text-blue-500" : "text-gray-400"}`}>
                         {dt.toLocaleDateString("ko-KR", { weekday: "short" })}
-                      </span>
-                      <span className={`text-xs font-black leading-tight ${isToday ? "text-blue-700" : "text-gray-700"}`}>
-                        {dt.toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" })}
                       </span>
                       {isToday && <span className="w-1 h-1 rounded-full bg-blue-500 mt-0.5" />}
                     </div>
