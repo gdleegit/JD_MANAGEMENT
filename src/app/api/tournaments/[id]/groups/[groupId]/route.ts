@@ -23,7 +23,6 @@ export async function PATCH(req: NextRequest, { params }: Params) {
     include: { teams: { include: { team: true } } },
   });
   revalidatePath(`/tournaments/${id}`);
-  revalidatePath("/tournaments");
   return NextResponse.json(group);
 }
 
@@ -34,6 +33,5 @@ export async function DELETE(_req: NextRequest, { params }: Params) {
   const { id, groupId } = await params;
   await prisma.group.delete({ where: { id: groupId } });
   revalidatePath(`/tournaments/${id}`);
-  revalidatePath("/tournaments");
   return NextResponse.json({ ok: true });
 }

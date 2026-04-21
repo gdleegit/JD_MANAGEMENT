@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/auth";
+import { revalidatePath } from "next/cache";
 
 // 참가팀 + 선수 목록 조회 (public, lazy load용)
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -27,6 +28,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       data: { tournamentId, teamId, seed },
       include: { team: true },
     });
+    revalidatePath(`/tournaments/${tournamentId}`);
+    revalidatePath("/tournaments");
     return NextResponse.json(entry, { status: 201 });
   } catch (e: unknown) {
     if ((e as { code?: string }).code === "P2002") {
@@ -45,5 +48,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const { teamId } = await req.json();
 
   await prisma.tournamentTeam.deleteMany({ where: { tournamentId, teamId } });
+  revalidatePath(`/tournaments/${tournamentId}`);
+  revalidatePath("/tournaments");
   return NextResponse.json({ ok: true });
 }

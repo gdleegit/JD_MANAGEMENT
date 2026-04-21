@@ -61,7 +61,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   if (scoreOrStatusChanged) {
     revalidatePath(`/tournaments/${match.tournamentId}`);
-    revalidatePath("/tournaments");
   }
 
   return NextResponse.json(match);
@@ -72,6 +71,11 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   if (!session) return NextResponse.json({ error: "인증 필요" }, { status: 401 });
 
   const { id } = await params;
+  const match = await prisma.match.findUnique({ where: { id }, select: { tournamentId: true } });
   await prisma.match.delete({ where: { id } });
+  if (match) {
+    revalidatePath(`/tournaments/${match.tournamentId}`);
+    revalidatePath("/tournaments");
+  }
   return NextResponse.json({ ok: true });
 }

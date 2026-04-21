@@ -10,10 +10,21 @@ export default async function TournamentsPage() {
     orderBy: [{ startDate: "desc" }, { createdAt: "desc" }],
     include: {
       _count: { select: { teams: true, matches: true } },
-      teams: { include: { team: { include: { _count: { select: { players: true } } } } } },
+      teams: { select: { teamId: true } },
       sponsors: { orderBy: [{ order: "asc" }, { createdAt: "asc" }] },
     },
   });
+
+  const allTeamIds = [...new Set(rawTournaments.flatMap(t => t.teams.map(tt => tt.teamId)))];
+  let playerCountByTeam: Record<string, number> = {};
+  if (allTeamIds.length > 0) {
+    const rows = await prisma.player.groupBy({
+      by: ["teamId"],
+      where: { teamId: { in: allTeamIds } },
+      _count: { id: true },
+    });
+    playerCountByTeam = Object.fromEntries(rows.map(r => [r.teamId, r._count.id]));
+  }
 
   const STATUS: Record<string, { label: string; badgeCls: string; borderColor: string }> = {
     UPCOMING: { label: "예정",   badgeCls: "bg-gray-100 text-gray-500",           borderColor: "#d1d5db" },
@@ -71,7 +82,7 @@ export default async function TournamentsPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {tournaments.map((t) => {
             const st = STATUS[calcStatus(t)] || STATUS.UPCOMING;
-            const playerCount = t.teams.reduce((sum, tt) => sum + tt.team._count.players, 0);
+            const playerCount = t.teams.reduce((sum, tt) => sum + (playerCountByTeam[tt.teamId] ?? 0), 0);
             const dateStr = t.startDate
               ? new Date(t.startDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", year: "numeric", month: "long", day: "numeric" })
                 + (t.endDate ? ` ~ ${new Date(t.endDate).toLocaleDateString("ko-KR", { timeZone: "Asia/Seoul", month: "long", day: "numeric" })}` : "")

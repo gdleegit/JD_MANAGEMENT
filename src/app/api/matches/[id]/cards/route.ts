@@ -25,7 +25,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const match = await prisma.match.findUnique({ where: { id: matchId }, select: { tournamentId: true } });
   if (match) {
     revalidatePath(`/tournaments/${match.tournamentId}`);
-    revalidatePath("/tournaments");
   }
 
   return NextResponse.json({ card }, { status: 201 });
@@ -43,7 +42,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const match = await prisma.match.findUnique({ where: { id: matchId }, select: { tournamentId: true } });
   if (match) {
     revalidatePath(`/tournaments/${match.tournamentId}`);
-    revalidatePath("/tournaments");
   }
 
   return NextResponse.json({ ok: true });

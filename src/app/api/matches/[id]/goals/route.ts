@@ -53,7 +53,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const updated = await recalcMatchScore(matchId);
     if (updated) {
       revalidatePath(`/tournaments/${updated.tournamentId}`);
-      revalidatePath("/tournaments");
     }
 
     const goals = await prisma.goal.findMany({ where: { matchId }, include: { player: true, team: true } });
@@ -82,7 +81,6 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   const updated = await recalcMatchScore(matchId);
   if (updated) {
     revalidatePath(`/tournaments/${updated.tournamentId}`);
-    revalidatePath("/tournaments");
   }
 
   return NextResponse.json(
@@ -108,7 +106,6 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     include: { player: true, team: true },
   });
 
-  revalidatePath(`/tournaments`);
   const match = await prisma.match.findUnique({ where: { id: matchId } });
   if (match) revalidatePath(`/tournaments/${match.tournamentId}`);
 
@@ -126,7 +123,6 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const updated = await recalcMatchScore(matchId);
   if (updated) {
     revalidatePath(`/tournaments/${updated.tournamentId}`);
-    revalidatePath("/tournaments");
   }
 
   return NextResponse.json({ homeScore: updated?.homeScore ?? 0, awayScore: updated?.awayScore ?? 0 });
