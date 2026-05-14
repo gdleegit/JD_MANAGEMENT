@@ -54,15 +54,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     },
   });
 
-  // GROUP: 스코어 또는 상태 변경 시에만 재계산
-  const scoreOrStatusChanged = homeScore !== undefined || awayScore !== undefined || autoStatus !== undefined;
+  // GROUP: 스코어·상태·기권패 변경 시 재계산
+  const scoreOrStatusChanged = homeScore !== undefined || awayScore !== undefined || autoStatus !== undefined || body.forfeitTeamId !== undefined;
   if (match.groupId && scoreOrStatusChanged) {
     await recalcGroupStandings(match.groupId);
   }
 
-  if (scoreOrStatusChanged) {
-    revalidatePath(`/tournaments/${match.tournamentId}`);
-  }
+  revalidatePath(`/tournaments/${match.tournamentId}`);
+  revalidatePath("/tournaments");
 
   return NextResponse.json(match);
 }

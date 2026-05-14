@@ -77,6 +77,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const [pendingGoals, setPendingGoals] = useState<PendingGoal[]>([]);
   const [editingGoalId, setEditingGoalId] = useState<string | null>(null);
   const [editGoalForm, setEditGoalForm] = useState({ half: "1", minute: "" });
+  const [forfeitLoading, setForfeitLoading] = useState(false);
 
   const isCardType = (type: string) => type === "YELLOW" || type === "RED";
 
@@ -168,6 +169,39 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
     } else {
       await matchFetch;
       setCurrentMatch(m => ({ ...m, status: effectiveStatus, homeScore: parsedHome, awayScore: parsedAway }));
+    }
+  };
+
+  // 기권패 즉시 저장 (별도 Save 버튼 불필요)
+  const applyForfeit = async (newForfeit: "home" | "away" | "") => {
+    setForfeitLoading(true);
+    try {
+      const isRemoving = newForfeit === "";
+      const newHomeScore = isRemoving ? undefined : (newForfeit === "home" ? 0 : 1);
+      const newAwayScore = isRemoving ? undefined : (newForfeit === "home" ? 1 : 0);
+      const body: Record<string, unknown> = {
+        forfeitTeamId: newForfeit === "home" ? match.homeTeam.id : newForfeit === "away" ? match.awayTeam.id : null,
+      };
+      if (!isRemoving) {
+        body.homeScore = newHomeScore;
+        body.awayScore = newAwayScore;
+        body.status = "FINISHED";
+      }
+      const res = await fetch(`/api/matches/${match.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) return;
+      setForfeit(newForfeit);
+      if (!isRemoving) {
+        setHomeScore(newHomeScore!.toString());
+        setAwayScore(newAwayScore!.toString());
+        setStatus("FINISHED");
+        setCurrentMatch(m => ({ ...m, homeScore: newHomeScore!, awayScore: newAwayScore!, status: "FINISHED" }));
+      }
+    } finally {
+      setForfeitLoading(false);
     }
   };
 
@@ -336,29 +370,21 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
         <div className="mt-4 pt-4 border-t border-gray-100">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">기권패</span>
-            <span className="text-xs text-gray-300">(선택된 팀이 기권 — 상대팀 1골 차 승리)</span>
+            <span className="text-xs text-gray-300">(클릭 즉시 저장 · 상대팀 1골 차 승리)</span>
           </div>
           <div className="flex gap-2">
             {([{ value: "home", team: match.homeTeam }, { value: "away", team: match.awayTeam }] as const).map(({ value, team }) => (
               <button
                 key={value}
-                onClick={() => {
-                  if (forfeit === value) {
-                    setForfeit("");
-                  } else {
-                    setForfeit(value);
-                    setHomeScore(value === "home" ? "0" : "1");
-                    setAwayScore(value === "home" ? "1" : "0");
-                    setStatus("FINISHED");
-                  }
-                }}
-                className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold border transition-all ${
+                disabled={forfeitLoading}
+                onClick={() => { void applyForfeit(forfeit === value ? "" : value); }}
+                className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold border transition-all disabled:opacity-50 ${
                   forfeit === value
                     ? "bg-red-50 text-red-700 border-red-300 ring-2 ring-offset-1 ring-red-400"
                     : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"
                 }`}
               >
-                {team.name} 기권패
+                {forfeitLoading ? "저장 중..." : `${team.name} 기권패`}
               </button>
             ))}
           </div>
