@@ -50,6 +50,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       ...(body.videoUrl !== undefined && { videoUrl: body.videoUrl || null }),
       ...(body.homeHandicap !== undefined && { homeHandicap: Number(body.homeHandicap) }),
       ...(body.awayHandicap !== undefined && { awayHandicap: Number(body.awayHandicap) }),
+      ...(body.forfeitTeamId !== undefined && { forfeitTeamId: body.forfeitTeamId ?? null }),
     },
   });
 

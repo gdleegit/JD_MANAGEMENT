@@ -17,6 +17,7 @@ type Match = {
   awayScore?: number | null;
   homeHandicap?: number | null;
   awayHandicap?: number | null;
+  forfeitTeamId?: string | null;
   date?: string | null;
   venue?: string | null;
   court?: string | null;
@@ -849,6 +850,9 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onT
   const homeWin = finished && hasScore && hTotal > aTotal;
   const awayWin = finished && hasScore && aTotal > hTotal;
   const hasHandicap = (match.homeHandicap ?? 0) > 0 || (match.awayHandicap ?? 0) > 0;
+  const forfeitHome = match.forfeitTeamId === match.homeTeam.id;
+  const forfeitAway = match.forfeitTeamId === match.awayTeam.id;
+  const hasForfeit = forfeitHome || forfeitAway;
   const cfg = STATUS_CFG[match.status] ?? STATUS_CFG.SCHEDULED;
   const referees = [match.referee, match.assistantReferee1, match.assistantReferee2].filter(Boolean);
   const [showVideo, setShowVideo] = useState(false);
@@ -899,7 +903,7 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onT
       </div>
 
       {/* Score row */}
-      <div className={`flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2.5 ${hasHandicap && finished && hasScore ? "pb-5" : ""}`}>
+      <div className={`flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2.5 ${(hasHandicap || hasForfeit) && finished && hasScore ? "pb-5" : ""}`}>
         <div className={`flex-1 flex items-center justify-end gap-2 min-w-0 ${homeWin ? "text-blue-700" : "text-gray-800"}`}>
           <button onClick={() => onTeamClick?.(match.homeTeam)} className="font-bold text-right text-sm sm:text-base truncate leading-tight hover:underline hover:text-blue-600 transition-colors text-inherit bg-transparent border-0 p-0 cursor-pointer max-w-full">{match.homeTeam.name}</button>
           <span className="w-4 h-4 rounded flex-shrink-0 shadow-sm" style={{ backgroundColor: match.homeTeam.color || "#3b82f6" }} />
@@ -914,6 +918,11 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onT
                     +{match.homeHandicap}골 핸디
                   </span>
                 )}
+                {forfeitHome && (
+                  <span className="absolute top-full left-1/2 -translate-x-1/2 text-[10px] text-red-500 font-semibold whitespace-nowrap mt-0.5">
+                    기권패
+                  </span>
+                )}
               </div>
               <span className="text-gray-300 font-black text-xl flex-shrink-0">:</span>
               <div className="relative">
@@ -921,6 +930,11 @@ function MatchCard({ match, showDate, showOrder, hideGroupBadge, expandable, onT
                 {(match.awayHandicap ?? 0) > 0 && (
                   <span className="absolute top-full left-1/2 -translate-x-1/2 text-[10px] text-purple-500 font-semibold whitespace-nowrap mt-0.5">
                     +{match.awayHandicap}골 핸디
+                  </span>
+                )}
+                {forfeitAway && (
+                  <span className="absolute top-full left-1/2 -translate-x-1/2 text-[10px] text-red-500 font-semibold whitespace-nowrap mt-0.5">
+                    기권패
                   </span>
                 )}
               </div>

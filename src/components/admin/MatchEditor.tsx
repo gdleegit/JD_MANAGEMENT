@@ -16,6 +16,7 @@ type Match = {
   awayScore?: number | null;
   homeHandicap?: number | null;
   awayHandicap?: number | null;
+  forfeitTeamId?: string | null;
   date?: string | null;
   venue?: string | null;
   court?: string | null;
@@ -51,6 +52,11 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
   const [awayScore, setAwayScore]       = useState(match.awayScore?.toString() ?? "");
   const [homeHandicap, setHomeHandicap] = useState((match.homeHandicap ?? 0).toString());
   const [awayHandicap, setAwayHandicap] = useState((match.awayHandicap ?? 0).toString());
+  const [forfeit, setForfeit] = useState<"home" | "away" | "">(() => {
+    if (match.forfeitTeamId === match.homeTeam.id) return "home";
+    if (match.forfeitTeamId === match.awayTeam.id) return "away";
+    return "";
+  });
   const [date, setDate] = useState(() => {
     if (!match.date) return "";
     return new Intl.DateTimeFormat("sv-SE", {
@@ -125,6 +131,7 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
       videoUrl: videoUrl || null,
       homeHandicap: homeHandicap !== "" ? parseInt(homeHandicap) : 0,
       awayHandicap: awayHandicap !== "" ? parseInt(awayHandicap) : 0,
+      forfeitTeamId: forfeit === "home" ? match.homeTeam.id : forfeit === "away" ? match.awayTeam.id : null,
     };
     if (pendingGoals.length === 0) {
       matchPatchBody.homeScore = parsedHome;
@@ -323,6 +330,38 @@ export default function MatchEditor({ match, tournament, onBack }: { match: Matc
               <span className="text-gray-400 ml-1">(실제골 + 핸디캡)</span>
             </p>
           )}
+        </div>
+
+        {/* 기권패 */}
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">기권패</span>
+            <span className="text-xs text-gray-300">(선택된 팀이 기권 — 상대팀 1골 차 승리)</span>
+          </div>
+          <div className="flex gap-2">
+            {([{ value: "home", team: match.homeTeam }, { value: "away", team: match.awayTeam }] as const).map(({ value, team }) => (
+              <button
+                key={value}
+                onClick={() => {
+                  if (forfeit === value) {
+                    setForfeit("");
+                  } else {
+                    setForfeit(value);
+                    setHomeScore(value === "home" ? "0" : "1");
+                    setAwayScore(value === "home" ? "1" : "0");
+                    setStatus("FINISHED");
+                  }
+                }}
+                className={`flex-1 py-2 px-3 rounded-lg text-xs font-semibold border transition-all ${
+                  forfeit === value
+                    ? "bg-red-50 text-red-700 border-red-300 ring-2 ring-offset-1 ring-red-400"
+                    : "bg-white text-gray-400 border-gray-200 hover:border-gray-300"
+                }`}
+              >
+                {team.name} 기권패
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
