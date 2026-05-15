@@ -5,10 +5,21 @@ import { useState, useEffect, useRef } from "react";
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
 type DraftRow = { key: string; name: string; number: string; position: string };
 
-const POSITIONS = ["GK", "DF", "MF", "FW"];
+const SPORT_POSITIONS: Record<string, string[]> = {
+  FOOTBALL:    ["GK", "DF", "MF", "FW"],
+  FUTSAL:      ["GK", "DF", "MF", "FW"],
+  BASKETBALL:  ["PG", "SG", "SF", "PF", "C"],
+  VOLLEYBALL:  ["S", "OH", "MB", "OPP", "L"],
+  BASEBALL:    ["P", "C", "1B", "2B", "3B", "SS", "OF"],
+};
+// GOLF, BADMINTON, TABLE_TENNIS, TENNIS, BILLIARDS → 포지션 없음
+
 const newRow = (): DraftRow => ({ key: Math.random().toString(36).slice(2), name: "", number: "", position: "" });
 
-export default function PlayerManager({ teamId, teamName }: { teamId: string; teamName: string }) {
+export default function PlayerManager({ teamId, teamName, sport }: { teamId: string; teamName: string; sport?: string }) {
+  const positions = sport ? (SPORT_POSITIONS[sport] ?? []) : SPORT_POSITIONS.FOOTBALL;
+  const hasPosition = positions.length > 0;
+  const numberLabel = sport === "GOLF" ? "기수" : "번호";
   const [players, setPlayers] = useState<Player[]>([]);
   const [fetching, setFetching] = useState(true);
   const [mode, setMode] = useState<"single" | "bulk">("single");
@@ -114,11 +125,13 @@ export default function PlayerManager({ teamId, teamName }: { teamId: string; te
           {mode === "single" && (
             <form onSubmit={addSingle} className="flex flex-wrap gap-2">
               <input className="input flex-1 min-w-32" placeholder="선수 이름 *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
-              <input className="input w-20" type="number" placeholder="번호" value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} />
-              <select className="input w-24" value={form.position} onChange={(e) => setForm({ ...form, position: e.target.value })}>
-                <option value="">포지션</option>
-                {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
+              <input className="input w-20" type="number" placeholder={numberLabel} value={form.number} onChange={(e) => setForm({ ...form, number: e.target.value })} />
+              {hasPosition && (
+                <select className="input w-24" value={form.position} onChange={(e) => setForm({ ...form, position: e.target.value })}>
+                  <option value="">포지션</option>
+                  {positions.map((p) => <option key={p} value={p}>{p}</option>)}
+                </select>
+              )}
               <button type="submit" className="btn-primary btn-sm" disabled={adding}>{adding ? "추가중" : "추가"}</button>
             </form>
           )}
@@ -133,7 +146,7 @@ export default function PlayerManager({ teamId, teamName }: { teamId: string; te
                     <input
                       className="input w-16 text-sm"
                       type="number"
-                      placeholder="번호"
+                      placeholder={numberLabel}
                       value={row.number}
                       onChange={(e) => updateRow(row.key, "number", e.target.value)}
                     />
@@ -145,14 +158,16 @@ export default function PlayerManager({ teamId, teamName }: { teamId: string; te
                       onChange={(e) => updateRow(row.key, "name", e.target.value)}
                       onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addRow(); } }}
                     />
-                    <select
-                      className="input w-20 text-sm"
-                      value={row.position}
-                      onChange={(e) => updateRow(row.key, "position", e.target.value)}
-                    >
-                      <option value="">포지션</option>
-                      {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
-                    </select>
+                    {hasPosition && (
+                      <select
+                        className="input w-20 text-sm"
+                        value={row.position}
+                        onChange={(e) => updateRow(row.key, "position", e.target.value)}
+                      >
+                        <option value="">포지션</option>
+                        {positions.map((p) => <option key={p} value={p}>{p}</option>)}
+                      </select>
+                    )}
                     <button onClick={() => removeRow(row.key)} className="text-gray-300 hover:text-red-500 transition-colors flex-shrink-0 text-sm px-1">✕</button>
                   </div>
                 ))}

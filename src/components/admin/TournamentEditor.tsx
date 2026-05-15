@@ -199,6 +199,7 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
       {tab === "teams" && (
         <TeamsTab
           tournament={tournament}
+          sport={tournament.sport}
           availableTeams={availableTeams}
           onAddTeams={async (teamIds) => {
             const results = await Promise.all(teamIds.map((teamId) =>
@@ -375,8 +376,9 @@ function RulesTab({ tournament, onSave }: { tournament: Tournament; onSave: (d: 
   );
 }
 
-function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onTeamCreated, onTeamUpdated }: {
+function TeamsTab({ tournament, sport, availableTeams, onAddTeams, onRemoveTeam, onTeamCreated, onTeamUpdated }: {
   tournament: Tournament;
+  sport: string;
   availableTeams: Team[];
   onAddTeams: (ids: string[]) => void;
   onRemoveTeam: (id: string) => void;
@@ -509,7 +511,10 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onTeam
       {/* 팀 추가 */}
       <div className="card p-5">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="font-bold">팀 추가</h3>
+          <h3 className="font-bold flex items-center gap-1.5">
+            {SPORT_EMOJI[sport] && <span>{SPORT_EMOJI[sport]}</span>}
+            팀 추가
+          </h3>
           {availableTeams.length > 0 && (
             <button onClick={toggleAll} className="text-xs text-blue-600 hover:underline">
               {selected.length === availableTeams.length ? "전체 해제" : "전체 선택"}
@@ -575,7 +580,7 @@ function TeamsTab({ tournament, availableTeams, onAddTeams, onRemoveTeam, onTeam
       {selectedTeam && (
         <div className="card p-5">
           <h3 className="font-bold mb-3">{selectedTeam.team.name} 선수 관리</h3>
-          <PlayerManager teamId={selectedTeam.team.id} teamName={selectedTeam.team.name} />
+          <PlayerManager teamId={selectedTeam.team.id} teamName={selectedTeam.team.name} sport={sport} />
         </div>
       )}
     </div>
