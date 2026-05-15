@@ -283,7 +283,45 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
 
       {/* Golf Tab */}
       {tab === "golf" && (
-        <GolfEditor tournament={tournament} />
+        <GolfEditor
+          tournament={tournament}
+          onCreateGroup={async (name, label, color) => {
+            const res = await fetch(`/api/tournaments/${tournamentId}/groups`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name, label, color, teamIds: [] }),
+            });
+            if (!res.ok) return null;
+            const newGroup = await res.json();
+            setTournament(t => t ? { ...t, groups: [...t.groups, newGroup] } : t);
+            return newGroup;
+          }}
+          onAssignTeamToGroup={async (teamId, newGroupId) => {
+            if (newGroupId) {
+              const res = await fetch(`/api/tournaments/${tournamentId}/groups/${newGroupId}/teams`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ teamId }),
+              });
+              if (!res.ok) return;
+            } else {
+              const currentGroup = tournament.groups.find(g => g.teams.some((gt: { team: { id: string } }) => gt.team.id === teamId));
+              if (!currentGroup) return;
+              await fetch(`/api/tournaments/${tournamentId}/groups/${currentGroup.id}/teams`, {
+                method: "DELETE", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ teamId }),
+              });
+            }
+            const team = tournament.teams.find(tt => tt.team.id === teamId)?.team;
+            setTournament(t => {
+              if (!t || !team) return t;
+              const updated = t.groups.map(g => ({ ...g, teams: g.teams.filter((gt: { team: { id: string } }) => gt.team.id !== teamId) }));
+              if (newGroupId) {
+                const idx = updated.findIndex(g => g.id === newGroupId);
+                if (idx >= 0) updated[idx] = { ...updated[idx], teams: [...updated[idx].teams, { id: `tmp-${Date.now()}`, team, points: 0 }] };
+              }
+              return { ...t, groups: updated };
+            });
+          }}
+        />
       )}
 
       {/* Matches Tab */}
