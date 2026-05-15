@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import BracketView from "./BracketView";
+import GolfView from "./GolfView";
 
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
 type Team = { id: string; name: string; color?: string | null; emblemUrl?: string | null; players?: Player[] };
@@ -140,7 +141,12 @@ export default function TournamentPublicView({
     setTab(key as typeof tab);
   };
 
-  const tabs = [
+  const isGolf = tournament.sport === "GOLF";
+
+  const tabs = isGolf ? [
+    tournament.rules && { key: "rules", label: "운영규칙" },
+    tournament.sponsors.length > 0 && { key: "sponsors", label: "협찬·후원" },
+  ].filter(Boolean) as { key: string; label: string }[] : [
     tournament.type === "KNOCKOUT" && { key: "bracket", label: "브래킷" },
     tournament.type === "LEAGUE" && { key: "standings", label: "순위표" },
     tournament.type === "GROUP" && { key: "division", label: "리그별 순위" },
@@ -223,16 +229,20 @@ export default function TournamentPublicView({
               <span className="text-gray-400">선수</span>
               <span className="font-bold text-gray-700">{playerCount}</span>
             </span>
-            <span className="text-gray-200 flex-shrink-0">|</span>
-            <span className="flex items-center gap-1 flex-shrink-0">
-              <span className="text-gray-400">경기</span>
-              <span className="font-bold text-gray-700">{tournament.matches.length}</span>
-            </span>
-            <span className="text-gray-200 flex-shrink-0">|</span>
-            <span className="flex items-center gap-1 flex-shrink-0">
-              <span className="text-gray-400">완료</span>
-              <span className="font-bold text-gray-700">{tournament.matches.filter((m) => m.status === "FINISHED").length}</span>
-            </span>
+            {!isGolf && (
+              <>
+                <span className="text-gray-200 flex-shrink-0">|</span>
+                <span className="flex items-center gap-1 flex-shrink-0">
+                  <span className="text-gray-400">경기</span>
+                  <span className="font-bold text-gray-700">{tournament.matches.length}</span>
+                </span>
+                <span className="text-gray-200 flex-shrink-0">|</span>
+                <span className="flex items-center gap-1 flex-shrink-0">
+                  <span className="text-gray-400">완료</span>
+                  <span className="font-bold text-gray-700">{tournament.matches.filter((m) => m.status === "FINISHED").length}</span>
+                </span>
+              </>
+            )}
           </div>
         </div>
 
@@ -256,15 +266,20 @@ export default function TournamentPublicView({
         </div>
       </div>
 
+      {/* Golf View */}
+      {isGolf && (
+        <GolfView tournament={tournament} />
+      )}
+
       {/* Bracket Tab */}
-      {tab === "bracket" && (
+      {!isGolf && tab === "bracket" && (
         <div className="card p-4 sm:p-6">
           <BracketView matches={tournament.matches} />
         </div>
       )}
 
       {/* League Standings Tab */}
-      {tab === "standings" && (
+      {!isGolf && tab === "standings" && (
         <div className="card p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-bold mb-4">순위표</h2>
           <StandingsTable rows={leagueStandings} />
@@ -272,22 +287,22 @@ export default function TournamentPublicView({
       )}
 
       {/* Division/기수 Tab */}
-      {tab === "division" && (
+      {!isGolf && tab === "division" && (
         <DivisionView tournament={tournament} onTeamClick={handleTeamClick} />
       )}
 
       {/* Schedule Tab */}
-      {tab === "schedule" && (
+      {!isGolf && tab === "schedule" && (
         <ScheduleView matches={tournament.matches} onTeamClick={handleTeamClick} />
       )}
 
       {/* Timetable Tab */}
-      {tab === "timetable" && (
+      {!isGolf && tab === "timetable" && (
         <TimetableView matches={tournament.matches} />
       )}
 
       {/* Scorers Tab */}
-      {tab === "scorers" && (
+      {!isGolf && tab === "scorers" && (
         tournament.type === "GROUP" ? (
           <div className="space-y-4">
             {tournament.groups.length === 0 ? (
@@ -423,7 +438,7 @@ export default function TournamentPublicView({
       )}
 
       {/* Teams Tab */}
-      {tab === "teams" && (
+      {!isGolf && tab === "teams" && (
         <div>
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold">참가 팀</h2>

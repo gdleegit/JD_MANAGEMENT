@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import MatchEditor from "./MatchEditor";
 import PlayerManager from "./PlayerManager";
+import GolfEditor from "./GolfEditor";
 import { SPORT_LABELS, SPORT_EMOJI } from "./TournamentsTab";
 import SaveButton from "./SaveButton";
 
@@ -60,7 +61,7 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
   const [loading, setLoading] = useState(true);
   const [editingMatch, setEditingMatch] = useState<Match | null>(null);
   const [loadingMatchId, setLoadingMatchId] = useState<string | null>(null);
-  const [tab, setTab] = useState<"info" | "teams" | "matches" | "groups" | "rules" | "sponsors">("matches");
+  const [tab, setTab] = useState<"info" | "teams" | "matches" | "groups" | "rules" | "sponsors" | "golf">("matches");
   const [editingName, setEditingName] = useState(false);
   const [nameInput, setNameInput] = useState("");
 
@@ -77,6 +78,7 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
     ]).then(([t, teams]) => {
       setTournament(t);
       setAllTeams(teams);
+      if (t?.sport === "GOLF") setTab("golf");
       setLoading(false);
     });
   }, [tournamentId]);
@@ -125,7 +127,8 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
       <div className="overflow-x-auto -mx-3 sm:mx-0 px-3 sm:px-0">
         <div className="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit">
           {[
-            { key: "matches", label: "경기 관리" },
+            { key: "matches", label: "경기 관리", show: tournament.sport !== "GOLF" },
+            { key: "golf", label: "골프 스코어", show: tournament.sport === "GOLF" },
             { key: "teams", label: "팀 구성" },
             { key: "groups", label: "조 편성", show: tournament.type === "GROUP" },
             { key: "rules", label: "운영규칙" },
@@ -239,6 +242,11 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
           onUpdateGroup={(group) => setTournament(t => t ? { ...t, groups: t.groups.map(g => g.id === group.id ? group : g) } : t)}
           onDeleteGroup={(groupId) => setTournament(t => t ? { ...t, groups: t.groups.filter(g => g.id !== groupId) } : t)}
         />
+      )}
+
+      {/* Golf Tab */}
+      {tab === "golf" && (
+        <GolfEditor tournament={tournament} />
       )}
 
       {/* Matches Tab */}

@@ -21,10 +21,11 @@ model Tournament {
   active      Boolean   @default(true)
   createdAt   DateTime  @default(now())
 
-  teams    TournamentTeam[]
-  matches  Match[]
-  groups   Group[]
-  sponsors Sponsor[]
+  teams     TournamentTeam[]
+  matches   Match[]
+  groups    Group[]
+  sponsors  Sponsor[]
+  golfRound GolfRound?
 }
 
 model Team {
@@ -42,6 +43,7 @@ model Team {
   goals       Goal[]
   cards       Card[]
   groupTeams  GroupTeam[]
+  golfScores  GolfScore[]
 }
 
 model TournamentTeam {
@@ -64,8 +66,9 @@ model Player {
   teamId    String
   createdAt DateTime @default(now())
 
-  goals Goal[]
-  cards Card[]
+  goals      Goal[]
+  cards      Card[]
+  golfScores GolfScore[]
 }
 
 model Match {
@@ -175,4 +178,25 @@ model AdminUser {
   username  String   @unique
   password  String
   createdAt DateTime @default(now())
+}
+
+model GolfRound {
+  id           String      @id @default(cuid())
+  tournament   Tournament  @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournamentId String      @unique
+  venue        String?
+  scores       GolfScore[]
+}
+
+model GolfScore {
+  id       String    @id @default(cuid())
+  round    GolfRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  roundId  String
+  player   Player    @relation(fields: [playerId], references: [id], onDelete: Cascade)
+  playerId String
+  team     Team      @relation(fields: [teamId], references: [id])
+  teamId   String
+  strokes  Int?
+
+  @@unique([roundId, playerId])
 }
