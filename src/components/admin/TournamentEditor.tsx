@@ -223,6 +223,42 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
             setTournament(t => t ? { ...t, teams: t.teams.map(tt => tt.team.id === team.id ? { ...tt, team } : tt) } : t);
             setAllTeams(prev => prev.map(t => t.id === team.id ? team : t));
           }}
+          onCreateGroup={async (name, label, color) => {
+            const res = await fetch(`/api/tournaments/${tournamentId}/groups`, {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ name, label, color, teamIds: [] }),
+            });
+            if (!res.ok) return null;
+            const newGroup = await res.json();
+            setTournament(t => t ? { ...t, groups: [...t.groups, newGroup] } : t);
+            return newGroup;
+          }}
+          onAssignTeamToGroup={async (teamId, newGroupId) => {
+            if (newGroupId) {
+              const res = await fetch(`/api/tournaments/${tournamentId}/groups/${newGroupId}/teams`, {
+                method: "POST", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ teamId }),
+              });
+              if (!res.ok) return;
+            } else {
+              const currentGroup = tournament.groups.find(g => g.teams.some(gt => gt.team.id === teamId));
+              if (!currentGroup) return;
+              await fetch(`/api/tournaments/${tournamentId}/groups/${currentGroup.id}/teams`, {
+                method: "DELETE", headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ teamId }),
+              });
+            }
+            const team = tournament.teams.find(tt => tt.team.id === teamId)?.team;
+            setTournament(t => {
+              if (!t || !team) return t;
+              const updated = t.groups.map(g => ({ ...g, teams: g.teams.filter(gt => gt.team.id !== teamId) }));
+              if (newGroupId) {
+                const idx = updated.findIndex(g => g.id === newGroupId);
+                if (idx >= 0) updated[idx] = { ...updated[idx], teams: [...updated[idx].teams, { id: `tmp-${Date.now()}`, team, points: 0 }] };
+              }
+              return { ...t, groups: updated };
+            });
+          }}
         />
       )}
 
@@ -376,7 +412,7 @@ function RulesTab({ tournament, onSave }: { tournament: Tournament; onSave: (d: 
   );
 }
 
-function TeamsTab({ tournament, sport, availableTeams, onAddTeams, onRemoveTeam, onTeamCreated, onTeamUpdated }: {
+function TeamsTab({ tournament, sport, availableTeams, onAddTeams, onRemoveTeam, onTeamCreated, onTeamUpdated, onCreateGroup, onAssignTeamToGroup }: {
   tournament: Tournament;
   sport: string;
   availableTeams: Team[];
@@ -384,8 +420,19 @@ function TeamsTab({ tournament, sport, availableTeams, onAddTeams, onRemoveTeam,
   onRemoveTeam: (id: string) => void;
   onTeamCreated: (team: Team) => void;
   onTeamUpdated: (team: Team) => void;
+  onCreateGroup: (name: string, label: string, color: string) => Promise<Group | null>;
+  onAssignTeamToGroup: (teamId: string, groupId: string | null) => Promise<void>;
 }) {
+  const isGroup = tournament.type === "GROUP";
+
+  // 팀 → 그룹 역방향 맵
+  const teamGroupMap: Record<string, Group> = {};
+  for (const g of tournament.groups) {
+    for (const gt of g.teams) teamGroupMap[gt.team.id] = g;
+  }
+
   const [selected, setSelected] = useState<string[]>([]);
+  const [addToGroupId, setAddToGroupId] = useState<string>("");  // 팀 추가 시 배정할 그룹
   const [editingTeam, setEditingTeam] = useState<Team | null>(null);
   const [editForm, setEditForm] = useState({ name: "", shortName: "", color: "#3b82f6" });
   const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
@@ -393,6 +440,10 @@ function TeamsTab({ tournament, sport, availableTeams, onAddTeams, onRemoveTeam,
   const [creatingTeam, setCreatingTeam] = useState(false);
   const [showNewTeamForm, setShowNewTeamForm] = useState(false);
   const [localColors, setLocalColors] = useState<Record<string, string>>({});
+  // 인라인 리그 생성
+  const [showNewGroup, setShowNewGroup] = useState(false);
+  const [newGroupForm, setNewGroupForm] = useState({ name: "", label: "", color: "#6366f1" });
+  const [creatingGroup, setCreatingGroup] = useState(false);
 
   const createTeam = async () => {
     if (!newTeamForm.name) return;
@@ -417,10 +468,28 @@ function TeamsTab({ tournament, sport, availableTeams, onAddTeams, onRemoveTeam,
   const toggleAll = () =>
     setSelected(selected.length === availableTeams.length ? [] : availableTeams.map((t) => t.id));
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (selected.length === 0) return;
     onAddTeams(selected);
+    // 그룹이 선택된 경우 배정
+    if (addToGroupId) {
+      for (const teamId of selected) {
+        await onAssignTeamToGroup(teamId, addToGroupId);
+      }
+    }
     setSelected([]);
+  };
+
+  const handleCreateGroup = async () => {
+    if (!newGroupForm.name) return;
+    setCreatingGroup(true);
+    const g = await onCreateGroup(newGroupForm.name, newGroupForm.label || newGroupForm.name, newGroupForm.color);
+    if (g) {
+      setNewGroupForm({ name: "", label: "", color: "#6366f1" });
+      setShowNewGroup(false);
+      setAddToGroupId(g.id); // 방금 만든 리그를 자동 선택
+    }
+    setCreatingGroup(false);
   };
 
   const startEdit = (team: Team) => {
@@ -491,12 +560,26 @@ function TeamsTab({ tournament, sport, availableTeams, onAddTeams, onRemoveTeam,
                   /* 일반 행 */
                   <div className={`flex items-center justify-between py-1.5 border-b border-gray-100 cursor-pointer rounded px-1 ${selectedTeamId === team.id ? "bg-blue-50" : "hover:bg-gray-50"}`}
                     onClick={() => setSelectedTeamId(selectedTeamId === team.id ? null : team.id)}>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
                       <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: localColors[team.id] ?? team.color ?? "#3b82f6" }} />
-                      <span className="font-medium text-sm">{team.name}</span>
-                      {team.shortName && <span className="text-xs text-gray-400">({team.shortName})</span>}
+                      <span className="font-medium text-sm truncate">{team.name}</span>
+                      {team.shortName && <span className="text-xs text-gray-400 flex-shrink-0">({team.shortName})</span>}
+                      {/* GROUP 타입: 리그 배정 셀렉트 */}
+                      {isGroup && (
+                        <select
+                          className="text-xs border border-gray-200 rounded-md px-1.5 py-0.5 bg-white text-gray-600 flex-shrink-0 ml-1 cursor-pointer"
+                          value={teamGroupMap[team.id]?.id ?? ""}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => { void onAssignTeamToGroup(team.id, e.target.value || null); }}
+                        >
+                          <option value="">미배정</option>
+                          {tournament.groups.map(g => (
+                            <option key={g.id} value={g.id}>{g.label || g.name}</option>
+                          ))}
+                        </select>
+                      )}
                     </div>
-                    <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex gap-2 flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                       <button onClick={() => startEdit(team)} className="text-blue-500 text-xs hover:text-blue-700">편집</button>
                       <button onClick={() => onRemoveTeam(team.id)} className="text-red-500 text-xs hover:text-red-700">제외</button>
                     </div>
@@ -521,6 +604,54 @@ function TeamsTab({ tournament, sport, availableTeams, onAddTeams, onRemoveTeam,
             </button>
           )}
         </div>
+
+        {/* GROUP: 리그 선택 + 인라인 리그 생성 */}
+        {isGroup && (
+          <div className="mb-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <label className="label whitespace-nowrap">추가 시 리그</label>
+              <select
+                className="input flex-1 text-sm"
+                value={addToGroupId}
+                onChange={(e) => setAddToGroupId(e.target.value)}
+              >
+                <option value="">미배정 (나중에 설정)</option>
+                {tournament.groups.map(g => (
+                  <option key={g.id} value={g.id}>{g.label || g.name}</option>
+                ))}
+              </select>
+            </div>
+            {showNewGroup ? (
+              <div className="flex gap-2 items-end flex-wrap">
+                <div className="flex-1 min-w-32">
+                  <input
+                    className="input text-sm w-full"
+                    placeholder="리그명 (예: 73기 리그) *"
+                    value={newGroupForm.name}
+                    onChange={(e) => setNewGroupForm(f => ({ ...f, name: e.target.value, label: e.target.value }))}
+                    autoFocus
+                  />
+                </div>
+                <input
+                  type="color"
+                  className="h-9 w-12 rounded border border-gray-300 cursor-pointer flex-shrink-0"
+                  value={newGroupForm.color}
+                  onChange={(e) => setNewGroupForm(f => ({ ...f, color: e.target.value }))}
+                />
+                <button
+                  onClick={handleCreateGroup}
+                  disabled={!newGroupForm.name || creatingGroup}
+                  className="btn-primary btn-sm text-xs flex-shrink-0"
+                >
+                  {creatingGroup ? "생성 중..." : "리그 만들기"}
+                </button>
+                <button onClick={() => setShowNewGroup(false)} className="btn-secondary btn-sm text-xs flex-shrink-0">취소</button>
+              </div>
+            ) : (
+              <button onClick={() => setShowNewGroup(true)} className="text-xs text-blue-600 hover:underline">+ 새 리그 만들기</button>
+            )}
+          </div>
+        )}
 
         {availableTeams.length === 0 ? (
           <p className="text-gray-400 text-sm">추가 가능한 팀이 없습니다</p>
