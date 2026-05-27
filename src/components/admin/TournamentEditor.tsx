@@ -321,6 +321,7 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
               return { ...t, groups: updated };
             });
           }}
+          onDeleteGroup={(groupId) => setTournament(t => t ? { ...t, groups: t.groups.filter(g => g.id !== groupId) } : t)}
         />
       )}
 

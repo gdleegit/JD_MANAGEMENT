@@ -12,10 +12,12 @@ export default function GolfEditor({
   tournament,
   onCreateGroup,
   onAssignTeamToGroup,
+  onDeleteGroup,
 }: {
   tournament: Tournament;
   onCreateGroup: (name: string, label: string, color: string) => Promise<Group | null>;
   onAssignTeamToGroup: (teamId: string, groupId: string | null) => Promise<void>;
+  onDeleteGroup: (groupId: string) => void;
 }) {
   const [venue, setVenue] = useState("");
   const [scores, setScores] = useState<Record<string, string>>({});
@@ -26,6 +28,7 @@ export default function GolfEditor({
   const [showNewGroup, setShowNewGroup] = useState(false);
   const [newGroupForm, setNewGroupForm] = useState({ name: "", color: "#6366f1" });
   const [creatingGroup, setCreatingGroup] = useState(false);
+  const [deletingGroupId, setDeletingGroupId] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -58,6 +61,14 @@ export default function GolfEditor({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ venue, scores: scoreEntries }),
     });
+  };
+
+  const handleDeleteGroup = async (groupId: string) => {
+    if (!confirm("리그를 삭제하면 배정된 조도 모두 해제됩니다. 삭제할까요?")) return;
+    setDeletingGroupId(groupId);
+    await fetch(`/api/tournaments/${tournament.id}/groups/${groupId}`, { method: "DELETE" });
+    onDeleteGroup(groupId);
+    setDeletingGroupId(null);
   };
 
   const handleCreateGroup = async () => {
@@ -103,9 +114,16 @@ export default function GolfEditor({
                 <div key={g.id} className="flex items-center gap-2 text-sm">
                   <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: g.color || "#6366f1" }} />
                   <span className="font-semibold text-gray-700">{g.label || g.name}</span>
-                  <span className="text-gray-400 text-xs">
-                    {gTeams.length > 0 ? gTeams.map(t => t.name).join(" · ") : "팀 없음"}
+                  <span className="text-gray-400 text-xs flex-1">
+                    {gTeams.length > 0 ? `${gTeams.length}개 조` : "팀 없음"}
                   </span>
+                  <button
+                    onClick={() => handleDeleteGroup(g.id)}
+                    disabled={deletingGroupId === g.id}
+                    className="text-red-400 hover:text-red-600 text-xs flex-shrink-0 disabled:opacity-40"
+                  >
+                    {deletingGroupId === g.id ? "삭제 중..." : "삭제"}
+                  </button>
                 </div>
               );
             })}

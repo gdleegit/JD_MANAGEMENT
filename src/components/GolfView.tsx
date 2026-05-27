@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 
 type Player = { id: string; name: string; number?: number | null };
-type Team = { id: string; name: string; color?: string | null; players?: Player[] };
+type Team = { id: string; name: string; shortName?: string | null; color?: string | null; players?: Player[] };
 type Group = { id: string; name: string; label?: string | null; color?: string | null; teams: { id: string; team: { id: string } }[] };
 type Tournament = { id: string; groups: Group[]; teams: { team: { id: string } }[] };
 type GolfScore = { playerId: string; strokes: number | null };
@@ -73,21 +73,26 @@ export default function GolfView({ tournament }: { tournament: Tournament }) {
   );
 }
 
-// ── 리그별 순위 ──────────────────────────────────────────────
-type LeaderboardEntry = { playerId: string; name: string; number?: number | null; teamName: string; teamColor: string; strokes: number | null };
-
+// ── 리그별 조편성 ──────────────────────────────────────────────
 function LeaderboardTab({ groups, teamMap, scoreMap }: {
   groups: Group[] | null;
   teamMap: Record<string, Team>;
   scoreMap: Record<string, number | null>;
 }) {
+  const sortedTeams = (teams: Team[]) =>
+    [...teams].sort((a, b) => {
+      const na = parseInt(a.name);
+      const nb = parseInt(b.name);
+      if (!isNaN(na) && !isNaN(nb)) return na - nb;
+      return a.name.localeCompare(b.name, "ko");
+    });
+
   if (!groups) {
-    // No groups — single leaderboard
-    const entries = buildEntries(Object.values(teamMap), scoreMap);
+    const allTeams = sortedTeams(Object.values(teamMap));
     return (
       <div className="card p-4 sm:p-5">
-        <h3 className="font-bold mb-4">전체 순위</h3>
-        <LeaderboardTable entries={entries} />
+        <h3 className="font-bold mb-4">전체 조편성</h3>
+        <GroupTable teams={allTeams} scoreMap={scoreMap} />
       </div>
     );
   }
@@ -95,19 +100,18 @@ function LeaderboardTab({ groups, teamMap, scoreMap }: {
   return (
     <div className="space-y-4">
       {groups.map((group) => {
-        const gTeams = group.teams.map((gt) => teamMap[gt.team.id]).filter(Boolean) as Team[];
-        const entries = buildEntries(gTeams, scoreMap);
+        const gTeams = sortedTeams(group.teams.map((gt) => teamMap[gt.team.id]).filter(Boolean) as Team[]);
         return (
           <div key={group.id} className="card p-4 sm:p-5">
             <h3 className="font-bold mb-4 flex items-center gap-2">
               <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: group.color || "#6366f1" }} />
               {group.label || group.name}
-              <span className="text-gray-400 font-normal text-sm">순위</span>
+              <span className="text-gray-400 font-normal text-sm">⛳ {gTeams.length}개 조</span>
             </h3>
-            {entries.length === 0 ? (
-              <p className="text-sm text-gray-400 text-center py-4">선수가 없습니다</p>
+            {gTeams.length === 0 ? (
+              <p className="text-sm text-gray-400 text-center py-4">배정된 조가 없습니다</p>
             ) : (
-              <LeaderboardTable entries={entries} />
+              <GroupTable teams={gTeams} scoreMap={scoreMap} />
             )}
           </div>
         );
@@ -116,71 +120,44 @@ function LeaderboardTab({ groups, teamMap, scoreMap }: {
   );
 }
 
-function buildEntries(teams: Team[], scoreMap: Record<string, number | null>): LeaderboardEntry[] {
-  const entries: LeaderboardEntry[] = [];
-  for (const team of teams) {
-    for (const player of team.players ?? []) {
-      entries.push({
-        playerId: player.id,
-        name: player.name,
-        number: player.number,
-        teamName: team.name,
-        teamColor: team.color || "#6b7280",
-        strokes: scoreMap[player.id] ?? null,
-      });
-    }
-  }
-  // Scored first (ASC), unscored last (alphabetical)
-  entries.sort((a, b) => {
-    if (a.strokes !== null && b.strokes !== null) return a.strokes - b.strokes;
-    if (a.strokes !== null) return -1;
-    if (b.strokes !== null) return 1;
-    return a.name.localeCompare(b.name, "ko");
-  });
-  return entries;
-}
-
-function LeaderboardTable({ entries }: { entries: LeaderboardEntry[] }) {
-  // Assign ranks — ties get same rank
-  let displayRank = 1;
+function GroupTable({ teams, scoreMap }: { teams: Team[]; scoreMap: Record<string, number | null> }) {
   return (
-    <div className="space-y-1.5">
-      {entries.map((e, i) => {
-        if (i === 0 || e.strokes !== entries[i - 1].strokes || e.strokes === null) {
-          displayRank = i + 1;
-        }
-        const scored = e.strokes !== null;
-        const isFirst = scored && displayRank === 1;
-        const isTop3 = scored && displayRank <= 3;
-        const rankBadgeCls = displayRank === 1
-          ? "bg-yellow-400 text-white"
-          : displayRank === 2
-          ? "bg-gray-300 text-gray-700"
-          : displayRank === 3
-          ? "bg-amber-500 text-white"
-          : "bg-gray-100 text-gray-500";
-
+    <div className="space-y-2">
+      {teams.map((team) => {
+        const players = [...(team.players ?? [])].sort((a, b) => {
+          if (a.number != null && b.number != null) return a.number - b.number;
+          if (a.number != null) return -1;
+          if (b.number != null) return 1;
+          return a.name.localeCompare(b.name, "ko");
+        });
+        const shortName = team.shortName;
         return (
-          <div key={e.playerId} className={`flex items-center gap-3 px-3 py-2.5 rounded-xl ${isFirst ? "bg-yellow-50 border border-yellow-100" : isTop3 ? "bg-gray-50" : ""}`}>
-            <div className={`w-7 h-7 rounded-full flex items-center justify-center font-black text-xs flex-shrink-0 ${scored ? rankBadgeCls : "bg-gray-50 text-gray-300"}`}>
-              {scored ? (entries[i - 1]?.strokes === e.strokes && i > 0 ? `T${displayRank}` : displayRank) : "-"}
-            </div>
-            <div className="flex-1 min-w-0 flex items-center gap-2">
-              {e.number != null && <span className="text-gray-400 text-xs flex-shrink-0">{e.number}.</span>}
-              <span className={`font-bold truncate ${isFirst ? "text-base text-gray-900" : "text-sm text-gray-800"}`}>{e.name}</span>
-              <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 whitespace-nowrap" style={{ backgroundColor: e.teamColor + "33", color: e.teamColor }}>
-                {e.teamName}
-              </span>
-            </div>
-            <div className="flex items-baseline gap-0.5 flex-shrink-0">
-              {scored ? (
-                <>
-                  <span className={`font-black tabular-nums ${isFirst ? "text-xl text-yellow-600" : isTop3 ? "text-lg text-gray-800" : "text-base text-gray-700"}`}>{e.strokes}</span>
-                  <span className="text-xs text-gray-400 ml-0.5">타</span>
-                </>
-              ) : (
-                <span className="text-sm text-gray-300 font-medium">미기록</span>
+          <div key={team.id} className="flex items-start gap-3 py-2.5 border-b border-gray-100 last:border-0">
+            {/* 조 이름 */}
+            <div className="flex-shrink-0 w-16 flex flex-col items-center pt-0.5">
+              <span className="text-sm font-bold text-gray-800">{team.name}</span>
+              {shortName && (
+                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 mt-0.5 whitespace-nowrap">{shortName}</span>
               )}
+            </div>
+            {/* 선수들 가로 나열 */}
+            <div className="flex flex-wrap gap-2 flex-1">
+              {players.map((player) => {
+                const strokes = scoreMap[player.id] ?? null;
+                return (
+                  <div key={player.id} className="flex flex-col items-center bg-gray-50 rounded-xl px-3 py-2 min-w-[64px]">
+                    <span className="text-xs font-bold text-gray-800 text-center leading-tight">{player.name}</span>
+                    {player.number != null && (
+                      <span className="text-[10px] text-gray-400 mt-0.5">{player.number}회</span>
+                    )}
+                    {strokes != null ? (
+                      <span className="text-sm font-black text-blue-600 mt-1 tabular-nums">{strokes}타</span>
+                    ) : (
+                      <span className="text-[10px] text-gray-300 mt-1">미기록</span>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
         );
