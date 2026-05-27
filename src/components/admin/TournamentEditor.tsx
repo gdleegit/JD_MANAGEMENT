@@ -1138,7 +1138,7 @@ function SponsorsTab({
     try {
       const form = new FormData();
       form.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: form });
+      const res = await fetch("/api/upload", { method: "POST", body: form, credentials: "include" });
       if (!res.ok) {
         const err = await res.json();
         alert(err.error ?? "업로드 실패");
