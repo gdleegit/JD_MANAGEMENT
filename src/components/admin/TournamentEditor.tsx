@@ -1136,17 +1136,36 @@ function SponsorsTab({
     if (!file) return;
     setImageUploading(true);
     try {
-      const form = new FormData();
-      form.append("file", file);
-      const res = await fetch("/api/upload", { method: "POST", body: form, credentials: "include" });
-      const json = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
-      if (!res.ok) {
-        alert(`업로드 실패: ${json.error ?? res.status}`);
+      // 1. 서버에서 서명된 업로드 URL 발급
+      const presignRes = await fetch("/api/upload/presign", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ filename: file.name }),
+      });
+      if (!presignRes.ok) {
+        const err = await presignRes.json().catch(() => ({}));
+        alert(`업로드 준비 실패: ${err.error ?? presignRes.status}`);
         return;
       }
-      const url: string = json.url;
-      setImageUrl(url);
-      await onUpdateTournament({ sponsorImageUrl: url });
+      const { signedUrl, publicUrl } = await presignRes.json();
+
+      // 2. 브라우저 → Supabase 직접 업로드 (서버 크기 제한 없음)
+      const uploadRes = await fetch(signedUrl, {
+        method: "PUT",
+        body: file,
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+      });
+      if (!uploadRes.ok) {
+        alert(`이미지 업로드 실패 (${uploadRes.status})`);
+        return;
+      }
+
+      // 3. 공개 URL 저장
+      setImageUrl(publicUrl);
+      await onUpdateTournament({ sponsorImageUrl: publicUrl });
+    } catch (err) {
+      alert(`업로드 오류: ${String(err)}`);
     } finally {
       setImageUploading(false);
       if (imageInputRef.current) imageInputRef.current.value = "";
