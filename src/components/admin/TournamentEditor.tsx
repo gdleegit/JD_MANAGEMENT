@@ -1139,12 +1139,12 @@ function SponsorsTab({
       const form = new FormData();
       form.append("file", file);
       const res = await fetch("/api/upload", { method: "POST", body: form, credentials: "include" });
+      const json = await res.json().catch(() => ({ error: `HTTP ${res.status}` }));
       if (!res.ok) {
-        const err = await res.json();
-        alert(err.error ?? "업로드 실패");
+        alert(`업로드 실패: ${json.error ?? res.status}`);
         return;
       }
-      const { url } = await res.json();
+      const url: string = json.url;
       setImageUrl(url);
       await onUpdateTournament({ sponsorImageUrl: url });
     } finally {
