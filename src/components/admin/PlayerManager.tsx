@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 
-type Player = { id: string; name: string; number?: number | null; position?: string | null };
+type Player = { id: string; name: string; number?: number | null; position?: string | null; sport?: string | null };
 type DraftRow = { key: string; name: string; number: string; position: string };
 
 const SPORT_POSITIONS: Record<string, string[]> = {
@@ -23,6 +23,7 @@ export default function PlayerManager({ teamId, teamName, sport }: { teamId: str
   const [players, setPlayers] = useState<Player[]>([]);
   const [fetching, setFetching] = useState(true);
   const [mode, setMode] = useState<"single" | "bulk">("single");
+  const [addSport, setAddSport] = useState<string>(sport ?? "FOOTBALL");
 
   // 단일 추가 폼
   const [form, setForm] = useState({ name: "", number: "", position: "" });
@@ -48,7 +49,7 @@ export default function PlayerManager({ teamId, teamName, sport }: { teamId: str
       const res = await fetch(`/api/teams/${teamId}/players`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, sport: addSport }),
       });
       if (!res.ok) return;
       const player = await res.json();
@@ -67,7 +68,7 @@ export default function PlayerManager({ teamId, teamName, sport }: { teamId: str
       const res = await fetch(`/api/teams/${teamId}/players`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ players: valid }),
+        body: JSON.stringify({ players: valid.map((r: DraftRow) => ({ ...r, sport: addSport })) }),
       });
       if (!res.ok) return;
       const created: Player[] = await res.json();
@@ -95,12 +96,16 @@ export default function PlayerManager({ teamId, teamName, sport }: { teamId: str
   };
 
   const validCount = rows.filter((r) => r.name.trim()).length;
-  const sortedPlayers = [...players].sort((a, b) => {
+
+  const sortFn = (a: Player, b: Player) => {
     if (a.number && b.number) return a.number - b.number;
     if (a.number) return -1;
     if (b.number) return 1;
     return a.name.localeCompare(b.name, "ko", { numeric: true });
-  });
+  };
+  const footballPlayers = [...players].filter((p) => !p.sport || p.sport === "FOOTBALL").sort(sortFn);
+  const golfPlayers = [...players].filter((p) => p.sport === "GOLF").sort(sortFn);
+  const otherPlayers = [...players].filter((p) => p.sport && p.sport !== "FOOTBALL" && p.sport !== "GOLF").sort(sortFn);
 
   return (
     <div>
@@ -108,17 +113,27 @@ export default function PlayerManager({ teamId, teamName, sport }: { teamId: str
         <p className="text-gray-400 text-sm py-2">불러오는 중...</p>
       ) : (
         <div className="space-y-4">
-          {/* 모드 토글 */}
-          <div className="flex gap-1 bg-gray-100 p-1 rounded-lg w-fit">
-            {(["single", "bulk"] as const).map((m) => (
-              <button
-                key={m}
-                onClick={() => setMode(m)}
-                className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${mode === m ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:text-gray-700"}`}
-              >
-                {m === "single" ? "단일 추가" : "일괄 추가"}
-              </button>
-            ))}
+          {/* 모드 토글 + 종목 선택 */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex gap-1 bg-gray-100 p-1 rounded-lg">
+              {(["single", "bulk"] as const).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMode(m)}
+                  className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors ${mode === m ? "bg-white shadow-sm text-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+                >
+                  {m === "single" ? "단일 추가" : "일괄 추가"}
+                </button>
+              ))}
+            </div>
+            <select
+              className="input text-xs py-1 h-auto min-h-0 w-28"
+              value={addSport}
+              onChange={(e) => setAddSport(e.target.value)}
+            >
+              <option value="FOOTBALL">⚽ 축구</option>
+              <option value="GOLF">⛳ 골프</option>
+            </select>
           </div>
 
           {/* 단일 추가 폼 */}
@@ -189,15 +204,28 @@ export default function PlayerManager({ teamId, teamName, sport }: { teamId: str
           {players.length === 0 ? (
             <p className="text-gray-400 text-sm text-center py-4">등록된 선수가 없습니다</p>
           ) : (
-            <div className="divide-y divide-gray-100">
-              {sortedPlayers.map((p) => (
-                <div key={p.id} className="flex items-center justify-between py-2">
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm text-gray-400 w-6 text-right">{p.number ?? ""}</span>
-                    <span className="font-medium text-sm">{p.name}</span>
-                    {p.position && <span className="badge badge-blue">{p.position}</span>}
+            <div className="space-y-3">
+              {[
+                { label: "⚽ 축구 선수", list: footballPlayers },
+                { label: "⛳ 골프 선수", list: golfPlayers },
+                { label: "기타 선수", list: otherPlayers },
+              ].filter(({ list }) => list.length > 0).map(({ label, list }) => (
+                <div key={label}>
+                  {(footballPlayers.length > 0 && golfPlayers.length > 0) || otherPlayers.length > 0 ? (
+                    <p className="text-xs font-semibold text-gray-400 mb-1">{label} ({list.length}명)</p>
+                  ) : null}
+                  <div className="divide-y divide-gray-100">
+                    {list.map((p) => (
+                      <div key={p.id} className="flex items-center justify-between py-2">
+                        <div className="flex items-center gap-3">
+                          <span className="text-sm text-gray-400 w-6 text-right">{p.number ?? ""}</span>
+                          <span className="font-medium text-sm">{p.name}</span>
+                          {p.position && <span className="badge badge-blue">{p.position}</span>}
+                        </div>
+                        <button onClick={() => deletePlayer(p.id)} className="text-red-400 hover:text-red-600 text-xs">삭제</button>
+                      </div>
+                    ))}
                   </div>
-                  <button onClick={() => deletePlayer(p.id)} className="text-red-400 hover:text-red-600 text-xs">삭제</button>
                 </div>
               ))}
             </div>

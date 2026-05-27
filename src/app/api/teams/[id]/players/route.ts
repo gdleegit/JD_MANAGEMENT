@@ -14,10 +14,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const valid = body.players.filter((p: { name?: string }) => p.name?.trim());
     if (!valid.length) return NextResponse.json({ error: "선수 이름 필수" }, { status: 400 });
     const created = await prisma.player.createManyAndReturn({
-      data: valid.map((p: { name: string; number?: string; position?: string }) => ({
+      data: valid.map((p: { name: string; number?: string; position?: string; sport?: string }) => ({
         name: p.name.trim(),
         number: p.number ? Number(p.number) : null,
         position: p.position || null,
+        sport: p.sport || "FOOTBALL",
         teamId,
       })),
     });
@@ -25,10 +26,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
   }
 
   // 단일 추가
-  const { name, number, position } = body;
+  const { name, number, position, sport } = body;
   if (!name) return NextResponse.json({ error: "선수 이름 필수" }, { status: 400 });
   const player = await prisma.player.create({
-    data: { name, number: number ? Number(number) : null, position: position || null, teamId },
+    data: { name, number: number ? Number(number) : null, position: position || null, sport: sport || "FOOTBALL", teamId },
   });
   return NextResponse.json(player, { status: 201 });
 }
