@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import MatchEditor from "./MatchEditor";
 import PlayerManager from "./PlayerManager";
 import GolfEditor from "./GolfEditor";
@@ -1107,7 +1107,8 @@ function SponsorsTab({
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState(empty);
   const [imageUrl, setImageUrl] = useState(tournament.sponsorImageUrl ?? "");
-  const [imageSaving, setImageSaving] = useState(false);
+  const [imageUploading, setImageUploading] = useState(false);
+  const imageInputRef = useRef<HTMLInputElement>(null);
 
   const handleAdd = async () => {
     if (!form.name.trim()) return;
@@ -1130,10 +1131,31 @@ function SponsorsTab({
     items: tournament.sponsors.filter(s => s.type === t.value),
   }));
 
-  const saveImage = async () => {
-    setImageSaving(true);
-    await onUpdateTournament({ sponsorImageUrl: imageUrl.trim() || null });
-    setImageSaving(false);
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImageUploading(true);
+    try {
+      const form = new FormData();
+      form.append("file", file);
+      const res = await fetch("/api/upload", { method: "POST", body: form });
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error ?? "업로드 실패");
+        return;
+      }
+      const { url } = await res.json();
+      setImageUrl(url);
+      await onUpdateTournament({ sponsorImageUrl: url });
+    } finally {
+      setImageUploading(false);
+      if (imageInputRef.current) imageInputRef.current.value = "";
+    }
+  };
+
+  const removeImage = async () => {
+    setImageUrl("");
+    await onUpdateTournament({ sponsorImageUrl: null });
   };
 
   return (
@@ -1141,25 +1163,27 @@ function SponsorsTab({
       {/* 협찬 이미지 */}
       <div className="card p-4 space-y-3">
         <h3 className="text-sm font-bold text-gray-700">협찬·후원 포스터 이미지</h3>
-        <p className="text-xs text-gray-400">이미지를 업로드한 URL을 붙여넣으세요. 설정 시 메인화면·대회 페이지에서 이미지로 표시됩니다.</p>
-        <div className="flex gap-2">
-          <input
-            className="input flex-1 text-sm"
-            placeholder="https://... (이미지 URL)"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-          />
-          <SaveButton onClick={saveImage} label="저장" size="sm" />
-        </div>
-        {imageUrl && (
-          <div className="relative mt-1">
+        <p className="text-xs text-gray-400">JPG·PNG·WEBP 파일을 직접 업로드하세요. 메인화면과 대회 협찬 탭에 표시됩니다.</p>
+
+        {imageUrl ? (
+          <div className="relative">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={imageUrl} alt="협찬 포스터 미리보기" className="w-full max-h-48 object-contain rounded-lg border border-gray-200 bg-gray-50" />
-            <button
-              onClick={() => { setImageUrl(""); void onUpdateTournament({ sponsorImageUrl: null }); }}
-              className="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
-            >✕</button>
+            <img src={imageUrl} alt="협찬 포스터" className="w-full max-h-56 object-contain rounded-lg border border-gray-200 bg-gray-50" />
+            <div className="absolute top-2 right-2 flex gap-1.5">
+              <label className="cursor-pointer bg-white/90 text-gray-700 text-xs font-semibold rounded-full px-3 py-1 shadow hover:bg-white transition border border-gray-200">
+                {imageUploading ? "업로드 중..." : "교체"}
+                <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={imageUploading} />
+              </label>
+              <button onClick={removeImage} className="bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 shadow">✕</button>
+            </div>
           </div>
+        ) : (
+          <label className={`flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 rounded-xl py-8 cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-colors ${imageUploading ? "opacity-50 pointer-events-none" : ""}`}>
+            <span className="text-2xl">🖼️</span>
+            <span className="text-sm font-semibold text-gray-600">{imageUploading ? "업로드 중..." : "클릭해서 이미지 업로드"}</span>
+            <span className="text-xs text-gray-400">JPG, PNG, WEBP, GIF</span>
+            <input ref={imageInputRef} type="file" accept="image/*" className="hidden" onChange={handleImageUpload} disabled={imageUploading} />
+          </label>
         )}
       </div>
 
