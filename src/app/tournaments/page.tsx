@@ -65,9 +65,7 @@ export default async function TournamentsPage() {
 
   const TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
   const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원" };
-  const allSponsors = tournaments.flatMap(t =>
-    TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type))
-  );
+  const tournamentsWithSponsors = tournaments.filter(t => t.sponsors.length > 0);
 
   return (
     <div>
@@ -200,65 +198,78 @@ export default async function TournamentsPage() {
 
       )}
 
-      {/* 방법 3+4: 하단 독립 협찬·후원 섹션 + 자동 스크롤 */}
-      {allSponsors.length > 0 && (
+      {/* 하단 대회별 협찬·후원 섹션 */}
+      {tournamentsWithSponsors.length > 0 && (
         <section
-          className="mt-16 pt-10 pb-10 bg-white border-t border-b border-gray-200"
+          className="mt-16 pt-10 pb-6 bg-white border-t border-b border-gray-200"
           style={{ width: "100vw", marginLeft: "calc(-50vw + 50%)" }}
         >
-          <div className="text-center mb-6 px-4">
+          <div className="text-center mb-8 px-4">
             <p className="text-xs font-bold tracking-widest uppercase mb-1" style={{ color: "#176fc1" }}>Our Sponsors &amp; Supporters</p>
             <h2 className="text-lg sm:text-xl font-extrabold text-gray-900">중동과 함께해주신 협찬·후원</h2>
           </div>
-          <div className="relative">
-            {/* 좌우 페이드 처리 — 배경색 맞춤 */}
-            <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-            <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-            <SponsorMarquee>
-              {allSponsors.map((s, i) => {
-                const card = (
-                  <div className="flex flex-col items-center px-4 py-2.5 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ width: "118px", borderTop: "3px solid #176fc1" }}>
-                    {/* 기수·성명 슬롯 */}
-                    <div className="flex items-center h-5 mb-1">
-                      {(s.grade || s.personName) && (
-                        <div className="flex items-center gap-0.5 whitespace-nowrap rounded-full px-2 py-0.5" style={{ backgroundColor: "#176fc1" }}>
-                          {s.grade && <span className="text-[10px] font-black text-white">{s.grade}</span>}
-                          {s.grade && s.personName && <span className="text-blue-200 text-[10px]">·</span>}
-                          {s.personName && <span className="text-[10px] font-bold text-white">{s.personName}</span>}
-                        </div>
-                      )}
-                    </div>
-                    {/* 로고 */}
-                    <div className="flex items-center justify-center h-10 w-full">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={s.logoUrl ?? "/cd_logo2.png"}
-                        alt={s.name}
-                        className="max-h-9 w-auto object-contain"
-                      />
-                    </div>
-                    {/* 협찬사명 */}
-                    <span className="text-xs font-extrabold text-gray-900 whitespace-nowrap tracking-tight mt-1.5">{s.name}</span>
-                    {/* 협찬 내용 뱃지 */}
-                    <div className="mt-1.5 min-h-[20px] flex items-center">
-                      {s.description ? (
-                        <span
-                          className="whitespace-nowrap text-[10px] font-bold px-2 py-0.5 rounded-full"
-                          style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a)", color: "#92400e", border: "1px solid #fbbf24" }}
-                        >
-                          {s.description}
-                        </span>
-                      ) : null}
-                    </div>
+
+          <div className="space-y-10">
+            {tournamentsWithSponsors.map(t => {
+              const sortedSponsors = TYPE_ORDER.flatMap(type => t.sponsors.filter(s => s.type === type));
+              return (
+                <div key={t.id}>
+                  {/* 대회명 헤더 */}
+                  <div className="text-center mb-4 px-4">
+                    <span className="inline-flex items-center gap-1.5 text-sm font-bold text-gray-600 bg-gray-100 px-4 py-1.5 rounded-full">
+                      <span>{sportEmoji[t.sport]}</span>
+                      <span>{t.name}</span>
+                    </span>
                   </div>
-                );
-                return s.link ? (
-                  <a key={i} href={s.link} target="_blank" rel="noopener noreferrer">{card}</a>
-                ) : (
-                  <div key={i}>{card}</div>
-                );
-              })}
-            </SponsorMarquee>
+                  <div className="relative">
+                    <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+                    <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+                    <SponsorMarquee>
+                      {sortedSponsors.map((s, i) => {
+                        const card = (
+                          <div className="flex flex-col items-center px-4 py-2.5 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ width: "118px", borderTop: "3px solid #176fc1" }}>
+                            {/* 기수·성명 슬롯 */}
+                            <div className="flex items-center h-5 mb-1">
+                              {(s.grade || s.personName) && (
+                                <div className="flex items-center gap-0.5 whitespace-nowrap rounded-full px-2 py-0.5" style={{ backgroundColor: "#176fc1" }}>
+                                  {s.grade && <span className="text-[10px] font-black text-white">{s.grade}</span>}
+                                  {s.grade && s.personName && <span className="text-blue-200 text-[10px]">·</span>}
+                                  {s.personName && <span className="text-[10px] font-bold text-white">{s.personName}</span>}
+                                </div>
+                              )}
+                            </div>
+                            {/* 로고 */}
+                            <div className="flex items-center justify-center h-10 w-full">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img src={s.logoUrl ?? "/cd_logo2.png"} alt={s.name} className="max-h-9 w-auto object-contain" />
+                            </div>
+                            {/* 협찬사명 */}
+                            <span className="text-xs font-extrabold text-gray-900 whitespace-nowrap tracking-tight mt-1.5">{s.name}</span>
+                            {/* 협찬 내용 뱃지 */}
+                            <div className="mt-1.5 min-h-[20px] flex items-center">
+                              {s.description ? (
+                                <span className="whitespace-nowrap text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a)", color: "#92400e", border: "1px solid #fbbf24" }}>
+                                  {s.description}
+                                </span>
+                              ) : null}
+                            </div>
+                            {/* 대회명 */}
+                            <div className="mt-1.5 w-full text-center">
+                              <span className="text-[9px] text-gray-400 font-medium leading-tight line-clamp-1">{t.name}</span>
+                            </div>
+                          </div>
+                        );
+                        return s.link ? (
+                          <a key={i} href={s.link} target="_blank" rel="noopener noreferrer">{card}</a>
+                        ) : (
+                          <div key={i}>{card}</div>
+                        );
+                      })}
+                    </SponsorMarquee>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
