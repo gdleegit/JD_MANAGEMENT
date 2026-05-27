@@ -122,7 +122,7 @@ function LeaderboardTab({ groups, teamMap, scoreMap }: {
 
 function GroupTable({ teams, scoreMap }: { teams: Team[]; scoreMap: Record<string, number | null> }) {
   return (
-    <div className="space-y-2">
+    <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-x-6">
       {teams.map((team) => {
         const players = [...(team.players ?? [])].sort((a, b) => {
           if (a.number != null && b.number != null) return a.number - b.number;
@@ -132,28 +132,28 @@ function GroupTable({ teams, scoreMap }: { teams: Team[]; scoreMap: Record<strin
         });
         const shortName = team.shortName;
         return (
-          <div key={team.id} className="flex items-start gap-3 py-2.5 border-b border-gray-100 last:border-0">
+          <div key={team.id} className="flex items-center gap-2 py-2 border-b border-gray-100">
             {/* 조 이름 */}
-            <div className="flex-shrink-0 w-16 flex flex-col items-center pt-0.5">
+            <div className="flex-shrink-0 w-11 flex flex-col items-center">
               <span className="text-sm font-bold text-gray-800">{team.name}</span>
               {shortName && (
-                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-blue-100 text-blue-700 mt-0.5 whitespace-nowrap">{shortName}</span>
+                <span className="text-[9px] font-semibold px-1 py-0.5 rounded-full bg-blue-100 text-blue-700 mt-0.5 whitespace-nowrap leading-tight">{shortName}</span>
               )}
             </div>
-            {/* 선수들 가로 나열 */}
-            <div className="flex flex-wrap gap-2 flex-1">
+            {/* 선수 4명 고정 그리드 */}
+            <div className="grid grid-cols-4 gap-1 flex-1">
               {players.map((player) => {
                 const strokes = scoreMap[player.id] ?? null;
                 return (
-                  <div key={player.id} className="flex flex-col items-center bg-gray-50 rounded-xl px-3 py-2 min-w-[64px]">
-                    <span className="text-xs font-bold text-gray-800 text-center leading-tight">{player.name}</span>
+                  <div key={player.id} className="flex flex-col items-center bg-gray-50 rounded-lg px-1 py-1.5 text-center overflow-hidden">
+                    <span className="text-xs font-bold text-gray-800 leading-tight w-full truncate">{player.name}</span>
                     {player.number != null && (
-                      <span className="text-[10px] text-gray-400 mt-0.5">{player.number}회</span>
+                      <span className="text-[10px] text-gray-400 leading-tight">{player.number}회</span>
                     )}
                     {strokes != null ? (
-                      <span className="text-sm font-black text-blue-600 mt-1 tabular-nums">{strokes}타</span>
+                      <span className="text-xs font-black text-blue-600 tabular-nums leading-tight mt-0.5">{strokes}타</span>
                     ) : (
-                      <span className="text-[10px] text-gray-300 mt-1">미기록</span>
+                      <span className="text-[9px] text-gray-300 leading-tight mt-0.5">미기록</span>
                     )}
                   </div>
                 );
