@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import BracketView from "./BracketView";
 import GolfView from "./GolfView";
+import SponsorImageViewer from "./SponsorImageViewer";
 
 type Player = { id: string; name: string; number?: number | null; position?: string | null };
 type Team = { id: string; name: string; color?: string | null; emblemUrl?: string | null; players?: Player[] };
@@ -60,6 +61,7 @@ type Tournament = {
   endDate?: string | null;
   description?: string | null;
   rules?: string | null;
+  sponsorImageUrl?: string | null;
   teams: TournamentTeam[];
   matches: Match[];
   groups: Group[];
@@ -397,6 +399,11 @@ export default function TournamentPublicView({
       {tab === "sponsors" && tournament.sponsors.length > 0 && (
         <div className="card p-4 sm:p-6">
           <h2 className="text-lg sm:text-xl font-bold mb-5">협찬·후원</h2>
+          {tournament.sponsorImageUrl && (
+            <div className="mb-6">
+              <SponsorImageViewer imageUrl={tournament.sponsorImageUrl} tournamentName={tournament.name} />
+            </div>
+          )}
           <div className="flex flex-wrap gap-3 justify-center">
             {["TITLE", "SPONSOR", "SUPPORT"].flatMap(type => tournament.sponsors.filter(s => s.type === type)).map((s, i) => {
               const card = (

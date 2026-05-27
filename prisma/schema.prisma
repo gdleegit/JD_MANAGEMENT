@@ -9,17 +9,18 @@ datasource db {
 }
 
 model Tournament {
-  id          String    @id @default(cuid())
-  name        String
-  sport       String    @default("FOOTBALL")
-  type        String
-  status      String    @default("UPCOMING")
-  startDate   DateTime?
-  endDate     DateTime?
-  description String?
-  rules       String?
-  active      Boolean   @default(true)
-  createdAt   DateTime  @default(now())
+  id               String    @id @default(cuid())
+  name             String
+  sport            String    @default("FOOTBALL")
+  type             String
+  status           String    @default("UPCOMING")
+  startDate        DateTime?
+  endDate          DateTime?
+  description      String?
+  rules            String?
+  sponsorImageUrl  String?
+  active           Boolean   @default(true)
+  createdAt        DateTime  @default(now())
 
   teams     TournamentTeam[]
   matches   Match[]

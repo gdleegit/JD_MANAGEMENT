@@ -32,7 +32,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   const { id } = await params;
   const body = await req.json();
-  const { name, sport, type, status, startDate, endDate, description, rules } = body;
+  const { name, sport, type, status, startDate, endDate, description, rules, sponsorImageUrl } = body;
 
   const tournament = await prisma.tournament.update({
     where: { id },
@@ -45,6 +45,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       ...(endDate !== undefined && { endDate: endDate ? new Date(endDate) : null }),
       ...(description !== undefined && { description }),
       ...(rules !== undefined && { rules }),
+      ...(sponsorImageUrl !== undefined && { sponsorImageUrl }),
     },
   });
   revalidatePath(`/tournaments/${id}`);

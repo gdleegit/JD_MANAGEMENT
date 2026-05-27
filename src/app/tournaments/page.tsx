@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import SponsorMarquee from "@/components/SponsorMarquee";
+import SponsorImageViewer from "@/components/SponsorImageViewer";
 
 export const revalidate = 300;
 
@@ -221,52 +222,55 @@ export default async function TournamentsPage() {
                       <span>{t.name}</span>
                     </span>
                   </div>
-                  <div className="relative">
-                    <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
-                    <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
-                    <SponsorMarquee>
-                      {sortedSponsors.map((s, i) => {
-                        const card = (
-                          <div className="flex flex-col items-center px-4 py-2.5 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ width: "118px", borderTop: "3px solid #176fc1" }}>
-                            {/* 기수·성명 슬롯 */}
-                            <div className="flex items-center h-5 mb-1">
-                              {(s.grade || s.personName) && (
-                                <div className="flex items-center gap-0.5 whitespace-nowrap rounded-full px-2 py-0.5" style={{ backgroundColor: "#176fc1" }}>
-                                  {s.grade && <span className="text-[10px] font-black text-white">{s.grade}</span>}
-                                  {s.grade && s.personName && <span className="text-blue-200 text-[10px]">·</span>}
-                                  {s.personName && <span className="text-[10px] font-bold text-white">{s.personName}</span>}
-                                </div>
-                              )}
+
+                  {/* 이미지 있으면 이미지 뷰어, 없으면 마퀴 */}
+                  {t.sponsorImageUrl ? (
+                    <div className="max-w-lg mx-auto px-4">
+                      <SponsorImageViewer imageUrl={t.sponsorImageUrl} tournamentName={t.name} />
+                    </div>
+                  ) : (
+                    <div className="relative">
+                      <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+                      <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+                      <SponsorMarquee>
+                        {sortedSponsors.map((s, i) => {
+                          const card = (
+                            <div className="flex flex-col items-center px-4 py-2.5 rounded-2xl border bg-gradient-to-b from-white to-gray-50 border-gray-200 shadow-lg shadow-black/40 hover:shadow-xl hover:shadow-black/50 hover:scale-[1.03] transition-all duration-200 overflow-hidden" style={{ width: "118px", borderTop: "3px solid #176fc1" }}>
+                              <div className="flex items-center h-5 mb-1">
+                                {(s.grade || s.personName) && (
+                                  <div className="flex items-center gap-0.5 whitespace-nowrap rounded-full px-2 py-0.5" style={{ backgroundColor: "#176fc1" }}>
+                                    {s.grade && <span className="text-[10px] font-black text-white">{s.grade}</span>}
+                                    {s.grade && s.personName && <span className="text-blue-200 text-[10px]">·</span>}
+                                    {s.personName && <span className="text-[10px] font-bold text-white">{s.personName}</span>}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex items-center justify-center h-10 w-full">
+                                {/* eslint-disable-next-line @next/next/no-img-element */}
+                                <img src={s.logoUrl ?? "/cd_logo2.png"} alt={s.name} className="max-h-9 w-auto object-contain" />
+                              </div>
+                              <span className="text-xs font-extrabold text-gray-900 whitespace-nowrap tracking-tight mt-1.5">{s.name}</span>
+                              <div className="mt-1.5 min-h-[20px] flex items-center">
+                                {s.description ? (
+                                  <span className="whitespace-nowrap text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a)", color: "#92400e", border: "1px solid #fbbf24" }}>
+                                    {s.description}
+                                  </span>
+                                ) : null}
+                              </div>
+                              <div className="mt-1.5 w-full text-center">
+                                <span className="text-[9px] text-gray-400 font-medium leading-tight line-clamp-1">{t.name}</span>
+                              </div>
                             </div>
-                            {/* 로고 */}
-                            <div className="flex items-center justify-center h-10 w-full">
-                              {/* eslint-disable-next-line @next/next/no-img-element */}
-                              <img src={s.logoUrl ?? "/cd_logo2.png"} alt={s.name} className="max-h-9 w-auto object-contain" />
-                            </div>
-                            {/* 협찬사명 */}
-                            <span className="text-xs font-extrabold text-gray-900 whitespace-nowrap tracking-tight mt-1.5">{s.name}</span>
-                            {/* 협찬 내용 뱃지 */}
-                            <div className="mt-1.5 min-h-[20px] flex items-center">
-                              {s.description ? (
-                                <span className="whitespace-nowrap text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ background: "linear-gradient(135deg, #fef3c7, #fde68a)", color: "#92400e", border: "1px solid #fbbf24" }}>
-                                  {s.description}
-                                </span>
-                              ) : null}
-                            </div>
-                            {/* 대회명 */}
-                            <div className="mt-1.5 w-full text-center">
-                              <span className="text-[9px] text-gray-400 font-medium leading-tight line-clamp-1">{t.name}</span>
-                            </div>
-                          </div>
-                        );
-                        return s.link ? (
-                          <a key={i} href={s.link} target="_blank" rel="noopener noreferrer">{card}</a>
-                        ) : (
-                          <div key={i}>{card}</div>
-                        );
-                      })}
-                    </SponsorMarquee>
-                  </div>
+                          );
+                          return s.link ? (
+                            <a key={i} href={s.link} target="_blank" rel="noopener noreferrer">{card}</a>
+                          ) : (
+                            <div key={i}>{card}</div>
+                          );
+                        })}
+                      </SponsorMarquee>
+                    </div>
+                  )}
                 </div>
               );
             })}

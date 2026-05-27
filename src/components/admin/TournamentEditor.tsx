@@ -43,6 +43,7 @@ type Tournament = {
   endDate?: string | null;
   description?: string | null;
   rules?: string | null;
+  sponsorImageUrl?: string | null;
   teams: TournamentTeam[];
   matches: Match[];
   groups: Group[];
@@ -191,6 +192,13 @@ export default function TournamentEditor({ tournamentId, onBack }: { tournamentI
           onDelete={async (id) => {
             await fetch(`/api/sponsors/${id}`, { method: "DELETE" });
             setTournament(t => t ? { ...t, sponsors: t.sponsors.filter(s => s.id !== id) } : t);
+          }}
+          onUpdateTournament={async (data) => {
+            const res = await fetch(`/api/tournaments/${tournamentId}`, {
+              method: "PATCH", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(data),
+            });
+            if (res.ok) setTournament(t => t ? { ...t, ...data } : t);
           }}
         />
       )}
@@ -1086,16 +1094,20 @@ function SponsorsTab({
   onAdd,
   onUpdate,
   onDelete,
+  onUpdateTournament,
 }: {
   tournament: Tournament;
   onAdd: (data: Omit<Sponsor, "id" | "order">) => Promise<void>;
   onUpdate: (id: string, data: Partial<Sponsor>) => Promise<void>;
   onDelete: (id: string) => Promise<void>;
+  onUpdateTournament: (data: { sponsorImageUrl?: string | null }) => Promise<void>;
 }) {
   const empty = { name: "", grade: "", personName: "", type: "SPONSOR", description: "", logoUrl: "", link: "" };
   const [form, setForm] = useState(empty);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState(empty);
+  const [imageUrl, setImageUrl] = useState(tournament.sponsorImageUrl ?? "");
+  const [imageSaving, setImageSaving] = useState(false);
 
   const handleAdd = async () => {
     if (!form.name.trim()) return;
@@ -1118,8 +1130,39 @@ function SponsorsTab({
     items: tournament.sponsors.filter(s => s.type === t.value),
   }));
 
+  const saveImage = async () => {
+    setImageSaving(true);
+    await onUpdateTournament({ sponsorImageUrl: imageUrl.trim() || null });
+    setImageSaving(false);
+  };
+
   return (
     <div className="space-y-4">
+      {/* 협찬 이미지 */}
+      <div className="card p-4 space-y-3">
+        <h3 className="text-sm font-bold text-gray-700">협찬·후원 포스터 이미지</h3>
+        <p className="text-xs text-gray-400">이미지를 업로드한 URL을 붙여넣으세요. 설정 시 메인화면·대회 페이지에서 이미지로 표시됩니다.</p>
+        <div className="flex gap-2">
+          <input
+            className="input flex-1 text-sm"
+            placeholder="https://... (이미지 URL)"
+            value={imageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
+          />
+          <SaveButton onClick={saveImage} label="저장" size="sm" />
+        </div>
+        {imageUrl && (
+          <div className="relative mt-1">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={imageUrl} alt="협찬 포스터 미리보기" className="w-full max-h-48 object-contain rounded-lg border border-gray-200 bg-gray-50" />
+            <button
+              onClick={() => { setImageUrl(""); void onUpdateTournament({ sponsorImageUrl: null }); }}
+              className="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600"
+            >✕</button>
+          </div>
+        )}
+      </div>
+
       {/* 목록 */}
       {tournament.sponsors.length === 0 ? (
         <div className="card p-8 text-center text-gray-400 text-sm">등록된 협찬·후원이 없습니다</div>
