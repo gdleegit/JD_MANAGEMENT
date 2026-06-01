@@ -66,7 +66,7 @@ export default async function TournamentsPage() {
 
   const TYPE_ORDER = ["TITLE", "SPONSOR", "SUPPORT"];
   const TYPE_LABEL: Record<string, string> = { TITLE: "타이틀 협찬", SPONSOR: "협찬", SUPPORT: "후원" };
-  const tournamentsWithSponsors = tournaments.filter(t => t.sponsors.length > 0);
+  const tournamentsWithSponsors = tournaments.filter(t => t.sponsors.length > 0 || t.sponsorImageUrl);
 
   return (
     <div>
